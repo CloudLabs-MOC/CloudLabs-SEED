@@ -35,8 +35,8 @@ Readings and videos. Detailed coverage of the Spectre attack can be found in the
 - Section 8 of the SEED Lecture,Computer Security: A Hands-on Approach, by Wenliang Du. See
     details athttps://www.handsonsecurity.net/video.html.
 
-Lab Environment. This lab has been tested on our pre-built Ubuntu 16.04 and 20.04 VMs, which can be
-downloaded from the SEED website.
+Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+
 When using this lab, instructors should keep the followings in mind: First, although the Spectre vulner-
 ability is a common design flaw inside Intel, AMD, and ARM CPUs, we have only tested the lab activities
 on Intel CPUs. Second, Intel is working on fixing this problem in its CPUs, so if a student’s computer uses
