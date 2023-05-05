@@ -40,8 +40,17 @@ countermeasure tasks are based on the Level-1 task, so skipping the other levels
 
 ## 2 Lab Environment Setup
 
-Please download theLabsetup.zipfile to your VM from the lab’s website, unzip it, and you will get a
-folder calledLabsetup. All the files needed for this lab are included in this folder.
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Server/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+``` 
+and you will get afolder calledLabsetup. All the files needed for this lab are included in this folder.
 
 
 ### 2.1 Turning off Countermeasures
