@@ -51,8 +51,14 @@ client: 10.9.0.
 server: 10.9.0.
 proxy: 10.9.0.
 
-Container Setup and Commands. Please download theLabsetup.zipfile to your VM from the lab’s
-website, unzip it, enter theLabsetupfolder, and use thedocker-compose.ymlfile to set up the lab
+Container Setup and Commands. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/TLS:%20Transport%20Layer%20Security/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+enter theLabsetupfolder, and use thedocker-compose.ymlfile to set up the lab
 environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
 SEED lab environment using containers, it is very important that you read the user manual.
