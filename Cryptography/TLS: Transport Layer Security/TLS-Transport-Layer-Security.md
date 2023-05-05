@@ -36,11 +36,7 @@ Readings. Detailed coverage of PKI and TLS can be found in the following:
 - Chapters 24 and 25 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd
     Edition, by Wenliang Du. See details athttps://www.handsonsecurity.net.
 
-Lab Environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-
-built image from the SEED website, and run the SEED VM on your own computer. However, most of the
-SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the
-cloud.
-
+Lab Environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment
 
