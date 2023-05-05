@@ -35,6 +35,7 @@ Readings and videos. Detailed coverage of the return-to-libc attack can be found
     Du. See details athttps://www.handsonsecurity.net/video.html.
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+
 Note for instructors. Instructors can customize this lab by choosing a value for the buffer size in the
 vulnerable program. See Section 2.3 for details.
 
