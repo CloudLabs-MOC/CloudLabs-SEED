@@ -39,7 +39,7 @@ from the SEED website. The lab uses a tool called “Fast MD5 Collision Generati
 by Marc Stevens. The name of the binary is calledmd5collgenin our VM, and it is installed inside the
 /usr/binfolder. If it is not there, Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
