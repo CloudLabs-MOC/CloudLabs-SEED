@@ -8,15 +8,8 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ```
 ## 1 Overview
 
-Border Gateway Protocol (BGP) is the standard exterior gateway protocol designed to exchange routing and
-reachability information among autonomous systems (AS) on the Internet. It is the “glue” of the Internet,
-and is an essential piece of the Internet infrastructure. It is also a primary attack target, because if attackers
-can compromise BGP, they can disconnect the Internet and redirect traffics.
-The goal of this lab is to help students understand how BGP “glues” the Internet together, and how the
-Internet is actually connected. We have built an Internet emulator, and will use this emulator as the basis
-for the lab activities. Due to the complexity of BGP, the explanation of how BGP works is provided in a
-separate document. It is essential for the lab activities, so students should read the document before working
-on the lab. This lab covers the following topics:
+Border Gateway Protocol (BGP) is the standard exterior gateway protocol designed to exchange routing and reachability information among autonomous systems (AS) on the Internet. It is the “glue” of the Internet, and is an essential piece of the Internet infrastructure. It is also a primary attack target, because if attackers
+can compromise BGP, they can disconnect the Internet and redirect traffics. The goal of this lab is to help students understand how BGP “glues” the Internet together, and how the Internet is actually connected. We have built an Internet emulator, and will use this emulator as the basis for the lab activities. Due to the complexity of BGP, the explanation of how BGP works is provided in a separate document. It is essential for the lab activities, so students should read the document before working on the lab. This lab covers the following topics:
 
 - How the BGP protocol works
 - Autonomous systems
@@ -41,18 +34,19 @@ Lab environment.You can perform the lab exercise on the SEED VM provided by the 
 
 ## 2 The Lab Setup and the SEED Internet Emulator
 
-This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document).
-We provide a pre-built emulator in two different forms: Python code and container files. The container files
+This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document). We provide a pre-built emulator in two different forms: Python code and container files. The container files are generated from the Python code, but students need to install the SEED Emulator source code from the GitHub to run the Python code. The container files can be directly used without the emulator source code. Instructors who would like to customize the emulator can modify the Python code, generate their own container files, and then provide the files to students, replacing the ones included in the lab setup file.
 
+Download the emulator files. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
-are generated from the Python code, but students need to install the SEED Emulator source code from
-the GitHub to run the Python code. The container files can be directly used without the emulator source
-code. Instructors who would like to customize the emulator can modify the Python code, generate their own
-container files, and then provide the files to students, replacing the ones included in the lab setup file.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/BGP%20and%20Attacks/Lab%20files/Labsetup.zip
+```
+ 
+```
+sudo unzip Labsetup.zip
+```
 
-Download the emulator files. Please download theLabsetup.zipfile from the web page, and unzip
-it. The files inside theoutputsub-folder are the actual emulation files (container files) that are generated
-from the Python codemini-internet.py.
+The files inside theoutputsub-folder are the actual emulation files (container files) that are generated from the Python codemini-internet.py.
 
 Start the emulation. We will directly use the container files in theoutputfolder. Go to this folder,
 and run the following docker commands to build and start the containers. We recommend that you run the
