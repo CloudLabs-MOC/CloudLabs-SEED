@@ -37,7 +37,13 @@ Readings. Detailed coverage of the one-way hash function can be found in the fol
 Lab Environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
 from the SEED website. The lab uses a tool called “Fast MD5 Collision Generation”, which was written
 by Marc Stevens. The name of the binary is calledmd5collgenin our VM, and it is installed inside the
-/usr/binfolder. If it is not there, you can download it from the lab’s website (insideLabsetup.zip).
+/usr/binfolder. If it is not there, Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Set-UID%20Programs/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
 If you are interested in installing the tool to your own machine, you can download the source code directly
 fromhttps://www.win.tue.nl/hashclash/.
 
