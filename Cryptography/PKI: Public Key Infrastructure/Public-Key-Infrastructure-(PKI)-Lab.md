@@ -44,8 +44,7 @@ In this lab, we will generate public-key certificates, and then use them to secu
 generation tasks will be conducted on the VM, but we will use a container to host the web server.
 
 
-Container Setup and Commands.  
-Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+Container Setup and Commands. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/PKI:%20Public%20Key%20Infrastructure/Lab%20files/Labsetup.zip
 ```
