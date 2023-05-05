@@ -3,21 +3,14 @@
 ## (Web Application:Elgg)
 
 ```
-Copyright © 2006 - 2020 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+Copyright © 2006 - 2020 by Wenliang Du. This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
+
 ## 1 Overview
 
-The objective of this lab is to help students understand the Cross-Site Request Forgery (CSRF) attack. A
-CSRF attack involves a victim user, a trusted site, and a malicious site. The victim user holds an active
-session with a trusted site while visiting a malicious site. The malicious site injects an HTTP request for the
-trusted site into the victim user session, causing damages.
-In this lab, students will be attacking a social networking web application using the CSRF attack. The
-open-source social networking application is calledElgg, which has already been installed in our VM.
-Elgghas countermeasures against CSRF, but we have turned them off for the purpose of this lab. This lab
-covers the following topics:
+The objective of this lab is to help students understand the Cross-Site Request Forgery (CSRF) attack. A CSRF attack involves a victim user, a trusted site, and a malicious site. The victim user holds an active session with a trusted site while visiting a malicious site. The malicious site injects an HTTP request for the
+trusted site into the victim user session, causing damages. In this lab, students will be attacking a social networking web application using the CSRF attack. The
+open-source social networking application is called Elgg, which has already been installed in our VM. Elgg has counter measures against CSRF, but we have turned them off for the purpose of this lab. This lab covers the following topics:
 
 - Cross-Site Request Forgery attack
 - CSRF countermeasures: Secret token and Same-site cookie
@@ -26,33 +19,21 @@ covers the following topics:
 
 Readings. Detailed coverage of the CSRF attack can be found in the following:
 
-- Chapter 10 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+- Chapter 10 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded from the SEED website. Since we use containers to set up the lab environment, this lab does not depend much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
 
 ## 2 Lab Environment Setup
 
-In this lab, we will use three websites. The first website is the vulnerable Elgg site accessible atwww.
-seed-server.com. The second website is the attacker’s malicious web site that is used for attacking
-Elgg. This web site is accessible viawww.attacker32.com. The third website is used for the defense
-tasks, and its hostname iswww.example32.com. We use containers to set up the lab environment.
+In this lab, we will use three websites. The first website is the vulnerable Elgg site accessible at www.seed-server.com. The second website is the attacker’s malicious web site that is used for attacking Elgg. This web site is accessible via www.attacker32.com. The third website is used for the defense tasks, and its hostname is www.example32.com. We use containers to set up the lab environment.
 
 ### 2.1 Container Setup and Commands
 
-Please download theLabsetup.zipfile to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Please download theLabsetup.zip file to your VM from the lab’s website, unzip it, enter theLabsetup folder, and use thedocker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Docker file can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. 
 
+In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the. bashrc file (in our provided SEEDUbuntu 20.04 VM).
 
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
-very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
-(in our provided SEEDUbuntu 20.04 VM).
-
+```
 $ docker-compose build # Build the container images
 $ docker-compose up # Start the containers
 $ docker-compose down # Shut down the containers
@@ -61,12 +42,11 @@ $ docker-compose down # Shut down the containers
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
-the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the"docker ps"command to find out the ID of the container, and then use"docker exec"to start a shell on that container. We have created aliases for them in the .bashrc file.
 
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
@@ -82,9 +62,9 @@ root@9652715c8e0a:/#
 // Note: If a docker command requires a container ID, you do not need to
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
+```
 
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+If you encounter problems when setting up the lab environment, please read the “Common Problems” section of the manual for potential solutions.
 
 ### 2.2 Elgg Web Application
 
@@ -146,17 +126,13 @@ $ sudo rm -rf mysql_data
 User accounts. We have created several user accounts on theElggserver; the user name and passwords
 are given in the following.
 
-----------------------------
 UserName | Password
-----------------------------
-
-
+---- | ----
 admin | seedelgg
 alice | seedalice
 boby | seedboby
 charlie | seedcharlie
 samy | seedsamy
-----------------------------
 
 ## 3 Lab Tasks: Attacks
 
