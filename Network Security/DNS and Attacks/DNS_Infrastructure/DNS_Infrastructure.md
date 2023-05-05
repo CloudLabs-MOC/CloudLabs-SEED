@@ -32,9 +32,7 @@ Readings and videos. Detailed coverage of the DNS protocol can be found in the f
 - Section 7 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
     athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+Lab environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 Overview of the lab tasks. The DNS infrastructure involves many servers. We will build a simplified
 DNS infrastructure inside the emulator. This infrastructure includes two root servers, twocomTLD (Top-
