@@ -23,10 +23,7 @@ emulator, with an Ethereum blockchain deployed inside. The topics covered in thi
 - Interacting with Blockchain
 - The SEED Internet emulator
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud. We
-recommend the following setup for the virtual machine: at least two CPU cores and at least 4GB of RAM.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 Note to instructors. The reentrancy attack is a classic attack on smart contracts. While this lab will cover
 some of the attack basics, it is not intended to be a tutorial on this attack. We suggest instructors to cover
