@@ -63,8 +63,16 @@ system, we can find a way to write to this file. Our objective is to replace the
 
 ### 2.2 Set Up the Memory Mapping Thread
 
-You can download the programcowattack.cfrom the website of the lab. The program has three threads:
-the main thread, the write thread, and the madvise thread. The main thread maps/zzzto memory, finds
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Dirty%20COW/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+```
+The program has three threads:the main thread, the write thread, and the madvise thread. The main thread maps/zzzto memory, finds
 where the pattern"222222"is, and then creates two threads to exploit the Dirty COW race condition
 vulnerability in the OS kernel.
 
