@@ -27,9 +27,7 @@ Videos. Detailed coverage of the IP protocol and the attacks at the IP layer can
 - Section 4 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
     athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Environment Setup using Container
 
