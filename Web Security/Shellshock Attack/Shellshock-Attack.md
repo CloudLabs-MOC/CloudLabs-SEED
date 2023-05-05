@@ -31,9 +31,7 @@ Readings and videos. Detailed coverage of the Shellshock attack can be found in 
 - Section 3 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+Lab environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Environment Setup
 
