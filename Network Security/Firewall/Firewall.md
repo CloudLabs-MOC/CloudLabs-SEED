@@ -39,9 +39,16 @@ set up this lab environment.
 
 ### 2.1 Container Setup and Commands
 
-Please download theLabsetup.zipfile to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/Firewall/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+
+Enter theLabsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
 
 
 ```
