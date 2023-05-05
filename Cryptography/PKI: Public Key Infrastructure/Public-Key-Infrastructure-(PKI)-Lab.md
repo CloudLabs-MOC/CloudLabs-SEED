@@ -44,8 +44,15 @@ In this lab, we will generate public-key certificates, and then use them to secu
 generation tasks will be conducted on the VM, but we will use a container to host the web server.
 
 
-Container Setup and Commands. Please download theLabsetup.zipfile to your VM from the lab’s
-website, unzip it, enter theLabsetupfolder, and use thedocker-compose.ymlfile to set up the lab
+Container Setup and Commands.  
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/PKI:%20Public%20Key%20Infrastructure/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+enter the Labsetup folder, and use the docker-compose.ymlfile to set up the lab
 environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
 SEED lab environment using containers, it is very important that you read the user manual.
