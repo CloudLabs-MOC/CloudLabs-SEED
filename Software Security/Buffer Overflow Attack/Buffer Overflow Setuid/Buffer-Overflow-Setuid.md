@@ -32,9 +32,7 @@ Readings and videos. Detailed coverage of the buffer-overflow attack can be foun
 - Section 4 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+Lab environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 Note for instructors. Instructors can customize this lab by choosing values forL1, ...,L4. See Section 4
 for details. Depending on the background of students and the time allocated for this lab, instructors can
