@@ -36,7 +36,7 @@ Readings. Detailed coverage of PKI and TLS can be found in the following:
 - Chapters 24 and 25 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd
     Edition, by Wenliang Du. See details athttps://www.handsonsecurity.net.
 
-Lab Environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment
 
