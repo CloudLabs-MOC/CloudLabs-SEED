@@ -33,9 +33,7 @@ Readings and videos. Detailed coverage of the public-key cryptography can be fou
 - Chapter 23 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
     by Wenliang Du. See details athttps://www.handsonsecurity.net.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 Acknowledgment This lab was developed with the help of Shatadiya Saha, a graduate student in the
 Department of Electrical Engineering and Computer Science at Syracuse University.
