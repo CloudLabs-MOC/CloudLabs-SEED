@@ -31,9 +31,7 @@ Readings and Videos. Detailed coverage of sniffing and spoofing can be found in 
 - Section 2 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
     athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 Note for Instructors. There are two sets of tasks in this lab. The first set focuses on using tools to conduct
 packet sniffing and spoofing. It only requires a little bit of Python programming (usually a few lines of
