@@ -29,7 +29,17 @@ In this lab, we will use three websites. The first website is the vulnerable Elg
 
 ### 2.1 Container Setup and Commands
 
-Please download theLabsetup.zip file to your VM from the lab’s website, unzip it, enter theLabsetup folder, and use thedocker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Docker file can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Set-UID%20Programs/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+```
+
+Then use thedocker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Docker file can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. 
 
 In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the. bashrc file (in our provided SEEDUbuntu 20.04 VM).
 
