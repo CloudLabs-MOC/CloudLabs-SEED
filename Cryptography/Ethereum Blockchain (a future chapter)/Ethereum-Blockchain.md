@@ -43,10 +43,16 @@ are generated from the Python code, but students need to install the SEED Emulat
 the GitHub to run the Python code. The container files can be directly used without the emulator source
 code. Instructors who would like to customize the emulator can modify the Python code, generate their own
 container files, and then provide the files to students, replacing the ones included in the lab setup file.
-Please download theLabsetup.zipfile from the web page, and unzip it. The contents inside the
-Labsetup/emulator/folder are the files for the emulator. Inside this folder, there is two Python
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/Ethereum%20Blockchain%20(a%20future%20chapter)/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+The contents inside the Labsetup/emulator/folder are the files for the emulator. Inside this folder, there is two Python
 programs that are used to generate the emulation. We have already run the programs and the generated
 emulation files are inside theoutput/andoutput-small/folders. Students do not need to run the
 Python programs. Students can pick one set of containers based on how much RAM they have given to their
