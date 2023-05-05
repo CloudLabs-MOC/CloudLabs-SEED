@@ -34,10 +34,7 @@ Readings and videos. Detailed coverage of the return-to-libc attack can be found
 - Section 5 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
-
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 Note for instructors. Instructors can customize this lab by choosing a value for the buffer size in the
 vulnerable program. See Section 2.3 for details.
 
