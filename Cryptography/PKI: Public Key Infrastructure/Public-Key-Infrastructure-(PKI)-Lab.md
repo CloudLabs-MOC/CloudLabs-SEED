@@ -34,9 +34,7 @@ Related labs. A topic related to this lab is the Transport Layer Security (TLS),
 We have a separate lab for TLS. In addition, we have a lab calledRSA Public-Key Encryption and Signature
 Lab, which focuses on the algorithm part of the public-key cryptography.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment
 
