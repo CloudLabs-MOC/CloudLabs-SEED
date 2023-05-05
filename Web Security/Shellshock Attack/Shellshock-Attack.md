@@ -50,11 +50,12 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Web%20Security/Shellshock%20Attack/Lab%20files/Labsetup.zip
-``` 
+```
 
 ```
 sudo unzip Labsetup.zip
 ```
+
 Enter the Labsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
 content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
