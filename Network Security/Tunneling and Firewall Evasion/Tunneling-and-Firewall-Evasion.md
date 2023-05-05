@@ -27,9 +27,7 @@ can be found in the following:
 - Chapter 9 of the SEED Book,Internet Security: A Hands-on Approach, 3rd Edition, by Wenliang Du.
     See details athttps://www.handsonsecurity.net.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+Lab environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Task 0: Get Familiar with the Lab Setup
 
