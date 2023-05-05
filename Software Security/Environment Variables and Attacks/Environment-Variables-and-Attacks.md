@@ -36,7 +36,17 @@ related security problems can be found in the following:
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 ## 2 Lab Tasks
 
-Files needed for this lab are included inLabsetup.zip, which can be downloaded from the lab’s website.
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+ 
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Environment%20Variables%20and%20Attacks/Lab%20files/Labsetup.zip
+```
+
+
+```
+sudo unzip Labsetup.zip
+```
 
 
 ### 2.1 Task 1: Manipulating Environment Variables
