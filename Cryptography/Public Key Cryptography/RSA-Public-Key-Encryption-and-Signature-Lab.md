@@ -112,7 +112,7 @@ OPENSSL_free(number_str);
 ```
     BN_mod_exp(res, a, c, n, ctx)
 ```
-- Compute modular inverse, i.e., givena, find b, such that a∗b mod n = 1. The value b is called
+- Compute modular inverse, i.e., given a, find b, such that a∗b mod n = 1. The value b is called
     the inverse of a, with respect to modular n.
 ```
     BN_mod_inverse(b, a, n, ctx);
