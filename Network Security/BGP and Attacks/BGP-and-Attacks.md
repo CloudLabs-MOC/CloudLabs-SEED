@@ -55,11 +55,16 @@ system should not have any problem, as long as the docker software is installed.
 manual from this link.
 
 $ docker-compose build
+
 $ docker-compose up
 
+
 // Aliases for the Compose commands above (only available in the SEED VM)
+
 $ dcbuild # Alias for: docker-compose build
+
 $ dcup # Alias for: docker-compose up
+
 $ dcdown # Alias for: docker-compose down
 
 ### 2.1 The Network Map
@@ -93,17 +98,9 @@ $ dockps | grep 180
 
 $ docker cp 2967:/etc/bird/bird.conf ./as180_bird.conf
 
+![image](https://user-images.githubusercontent.com/131140229/236828007-3d29cdfa-3b68-4111-9e09-684634efd85c.png)
 
-```
-Get a terminal on a
-selected node
-```
-```
-Set filter for Click on a node
-packet trace
-visulization
-```
-```
+
 Figure 1: The SEED Internet Emulator
 ```
 ... edit the file ...
