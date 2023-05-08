@@ -52,7 +52,7 @@ Start the emulation. We will directly use the container files in the output fold
 and run the following docker commands to build and start the containers. We recommend that you run the
 emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating
 system should not have any problem, as long as the docker software is installed. Readers can find the docker
-manual from this link.
+manual from [This Link](https://github.com/seed-labs/seed-labs/blob/master/manuals/docker/SEEDManual-Container.md).
 
 ```
 $ docker-compose build
@@ -85,22 +85,16 @@ We need to modify the BGP configuration file in several tasks. We can do that by
 configuration file inside a container. Anther way is to copy the file into the host VM, do the editing from
 the host VM, and then copy it back. Let us see an example (assuming that we want to modify the BGP
 configuration file of AS-180):
-
+```
 // Find out the IP of the AS-180’s BGP router container
-
 $ dockps | grep 180
-
  6bf0bcda8d06 as180h-host_1-10.180.0.
- 
  437874056b15 as180h-webservice_0-10.180.0.
- 
  **2967**6d5034ce as180r-router0-10.180.0.254 <- **This is AS-180’s BGP router**
-
 // Copy the configuration file from the container to the host machine
-
 $ docker cp 2967:/etc/bird/bird.conf ./as180_bird.conf
-
-![image](https://user-images.githubusercontent.com/131140229/236828007-3d29cdfa-3b68-4111-9e09-684634efd85c.png)
+```
+![](Images/Seed_Internet.png)
 
 
 Figure 1: The SEED Internet Emulator
