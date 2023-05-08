@@ -54,6 +54,7 @@ emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubu
 system should not have any problem, as long as the docker software is installed. Readers can find the docker
 manual from this link.
 
+```
 $ docker-compose build
 
 $ docker-compose up
@@ -66,6 +67,7 @@ $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 
 $ dcdown # Alias for: docker-compose down
+```
 
 ### 2.1 The Network Map
 
