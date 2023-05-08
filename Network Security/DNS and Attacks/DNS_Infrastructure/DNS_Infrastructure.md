@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -37,7 +37,7 @@ Lab environment.You can perform the lab exercise on the SEED VM provided by the 
 Overview of the lab tasks. The DNS infrastructure involves many servers. We will build a simplified
 DNS infrastructure inside the emulator. This infrastructure includes two root servers, twocomTLD (Top-
 Level Domain) servers, oneeduTLD server, and two second-level domain nameservers (See Figure 1). It
-should be noted that students need to replacesmith2021with their own last names and the present year.
+should be noted that students need to replace smith 2021 with their own last names and the present year.
 We need to configure the nameservers for each of the zone depicted in the figure. We will do it from
 the bottom up. Namely, we will configure the second-level domain nameservers first (Task 1), then the TLD
 server (Task 2), and then the Root server (Task 3). We also need to configure the local DNS server and the
@@ -169,14 +169,14 @@ Figure 2: The map of the emulated Internet
 ### 2.3 Filtering and Replying
 
 Users can also set filters to visualize network traffic. The syntax of the filter is the same as that intcpdump;
-actually, the filter is directly fed into thetcpdumpprogram running on all nodes. When a node sees the
+actually, the filter is directly fed into the tcp dump program running on all nodes. When a node sees the
 packets that satisfy the filter, it sends an event to the map, which will highlight the node briefly on the map.
 Sometimes, a sequence of events happen too fast to see the actual order among them. In this case, we
 can use the Replay panel (see Figure 3) to record the events and then replay them at a slower pace. The
 speed of replaying can be adjusted by changing the event interval.
 
 ```
-Set the tcpdump packet filter.
+Set the tcp dump packet filter.
 Nodes seeing the specified
 packets will report the event to
 the map, which will highlight
@@ -239,7 +239,7 @@ fi
 
 In the emulator, zone files are stored inside the/etc/bind/zonesfolder. Each DNS nameservers
 have a unique keyword in its container name, for example the nameserver for theexample.comzone
-has the keywordExamplein its name. We use this keyword to find the corresponding container’s ID (see
+has the keyword Example in its name. We use this keyword to find the corresponding container’s ID (see
 Line¡). We also prepend the keyword to the name of the zone file, so we can easily identify them once they
 are copied to the host machine (see Lines¿and¬). The following examples show how we get the zone file
 
@@ -289,8 +289,8 @@ customized name based on student’s name.
 
 ### 3.1 Task 1.a: Configure the Nameserver for example.com
 
-In this task, we will configure the nameserver for a domain calledexample.com. The nameserver is
-hosted on one of the containers inside the emulator. The keywordExampleis included in the container
+In this task, we will configure the nameserver for a domain called example.com. The nameserver is
+hosted on one of the containers inside the emulator. The keyword Exampleis included in the container
 name, as well as the IP address.
 
 $ dockps | grep Example
@@ -300,7 +300,7 @@ $ dockps | grep Example
 Step 1. Add the zone entry. To host a server for theexample.comdomain, we need to add a zone
 entry to the BIND’s configuration, so it knows what zones it is going to host. In the emulator, the zones
 hosted by a nameserver are placed in the/etc/bind/named.conf.zonesfile (multiple zones can be
-placed in this file). Here is an example, where thefileentry specifies the actual file containing the zone
+placed in this file). Here is an example, where the file entry specifies the actual file containing the zone
 information. If we want to host another zone on this nameserver, we can add a corresponding zone entry in
 this file.
 
@@ -314,7 +314,7 @@ zone "example.net" {
 ...
 }
 
-The above entry for theexample.comzone indicates that the current nameserver is the master server
+The above entry for the example.comzone indicates that the current nameserver is the master server
 for this domain, and the zone file is specified in thefileentry. In the emulator, the zone files are placed
 inside the/etc/bind/zonesfolder. It should be noted that most of the zone files (except the root zone)
 have the.at the end of the filename. This is the main file that we need to modify in this lab.
@@ -340,7 +340,7 @@ the record). If we modify the zone file, we should change the serial number (the
 SOA entry), so the change can be synchronized to the slave nameservers.
 In the zone file, domain names that end with a full stop character (i.e., the dot), are fully qualified while
 those that do not end with a full stop are relative to the current origin. For example, in the above example,
-ns1.example.com.is a full name, whilewwwexample refers towww.example.com.
+ns1.example.com.is a full name, while wwwexample refers to www.example.com.
 
 Step 3. Restarting the nameserver. Every time we modify the BIND configuration files, we should to
 restart the nameserver, so the changes can take effect. If there are mistakes in the configuration files, the
@@ -359,7 +359,7 @@ waiting for pid 92 to die
 ```
 Step 4. Testing. Since we have not finished setting up the entire DNS infrastructure, we need to use the
 @10.154.0.71option to send our DNS query directly to10.154.0.71, which is the IP address of the
-example.comnameserver in our emulator. If everything is done correctly, you can get the IP address
+example.com nameserver in our emulator. If everything is done correctly, you can get the IP address
 specified in your zone file. Please report your observations.
 
 $ dig @10.154.0.71 [http://www.example.com](http://www.example.com)
@@ -371,10 +371,10 @@ xyz.example.com. 300 IN A **1.2.3.**
 ### 3.2 Task 1.b: Configure Nameserver for Another Domain
 
 In this task, we will configure the nameserver for another domain. The name of the domain should use
-the following format<NAME><YEAR>.edu, where<NAME>should be replaced with your last name, and
+the following format <NAME> <YEAR>.edu, where <NAME> should be replaced with your last name, and
 <YEAR>be replaced with the current year. For example, if your last name isSmith, and it is year 2021,
-the domain will besmith2021.edu. In the emulator, an empty nameserver has already been created; the
-keywordAAAAAis encoded in the container name. Please use this nameserver to host your domain.
+the domain will be smith2021.edu. In the emulator, an empty nameserver has already been created; the
+keyword AAAAA is encoded in the container name. Please use this nameserver to host your domain.
 
 $ dockps | grep AAAAA
 70f2e8a57a96 as162h-DNS-AAAAA-10.162.0.
@@ -390,7 +390,7 @@ c3040914667c as151h-DNS-COM-A-10.151.0.72 Ÿ **The master com server**
 6c7132feb7d4 as152h-DNS-EDU-10.152.0.71 Ÿ **The edu server**
 ...
 
-There are two nameservers for thecomzone. One is configured as the master server, and the other
+There are two nameservers for the com zone. One is configured as the master server, and the other
 as the slave server. We only need to modify the zone file on the master (COM-A), as the slave server will
 automatically synchronize with the master server. See the following zone configuration on these two servers.
 
@@ -402,11 +402,11 @@ zone "com." { type slave; masters { 10.151.0.72; }; ... };
 
 
 All the nameservers within a TLD domain must register their nameservers with this TLD server; oth-
-erwise, nobody can find them. For each domain, such asexample.com, we need to add two records in
-thecomserver’s zone file: anNSrecord and anArecord. TheNSrecord specifies the nameserver for the
-example.comdomain, while theArecord specifies the IP address of the nameserver.
+erwise, nobody can find them. For each domain, such as example.com, we need to add two records in
+the com server’s zone file: an NS record and an A record. The NS record specifies the nameserver for the
+example.comdomain, while the A record specifies the IP address of the nameserver.
 
-Lab Task. Please register yourexample.comand<NAME><YEAR>.edunameservers with their cor-
+Lab Task. Please register your example.comand <NAME> <YEAR>. edu nameservers with their cor-
 responding TLD servers. Remember to run"service named restart"to restart the nameserver
 after the changes. Also remember to change the serial number of the zone file; otherwise, the changes on
 the master server will not be synchronized to the slave server. After making the changes, please run the
@@ -434,7 +434,7 @@ allow-update { any; };
 
 In this task, we will configure the nameservers for the root zone. In the real world, there are 13 nameservers
 for the root zone, and they are synchronized through the root zone file maintained by IANA. In our emulator,
-we have only created two root servers, and their container names contain the keywordRoot. We will
+we have only created two root servers, and their container names contain the keyword Root. We will
 manually synchronize them by putting the identical content in their zone files.
 
 $ dockps | grep Root
@@ -443,8 +443,8 @@ $ dockps | grep Root
 
 All TLD nameservers need to register with the root nameserver, so they can be found in the DNS query
 process. For every TLD zone that we would like to include in our miniature DNS system, we need to add
-at least two records in the zone file, including anNSrecord and anArecord. In this task, students need to
-modify both root server’s zone files to support thecomandeduTLDs inside the emulator. The zone file
+at least two records in the zone file, including an NS record and an A record. In this task, students need to
+modify both root server’s zone files to support the comand eduTLDs inside the emulator. The zone file
 is located inside the/etc/bind/zonesfolder. After making the changes, restart both nameservers, and
 then run the following commands from another container (replace the<root-ip>with the root server’s
 IP address; please try both root servers). Report and explain your observations.
@@ -496,7 +496,7 @@ the hints file.
 ns1. A 10.150.0.
 ns2. A 10.160.0.
 
-The task. We have created two DNS resolvers in the emulator. We putGlobalDNSin their container
+The task. We have created two DNS resolvers in the emulator. We put Global DNS in their container
 names. Their IP addresses are also encoded in the names. You can use the following command to find out
 these two DNS resolvers.
 
@@ -506,7 +506,7 @@ c357ff76bda6 as153h-Global_DNS-1-10.153.0.
 
 d65e76c44437 as163h-Global_DNS-2-10.163.0.
 
-Please go to theirroot.hintsfile. Inside the file, please change the IP addresses of the root name-
+Please go to their root.hints file. Inside the file, please change the IP addresses of the root name-
 servers to something else (random, e.g., changing 72 to 75 ), and then show how that affects the DNS
 resolution process (run the following commands). Please report and explain your observations. Please do
 remember to change them back after this task, because the subsequent tasks depend on them.
@@ -516,12 +516,12 @@ remember to change them back after this task, because the subsequent tasks depen
 
 ## 7 Task 5. Configure the Client
 
-So far, we need to use@<ip>in ourdigcommand to indicate what DNS server thedigcommand should
+So far, we need to use@<ip>in our dig command to indicate what DNS server the dig command should
 talk to. While this is not an issue fordig, it is a problem for other software that depends on DNS. We
 need to tell the operating system what local DNS server that it should use. This is achieved by changing
 the resolver configuration file (/etc/resolv.conf) of the user machine, so the container’s IP address is
-added as the firstnameserverentry in the file, i.e., this server will be used as the primary DNS resolver.
-We have already configured all the machines to use10.153.0.53as the primary DNS resolver,
+added as the first name server entry in the file, i.e., this server will be used as the primary DNS resolver.
+We have already configured all the machines to use 10.153.0.53 as the primary DNS resolver,
 except for the machines in AS-155. Your job is to configure the host machines in AS-155, so they can
 use one of the DNS resolvers (or both of them). You can add the following entries (one or both) to the
 /etc/resolv.conffile.
@@ -530,7 +530,7 @@ nameserver 10.153.0.
 nameserver 10.163.0.
 
 Testing the entire DNS Infrastructure. At this point, the DNS infrastructure is completely set up, we
-can run thedigwithout using the@<ip>option;digwill use the local DNS server set by the system.
+can run the dig without using the@<ip>option;dig will use the local DNS server set by the system.
 Please run the following commands from a host inside AS-155. If everything is set up correctly, you should
 be able to get the answer as expected.
 
@@ -538,9 +538,9 @@ be able to get the answer as expected.
 # dig <NAME><YEAR>.edu
 
 Please use the map to show the packet trace. First set the filter to"udp and dst port 53"to
-capture the DNS request traffic. Then run the abovedigcommands. If the entire process happens too fast,
+capture the DNS request traffic. Then run the above dig commands. If the entire process happens too fast,
 you can use the Replay feature of the map: After setting the filter, press the Record button, and then run
-the abovedigcommands. Stop the recording, and replay the recorded events. Adjust the time interval
+the above dig commands. Stop the recording, and replay the recorded events. Adjust the time interval
 if needed. It is hard to take screenshots of the packet trace, describing the packet trace in your report is
 sufficient.
 
@@ -553,8 +553,8 @@ a “fake” name184.171.230.128.in-addr.arpa, and then send queries through an 
 cess, just like the forward lookup. Namely, it starts from the ROOT server, to thein-addr.arpaserver,
 
 
-128.in-addr.arpaserver, and eventually reach the230.128.in-addr.arpaserver, which is the
-same nameserver as that hosting thesyr.eduzone.
+128.in-addr.arpaserver, and eventually reach the 230.128.in-addr.arpaserver, which is the
+same nameserver as that hosting the syr.eduzone.
 Tasks 1 - 4 only set up the DNS infrastructure for the forward lookup. In this task, we will set up the
 infrastructure for the reverse lookup. For the sake of simplicity, We will only support the reverse lookup
 for the IP addresses belonging to theexample.comdomain in the emulator (i.e., the IP addresses in the
@@ -602,7 +602,7 @@ ____ A ____ Ÿ The IP address of the nameserver
 - Step 3: Configure the154.10.in-addr.arpaserver: this nameserver can be hosted on the same
     nameserver where theexample.comzone is hosted. We should add a zone entry in its/etc/
     bind/named.conf.zonesfile (similar to Step 2), and then create the corresponding zone file,
-    which should contain the reverse lookup records for theexample.comdomain. We give an example
+    which should contain the reverse lookup records for the example.com domain. We give an example
     of the zone file in the following:
     $TTL 300
 
