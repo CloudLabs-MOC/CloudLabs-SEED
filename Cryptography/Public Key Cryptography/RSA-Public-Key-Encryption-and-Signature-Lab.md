@@ -255,7 +255,7 @@ server, get its issuer’s public key, and then use this public key to verify th
 
 **Step 1: Download a certificate from a real web server.** We use the www.example.org server in
 this document. Students should choose a different web server that has a different certificate than the
-one used in this document (it should be noted that www.example.comshare the same certificate with
+one used in this document (it should be noted that www.example.com share the same certificate with
 http://www.example.org . We can download certificates using browsers or use the following command:
 ```
 $ openssl s_client -connect (http://www.example.org:443) -showcerts
