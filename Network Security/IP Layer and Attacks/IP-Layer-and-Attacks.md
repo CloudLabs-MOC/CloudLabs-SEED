@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2020 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -13,7 +13,7 @@ a router believes a packet is being routed incorrectly, and it would like to inf
 use a different router for the subsequent packets sent to that same destination. ICMP redirect can be used by
 attackers to change a victim’s routing.
 The objective of this task is to launch an ICMP redirect attack on the victim, such that when the victim
-sends packets to192.168.60.5, it will use the malicious router container (10.9.0.111) as its router.
+sends packets to 192.168.60.5, it will use the malicious router container (10.9.0.111) as its router.
 Since the malicious router is controlled by the attacker, the attacker can intercept the packets, make changes,
 and then send the modified packets out. This is a form of the Man-In-The-Middle (MITM) attack. This lab
 covers the following topics:
@@ -25,7 +25,7 @@ covers the following topics:
 Videos. Detailed coverage of the IP protocol and the attacks at the IP layer can be found in the following:
 
 - Section 4 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
-    athttps://www.handsonsecurity.net/video.html.
+    at https://www.handsonsecurity.net/video.html.
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
@@ -45,8 +45,8 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 sudo unzip Labsetup.zip
 ```
 
-Enter the Labsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile(in our provided SEEDUbuntu 20.04 VM).
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Dockerfile can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. In the following, we list some of the commonly used commands related to Docker and Compose. Since
+we are going to use these commands very frequently, we have created aliases for them in the .bashrc file(in our provided SEED Ubuntu 20.04 VM).
 
 
 ```
@@ -101,7 +101,7 @@ $ dcdown # Alias for: docker-compose down
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the.bashrc file.
 
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
@@ -132,10 +132,10 @@ containers. Here are the differences:
 - Shared folder. When we use the attacker container to launch attacks, we need to put the attacking
     code inside the attacker container. Code editing is more convenient inside the VM than in containers,
     because we can use our favorite editors. In order for the VM and container to share files, we have
-    created a shared folder between the VM and the container using the Dockervolumes. If you look
+    created a shared folder between the VM and the container using the Docker volumes. If you look
     at the Docker Compose file, you will find out that we have added the following entry to some of the
-    containers. It indicates mounting the./volumesfolder on the host machine (i.e., the VM) to the
-    /volumesfolder inside the container. We will write our code in the./volumesfolder (on the
+    containers. It indicates mounting the./volumes folder on the host machine (i.e., the VM) to the
+    /volumes folder inside the container. We will write our code in the./volumes folder (on the
     VM), so they can be used inside the containers.
     volumes:
        - ./volumes:/volumes
@@ -146,8 +146,8 @@ containers. Here are the differences:
 
 ## 3 Task 1: Launching ICMP Redirect Attack
 
-In the Ubuntu operating system, there is a countermeasure against the ICMP redirect attack. In the Compose
-file, we have already turned off the countermeasure by configuring the victim container to accept ICMP
+In the Ubuntu operating system, there is a counter measure against the ICMP redirect attack. In the Compose
+file, we have already turned off the counter measure by configuring the victim container to accept ICMP
 redirect messages.
 
 // In docker-compose.yml
@@ -160,7 +160,7 @@ sysctls:
 
 For this task, we will attack the victim container from the attacker container. In the current setup, the
 victim will use the router container (192.168.60.11) as the router to get to the192.168.60.0/
-network. If we runip routeon the victim container, we will see the following
+network. If we runip route on the victim container, we will see the following
 
 # ip route
 default via 10.9.0.1 dev eth
@@ -204,7 +204,7 @@ Please do a traceroute on the victim machine, and see whether the packet is rero
 A strange issue. While developing this lab, we have observed a strange issue in the container environment.
 The issue does not exist if the victim is a VM, instead of a container. If we spoof the redirect packets, but
 the victim machine is not sending out ICMP packets during the attack, the attack will never be successful.
-This is not the case for the VM setting. Moreover, theip2inside the redirect packet must match with the
+This is not the case for the VM setting. Moreover, the ip2 inside the redirect packet must match with the
 type and the destination IP address of the packets that the victim is currently sending (ICMP for ICMP, UDP
 for UDP, etc.).
 It seems that the OS kernel conducts some kind of sanity check before accepting an ICMP redirect
@@ -212,7 +212,7 @@ packets. We have not figured out what exactly caused this, and why the VM does n
 This is an open issue for the SEED labs, and we encourage students to help us resolve this issue. We
 recommend instructors to give students bonus points if they have indeed resolved this issue.
 Before we find a way to disable this checking mechanism, when we launch the attack, we should should
-pingthe192.168.60.5host on the victim machine.
+ping the 192.168.60.5 host on the victim machine.
 
 Questions. After you have succeeded in the attack, please conduct the following experiments, and see
 whether your attack can still succeed. Please explain your observations:
@@ -223,9 +223,9 @@ whether your attack can still succeed. Please explain your observations:
 
 
 - Question 2: Can you use ICMP redirect attacks to redirect to a non-existing machine on the same
-    network? Namely, the IP address assigned toicmp.gwis a local computer that is either offline or
+    network? Namely, the IP address assigned to icmp.gw is a local computer that is either offline or
     non-existing. Please show your experiment result, and explain your observation.
-- Question 3: If you look at thedocker-compose.ymlfile, you will find the following entries for
+- Question 3: If you look at the docker-compose.yml file, you will find the following entries for
     the malicious router container. What are the purposes of these entries? Please change their value to
     1 , and launch the attack again. Please describe and explain your observation.
     sysctls:
@@ -236,9 +236,9 @@ whether your attack can still succeed. Please explain your observations:
 ## 4 Task 2: Launching the MITM Attack
 
 Using the ICMP redirect attack, we can get the victim to use our malicious router (10.9.0.111) as
-the router for the destination192.168.60.5. Therefore, all packets from the victim machine to this
+the router for the destination 192.168.60.5. Therefore, all packets from the victim machine to this
 destination will be routed through the malicious router. We would like to modify the victim’s packets.
-Before launching the MITM attack, we start a TCP client and server program usingnetcat. See the
+Before launching the MITM attack, we start a TCP client and server program using netcat. See the
 following commands.
 
 On the destination container 192.168.60.5, start the netcat server:
