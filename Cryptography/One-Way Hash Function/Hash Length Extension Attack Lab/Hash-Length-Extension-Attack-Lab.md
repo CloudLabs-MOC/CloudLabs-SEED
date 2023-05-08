@@ -39,7 +39,8 @@ use a container for the web server.
 Container Setup and Commands. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabsMOC/CloudLabsSEED/blob/main/Cryptography/OneWay%20Hash%20Function/Hash%20Length%20Extension%20Attack%20Lab/Lab%20files/Labsetup.zip
+sudo wget 
+https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/One-Way%20Hash%20Function/Hash%20Length%20Extension%20Attack%20Lab/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
