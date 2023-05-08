@@ -80,13 +80,17 @@ the host VM, and then copy it back. Let us see an example (assuming that we want
 configuration file of AS-180):
 
 // Find out the IP of the AS-180’s BGP router container
+
 $ dockps | grep 180
 
-6bf0bcda8d06 as180h-host_1-10.180.0.
-437874056b15 as180h-webservice_0-10.180.0.
-**2967** 6d5034ce as180r-router0-10.180.0.254 Ÿ **This is AS-180’s BGP router**
+ 6bf0bcda8d06 as180h-host_1-10.180.0.
+ 
+ 437874056b15 as180h-webservice_0-10.180.0.
+ 
+ **2967**6d5034ce as180r-router0-10.180.0.254 <- **This is AS-180’s BGP router**
 
 // Copy the configuration file from the container to the host machine
+
 $ docker cp 2967:/etc/bird/bird.conf ./as180_bird.conf
 
 
@@ -105,12 +109,17 @@ Figure 1: The SEED Internet Emulator
 ... edit the file ...
 
 // Copy the file back to the container
+
 $ docker cp ./as180_bird.conf 2967:/etc/bird/bird.conf
 
 // Reload the configuration on the container
+
 $ docker exec 2967 birdc configure Ÿ **Run "birdc configure"**
+
 BIRD 2.0.7 ready.
+
 Reading configuration from /etc/bird/bird.conf
+
 Reconfigured
 
 ### 2.3 Convention used in the Emulator
@@ -142,10 +151,10 @@ the machine
 ```
 Figure 2: Interact with a node
 ```
-- For an autonomous system N, its first internal network’s prefix is10.N.0.0/24, the second
+- For an autonomous system N, its first internal network’s prefix is 10.N.0.0/24, the second
     internal network is10.N.1.0/24, and so on.
 - In each network, the address 200 to 255 are for routers. For hosts (non-router), their IP
-    address start from 71. For example, in AS-155,10.155.0.255is a BGP router, while
+    address start from 71. For example, in AS-155,10.155.0.255 is a BGP router, while
     10.155.0.71is a host.
 
 ## 3 Task 1: Stub Autonomous System
@@ -294,9 +303,9 @@ not get a reply, you want to know where the problem is. You can use the filter o
 visualize the traffic flow. The syntax of the filter is the same as that intcpdump. We give a few examples
 in the following.
 
-"icmp" Ÿ **show all icmp traffic**
-"icmp and src 10.180.0.71" Ÿ **show icmp traffic from 10.180.0.**
-"icmp and dst 10.180.0.71" Ÿ **show icmp traffic to 10.180.0.**
+"icmp" **show all icmp traffic**
+"icmp and src 10.180.0.71" **show icmp traffic from 10.180.0.**
+"icmp and dst 10.180.0.71" **show icmp traffic to 10.180.0.**
 
 Lab report. In your lab report, please include the content that you add to the BIRD configuration files,
 and provide proper explanation. Please also include screenshots (such as traceroute) to demonstrate that
@@ -432,8 +441,8 @@ IP anycast is naturally supported by BGP. One of the well-known applications of 
 On the emulator map, type 190 in the search box, you will find out that AS-190 has two networks,
 but they are disconnected. One network is connected to IX-100, and the other is connected to IX-105.
 A closer look at these two networks will reveal that these two networks have the identical network prefix
-10.190.0.0/24. The only hosts on these two networks have the identical IP address10.190.0.100.
-Please find two different hosts in the emulator, so when you ping10.190.0.100from these two
+ 10.190.0.0/24. The only hosts on these two networks have the identical IP address  10.190.0.100.
+Please find two different hosts in the emulator, so when you ping 10.190.0.100 from these two
 hosts, the destinations are different (even though the destination IP address is the same). Please set the filter
 on the map toicmpto visualize the packet trace, then look at the BGP routers on the path, and explain why
 the packets reach two different destinations. Students should read Section 11 of the tutorial before working
@@ -456,16 +465,21 @@ In BIRD, the prefixes announced by a BGP router can come from different sources:
 the direct protocol, i.e., they are obtained from the actual network interface attached to the BGP router.
 They can also come from thestaticprotocol, which contains pre-defined routes. The easiest way for a
 BGP router to announce a prefix that it does not own is to use the static protocol. The following example
-creates a pre-defined route to10.130.0.0/16. See Section 3 of the tutorial for detailed explanation of
+creates a pre-defined route to 10.130.0.0/16. See Section 3 of the tutorial for detailed explanation of
 the static protocol. It should be noted that in the filter part of the route, we need to add the route to the
 LOCAL_COMM community; otherwise, the BGP router will not export it to the outside.
 
-protocol static {
-ipv4 {
-table t_bgp;
-};
-route 10.130.0.0/16 blackhole { bgp_large_community.add(LOCAL_COMM); };
-}
+    protocol static {
+    
+        ipv4 {       
+         
+            table t_bgp;
+        
+         };
+       
+         route 10.130.0.0/16 blackhole { bgp_large_community.add(LOCAL_COMM); };
+
+    }
 
 
 ### 7.2 Task 5.b. Fighting Back from AS-
