@@ -85,8 +85,8 @@ BN_generate_prime_ex(a, 128, 1, NULL, NULL, NULL);
 ```
 void printBN(char *msg, BIGNUM * a)
 {
- // Convert the BIGNUM to number strin
- char * number_str = BN_bn2dec(a);
+// Convert the BIGNUM to number strin
+char * number_str = BN_bn2dec(a);
        
 // Print out the number string
 printf("%s %s\n", msg, number_str);
@@ -108,7 +108,7 @@ OPENSSL_free(number_str);
 ```
     BN_mod_mul(res, a, b, n, ctx)
 ```
-- Computeres = a^c^ mod n:
+- Computeres = a^c mod n:
 ```
     BN_mod_exp(res, a, c, n, ctx)
 ```
