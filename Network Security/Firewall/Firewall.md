@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2006 - 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -12,10 +12,10 @@ The learning objective of this lab is two-fold: learning how firewalls work, and
 for a network. Students will first implement a simple stateless packet-filtering firewall, which inspects pack-
 ets, and decides whether to drop or forward a packet based on firewall rules. Through this implementation
 task, students can get the basic ideas on how firewall works.
-Actually, Linux already has a built-in firewall, also based onnetfilter. This firewall is called
-iptables. Students will be given a simple network topology, and are asked to useiptablesto set up
+Actually, Linux already has a built-in firewall, also based on netfilter. This firewall is called
+iptables. Students will be given a simple network topology, and are asked to use iptables to set up
 firewall rules to protect the network. Students will also be exposed to several other interesting applications
-ofiptables. This lab covers the following topics:
+of iptables. This lab covers the following topics:
 
 - Firewall
 - Netfilter
@@ -48,7 +48,7 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 sudo unzip Labsetup.zip
 ```
 
-Enter theLabsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Dockerfile can be found from the user manual, which is linked
 
 
 ```
@@ -91,8 +91,8 @@ Figure 1: Lab setup
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
-(in our provided SEEDUbuntu 20.04 VM).
+we are going to use these commands very frequently, we have created aliases for them in the.bashrc file
+(in our provided SEED Ubuntu 20.04 VM).
 
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
@@ -106,7 +106,7 @@ $ dcdown # Alias for: docker-compose down
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the .bashrc file.
 
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
@@ -134,10 +134,10 @@ section of the manual for potential solutions.
 In this task, we will implement a simple packet filtering type of firewall, which inspects each incoming and
 outgoing packets, and enforces the firewall policies set by the administrator. Since the packet processing is
 done within the kernel, the filtering must also be done within the kernel. Therefore, it seems that implement-
-ing such a firewall requires us to modify theLinuxkernel. In the past, this had to be done by modifying
-and rebuilding the kernel. The modernLinuxoperating systems provide several new mechanisms to facil-
-itate the manipulation of packets without rebuilding the kernel image. These two mechanisms areLoadable
-Kernel Module(LKM) andNetfilter.
+ing such a firewall requires us to modify the Linux kernel. In the past, this had to be done by modifying
+and rebuilding the kernel. The modern Linux operating systems provide several new mechanisms to facil-
+itate the manipulation of packets without rebuilding the kernel image. These two mechanisms are Loadable
+Kernel Module(LKM) and Netfilter.
 
 Notes about containers. Since all the containers share the same kernel, kernel modules are global. There-
 fore, if we set a kernel model from a container, it affects all the containers and the host. For this reason, it
@@ -177,9 +177,9 @@ printk(KERN_INFO "Bye-bye World!.\n");
 module_init(initialization);
 module_exit(cleanup);
 
-We now need to createMakefile, which includes the following contents (the file is included in the lab
+We now need to create Make file, which includes the following contents (the file is included in the lab
 setup files). Just typemake, and the above program will be compiled into a loadable kernel module (if you
-copy and paste the following intoMakefile, make sure replace the spaces before themakecommands
+copy and paste the following into Make file, make sure replace the spaces before the make commands
 with a tab).
 
 obj-m += hello.o
@@ -205,36 +205,36 @@ not use containers. Please show your running results in the lab report.
 ### 3.2 Task 1.B: Implement a Simple Firewall Using Netfilter
 
 In this task, we will write our packet filtering program as an LKM, and then insert in into the packet process-
-ing path inside the kernel. This cannot be easily done in the past before thenetfilterwas introduced
-into theLinux.
-Netfilteris designed to facilitate the manipulation of packets by authorized users. It achieves this
-goal by implementing a number of hooks in theLinuxkernel. These hooks are inserted into various
+ing path inside the kernel. This cannot be easily done in the past before the netfilter was introduced
+into the Linux.
+Netfilter is designed to facilitate the manipulation of packets by authorized users. It achieves this
+goal by implementing a number of hooks in the Linux kernel. These hooks are inserted into various
 places, including the packet incoming and outgoing paths. If we want to manipulate the incoming packets,
 we simply need to connect our own programs (within LKM) to the corresponding hooks. Once an incoming
 packet arrives, our program will be invoked. Our program can decide whether this packet should be blocked
 or not; moreover, we can also modify the packets in the program.
-In this task, you need to use LKM andNetfilterto implement a packet filtering module. This module
+In this task, you need to use LKM and Netfilter to implement a packet filtering module. This module
 will fetch the firewall policies from a data structure, and use the policies to decide whether packets should
 be blocked or not. We would like students to focus on the filtering part, the core of firewalls, so students are
-allowed to hardcode firewall policies in the program. Detailed guidelines on how to useNetfiltercan
+allowed to hardcode firewall policies in the program. Detailed guidelines on how to use Netfilter can
 be found in Chapter 17 of the SEED book. We will provide some guidelines in here as well.
 
-Hooking to **Netfilter**. Usingnetfilteris quite straightforward. All we need to do is to hook our
-functions (in the kernel module) to the correspondingnetfilterhooks. Here we show an example (the
-code is inLabsetup/packet_filter, but it may not be exactly the same as this example).
+Hooking to **Netfilter**. Using netfilter is quite straight forward. All we need to do is to hook our
+functions (in the kernel module) to the correspond in gnetfilter hooks. Here we show an example (the
+code is in Labsetup/packet_filter, but it may not be exactly the same as this example).
 
 
 The structure of the code follows the structure of the kernel module implemented earlier. When the
-kernel module is added to the kernel, theregisterFilter()function in the code will be invoked.
-Inside this function, we register two hooks tonetfilter.
+kernel module is added to the kernel, the register Filter()function in the code will be invoked.
+Inside this function, we register two hooks to netfilter.
 To register a hook, you need to prepare a hook data structure, and set all the needed parameters, the
 most important of which are a function name (Line ) and a hook number (LineÀ). The hook number is
-one of the 5 hooks innetfilter, and the specified function will be invoked when a packet has reached
-this hook. In this example, when a packet gets to theLOCALINhook, the functionprintInfo()will
+one of the 5 hooks in netfilter, and the specified function will be invoked when a packet has reached
+this hook. In this example, when a packet gets to the LOCALIN hook, the function print Info()will
 be invoked (this function will be given later). Once the hook data structure is prepared, we attach the hook
-tonetfilterin LineÃ).
+to netfilter in LineÃ).
 
-Listing 2: Register hook functions tonetfilter
+Listing 2: Register hook functions to netfilter
 static struct nf_hook_ops hook1, hook2;
 
 int registerFilter(void) {
@@ -284,10 +284,10 @@ nf_unregister_hook(&nfho); // For Ubuntu 16.04 VM
 nf_unregister_net_hook(&init_net, &nfho); // For Ubuntu 20.04 VM
 ```
 Hook functions. We give an example of hook function below. It only prints out the packet information.
-Whennetfilterinvokes a hook function, it passes three arguments to the function, including a pointer
+When netfilter invokes a hook function, it passes three arguments to the function, including a pointer
 to the actual packet (skb). In the following code, Line shows how to retrieve the hook number from the
-stateargument. In LineÀ, we useiphdr()function to get the pointer for the IP header, and then use
-the%pI4format string specifier to print out the source and destination IP addresses in LineÃ.
+state argument. In Line À, we useiphdr()function to get the pointer for the IP header, and then use
+the %pI4 format string specifier to print out the source and destination IP addresses in Line Ã.
 
 Listing 3: An example of hook function
 unsigned int printInfo(void *priv, struct sk_buff *skb,
@@ -350,21 +350,21 @@ return NF_ACCEPT; Õ
 
 In the code above, Line shows, inside the kernel, how to convert an IP address in the dotted decimal
 format (i.e., a string, such as1.2.3.4) to a 32-bit binary (0x01020304), so it can be compared with the
-binary number stored inside packets. LineÀcompares the destination IP address and port number with the
-values in our specified rule. If they match the rule, theNFDROPwill be returned tonetfilter, which
-will drop the packet. Otherwise, theNFACCEPTwill be returned, andnetfilterwill let the packet
-continue its journey (NFACCEPTonly means that the packet is accepted by this hook function; it may still
+binary number stored inside packets. Line À compares the destination IP address and port number with the
+values in our specified rule. If they match the rule, the NFDROP will be returned to netfilter, which
+will drop the packet. Otherwise, the NFACCEPT will be returned, and netfilter will let the packet
+continue its journey (NFACCEPT only means that the packet is accepted by this hook function; it may still
 be dropped by other hook functions).
 
-Tasks. The complete sample code is calledseedFilter.c, which is included in the lab setup files
+Tasks. The complete sample code is called seedFilter.c, which is included in the lab setup files
 (inside theFiles/packet_filterfolder). Please do the following tasks (do each of them separately):
 
-1. Compile the sample code using the providedMakefile. Load it into the kernel, and demonstrate
+1. Compile the sample code using the provided Make file. Load it into the kernel, and demonstrate
     that the firewall is working as expected. You can use the following command to generate UDP packets
     to8.8.8.8, which is Google’s DNS server. If your firewall works, your request will be blocked;
     otherwise, you will get a response.
     dig @8.8.8.8 [http://www.example.com](http://www.example.com)
-2. Hook theprintInfofunction to all of thenetfilterhooks. Here are the macros of the hook
+2. Hook the print Info function to all of the net filter hooks. Here are the macros of the hook
     numbers. Using your experiment results to help explain at what condition will each of the hook
     function be invoked.
     NF_INET_PRE_ROUTING
@@ -374,7 +374,7 @@ Tasks. The complete sample code is calledseedFilter.c, which is included in the 
     NF_INET_POST_ROUTING
 3. Implement two more hooks to achieve the following: (1) preventing other computers to ping the
     VM, and (2) preventing other computers to telnet into the VM. Please implement two different hook
-    functions, but register them to the samenetfilterhook. You should decide what hook to use.
+    functions, but register them to the same netfilter hook. You should decide what hook to use.
     Telnet’s default port is TCP port 23. To test it, you can start the containers, go to10.9.0.5, run the
     following commands (10.9.0.1is the IP address assigned to the VM; for the sake of simplicity,
     you can hardcode this IP address in your firewall rules):
@@ -388,42 +388,42 @@ Important note: Since we make changes to the kernel, there is a high chance that
 kernel. Make sure you back up your files frequently, so you don’t lose them. One of the common reasons
 for system crash is that you forget to unregister hooks. When a module is removed, these hooks will still
 be triggered, but the module is no longer present in the kernel. That will cause system crash. To avoid this,
-make sure for each hook you add to your module, add a line inremoveFilterto unregister it, so when
+make sure for each hook you add to your module, add a line in remove Filter to unregister it, so when
 the module is removed, those hooks are also removed.
 
 ## 4 Task 2: Experimenting with Stateless Firewall Rules
 
-In the previous task, we had a chance to build a simple firewall usingnetfilter. Actually,Linux
-already has a built-in firewall, also based onnetfilter. This firewall is callediptables. Technically,
-the kernel part implementation of the firewall is calledXtables, whileiptablesis a user-space program
-to configure the firewall. However,iptablesis often used to refer to both the kernel-part implementation
+In the previous task, we had a chance to build a simple firewall using netfilter. Actually,Linux
+already has a built-in firewall, also based on netfilter. This firewall is called iptables. Technically,
+the kernel part implementation of the firewall is called Xtables, while iptables is a user-space program
+to configure the firewall. However,iptables is often used to refer to both the kernel-part implementation
 and the user-space program.
 
 ### 4.1 Background of iptables
 
-In this task, we will useiptablesto set up a firewall. Theiptablesfirewall is designed not only
+In this task, we will use iptables to set up a firewall. The iptables firewall is designed not only
 to filter packets, but also to make changes to packets. To help manage these firewall rules for different
-purposes,iptablesorganizes all rules using a hierarchical structure: table, chain, and rules. There are
+purposes,iptables organizes all rules using a hierarchical structure: table, chain, and rules. There are
 several tables, each specifying the main purpose of the rules as shown in Table 1. For example, rules for
-packet filtering should be placed in thefiltertable, while rules for making changes to packets should be
-placed in thenatormangletables.
-Each table contains several chains, each of which corresponds to anetfilterhook. Basically, each
-chain indicates where its rules are enforced. For example, rules on theFORWARDchain are enforced at the
-NFINETFORWARDhook, and rules on theINPUTchain are enforced at theNFINETLOCALINhook.
+packet filtering should be placed in the filter table, while rules for making changes to packets should be
+placed in the nat or mangletables.
+Each table contains several chains, each of which corresponds to a netfilter hook. Basically, each
+chain indicates where its rules are enforced. For example, rules on the FORWARD chain are enforced at the
+NFINETFORWARD hook, and rules on the INPUT chain are enforced at the NFINETLOCALIN hook.
 Each chain contains a set of firewall rules that will be enforced. When we set up firewalls, we add rules
-to these chains. For example, if we would like to block all incomingtelnettraffic, we would add a rule
-to theINPUTchain of thefiltertable. If we would like to redirect all incomingtelnettraffic to a
-different port on a different host, basically doing port forwarding, we can add a rule to theINPUTchain of
-themangletable, as we need to make changes to packets.
+to these chains. For example, if we would like to block all in coming telnet traffic, we would add a rule
+to the INPUT chain of the filter table. If we would like to redirect all incoming telnet traffic to a
+different port on a different host, basically doing port forwarding, we can add a rule to the INPUT chain of
+the mangletable, as we need to make changes to packets.
 
 ### 4.2 Using iptables
 
-To add rules to the chains in each table, we use theiptablescommand, which is a quite powerful
-command. Students can find the manual ofiptablesby typing"man iptables"or easily find many
-tutorials from online. What makesiptablescomplicated is the many command-line arguments that we
+To add rules to the chains in each table, we use the iptables command, which is a quite powerful
+command. Students can find the manual of iptables by typing"man iptables"or easily find many
+tutorials from online. What makes iptables complicated is the many command-line arguments that we
 need to provide when using the command. However, if we understand the structure of these command-line
 arguments, we will find out that the command is not that complicated.
-In a typicaliptablescommand, we add a rule to or remove a rule from one of the chains in one of
+In a typical iptables command, we add a rule to or remove a rule from one of the chains in one of
 the tables, so we need to specify a table name (the default isfilter), a chain name, and an operation on
 the chain. After that, we specify the rule, which is basically a pattern that will be matched with each of
 the packets passing through. If there is a match, an action will be performed on this packet. The general
@@ -450,7 +450,7 @@ iptables -t <table> -<operation> <chain> <rule> -j <target>
 ---------- -------------------- ------- -----------
 Table Chain Rule Action
 
-The rule is the most complicated part of theiptablescommand. We will provide additional informa-
+The rule is the most complicated part of the iptables command. We will provide additional informa-
 tion later when we use specific rules. In the following, we list some commonly used commands:
 
 // List all the rules in a table (without line number)
@@ -465,18 +465,18 @@ iptables -t filter -D INPUT 2
 // Drop all the incoming packets that satisfy the <rule>
 iptables -t filter -A INPUT <rule> -j DROP
 
-Note. Docker relies oniptablesto manage the networks it creates, so it adds many rules to thenat
-table. When we manipulateiptablesrules, we should be careful not to remove Docker rules. For
+Note. Docker relies on iptables to manage the networks it creates, so it adds many rules to thenat
+table. When we manipulate iptables rules, we should be careful not to remove Docker rules. For
 example, it will be quite dangerous to run the"iptables -t nat -F"command, because it removes
-all the rules in thenattable, including many of the Docker rules. That will cause trouble to Docker
-containers. Doing this for thefiltertable is fine, because Docker does not touch this table.
+all the rules in the nat table, including many of the Docker rules. That will cause trouble to Docker
+containers. Doing this for the filter table is fine, because Docker does not touch this table.
 
 ### 4.3 Task 2.A: Protecting the Router
 
 In this task, we will set up rules to prevent outside machines from accessing the router machine, except ping.
-Please execute the followingiptablescommand on the router container, and then try to access it from
+Please execute the following iptables command on the router container, and then try to access it from
 10.9.0.5. (1) Can you ping the router? (2) Can you telnet into the router (a telnet server is running on
-all the containers; an account calledseedwas created on them with a passworddees). Please report your
+all the containers; an account called seed was created on them with a passworddees). Please report your
 observation and explain the purpose for each rule.
 
 
@@ -485,7 +485,7 @@ iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
 iptables -P OUTPUT DROP Ÿ **Set default rule for OUTPUT**
 iptables -P INPUT DROP Ÿ **Set default rule for INPUT**
 
-Cleanup. Before moving on to the next task, please restore thefiltertable to its original state by
+Cleanup. Before moving on to the next task, please restore the filter table to its original state by
 running the following commands:
 
 iptables -F
@@ -499,7 +499,7 @@ $ docker restart <Container ID>
 
 ### 4.4 Task 2.B: Protecting the Internal Network
 
-In this task, we will set up firewall rules on the router to protect the internal network192.168.60.0/24.
+In this task, we will set up firewall rules on the router to protect the internal network 192.168.60.0/24.
 We need to use the FORWARD chain for this purpose.
 The directions of packets in the INPUT and OUTPUT chains are clear: packets are either coming
 into (for INPUT) or going out (for OUTPUT). This is not true for the FORWARD chain, because it is
@@ -560,7 +560,7 @@ maintains some state information for each connection. If it does that, it become
 
 ### 5.1 Task 3.A: Experiment with the Connection Tracking
 
-To support stateful firewalls, we need to be able to track connections. This is achieved by theconntrack
+To support stateful firewalls, we need to be able to track connections. This is achieved by the conntrack
 mechanism inside the kernel. In this task, we will conduct experiments related to this module, and get
 familiar with the connection tracking mechanism. In our experiment, we will check the connection tracking
 information on the router container. This can be done using the following command:
@@ -602,10 +602,10 @@ observation, along with your explanation.
 ### 5.2 Task 3.B: Setting Up a Stateful Firewall
 
 Now we are ready to set up firewall rules based on connections. In the following example, the"-m
-conntrack"option indicates that we are using theconntrackmodule, which is a very important mod-
-ule foriptables; it tracks connections, andiptablesreplies on the tracking information to build
-stateful firewalls. The--ctsate ESTABLISHED,RELATEDindicates that whether a packet belongs
-to anESTABLISHEDorRELATEDconnection. The rule allows TCP packets belonging to an existing
+conntrack"option indicates that we are using the conntrack module, which is a very important mod-
+ule foriptables; it tracks connections, and iptables replies on the tracking information to build
+stateful firewalls. The--ctsate ESTABLISHED,RELATED indicates that whether a packet belongs
+to an ESTABLISHED or RELATED connection. The rule allows TCP packets belonging to an existing
 connection to pass through.
 
 iptables -A FORWARD -p tcp -m conntrack \
@@ -656,16 +656,16 @@ iptables -A FORWARD -s 10.9.0.5 -j DROP
 
 ## 7 Task 5: Load Balancing
 
-Theiptablesis very powerful. In addition to firewalls, it has many other applications. We will not be
+The iptables is very powerful. In addition to firewalls, it has many other applications. We will not be
 able to cover all its applications in this lab, but we will experimenting with one of the applications, load
 balancing. In this task, we will use it to load balance three UDP servers running in the internal network.
-Let’s first start the server on each of the hosts:192.168.60.5,192.168.60.6, and192.168.60.
-(the-koption indicates that the server can receive UDP datagrams from multiple hosts):
+Let’s first start the server on each of the hosts:192.168.60.5,192.168.60.6, and 192.168.60.
+(the -k option indicates that the server can receive UDP datagrams from multiple hosts):
 
 nc -luk 8080
 
-We can use thestatisticmodule to achieve load balancing. You can type the following command
-to get its manual. You can see there are two modes:randomandnth. We will conduct experiments using
+We can use the statistic module to achieve load balancing. You can type the following command
+to get its manual. You can see there are two modes:random and nth. We will conduct experiments using
 both of them.
 
 $ iptables -m statistic -h
@@ -678,7 +678,7 @@ nth mode:
 --packet p Initial counter value (0 <= p <= n-1, default 0)
 
 Using the **nth** mode (round-robin). On the router container, we set the following rule, which applies to
-all the UDP packets going to port 8080. Thenthmode of thestatisticmodule is used; it implements
+all the UDP packets going to port 8080. Thenth mode of the statistic module is used; it implements
 a round-robin load balancing policy: for every three packets, pick the packet 0 (i.e., the first one), change its
 
 
@@ -701,7 +701,7 @@ Please add more rules to the router container, so all the three internal hosts g
 packets. Please provide some explanation for the rules.
 
 Using the **random** mode. Let’s use a different mode to achieve the load balancing. The following rule
-will select a matching packet with the probabilityP. You need to replacePwith a probability number.
+will select a matching packet with the probability P. You need to replace P with a probability number.
 
 iptables -t nat -A PREROUTING -p udp --dport 8080 \
 -m statistic --mode random --probability P \
