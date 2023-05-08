@@ -114,7 +114,7 @@ $ docker cp ./as180_bird.conf 2967:/etc/bird/bird.conf
 
 // Reload the configuration on the container
 
-$ docker exec 2967 birdc configure Ÿ **Run "birdc configure"**
+$ docker exec 2967 birdc configure  **Run "birdc configure"**
 
 BIRD 2.0.7 ready.
 
@@ -479,7 +479,7 @@ rerouted to the attackers, who can intercept or modify the traffic. Many of the 
 caused by such an “attack”, although they are mostly caused by the mis-configured BGP routers. Students
 should read Section 12 of the tutorial before working on this task.
 
-### 7.1 Task 5.a. Launching the Prefix Hijacking Attack from AS-
+### 7.1 Task 5.a. Launching the Prefix Hijacking Attack from AS-161
 
 In this task, we will launch the prefix hijacking attack using a BGP router in AS-161. Our goal is to hijack
 the IP prefix owned by AS-154. If the attack is successful, all the packets going to AS-154 will be rerouted
@@ -505,7 +505,7 @@ LOCAL_COMM community; otherwise, the BGP router will not export it to the outsid
     }
 
 
-### 7.2 Task 5.b. Fighting Back from AS-
+### 7.2 Task 5.b. Fighting Back from AS-154
 
 AS-154 has a detection system. After the attack was launched, it immediately detected the attack. It tried to
 contact the operators of AS-3, which is the upstream service provider for AS-161, asking them to block the
@@ -514,7 +514,7 @@ service is very significant, so the operators of AS-154 decide to fight back: th
 own network prefixes, without the help of AS-3. Please reconfigure the BGP routers of AS-154, so you can
 get the traffic back.
 
-### 7.3 Task 5.c. Fixing the Problem at AS-
+### 7.3 Task 5.c. Fixing the Problem at AS-3
 
 Eventually, the operators of AS-3 are reached. Without knowing whether this is a misconfiguration on the
 AS-161 side or an intentional attack, AS-3 decides not to cut the peering with AS-161, so the users of AS-
