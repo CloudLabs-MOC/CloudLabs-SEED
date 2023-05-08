@@ -405,7 +405,7 @@ We will implement a simple HTTPS proxy called mHTTPSproxy(m stands for mini). Th
 program simply integrates the client and server programs from Task 1 and 2 together. How it works is
 illustrated in Figure 1. We will run the proxy on the proxy container.
 The proxy is actually a combination of the TLS client and server programs. To the browser, the TLS
-# image
+![](image/image1.png)
 proxy is just a server program, which takes the HTTP requests from the browser (the client), and return
 HTTP responses to it. The proxy does not generate any HTTP responses; instead, it forwards the HTTP
 requests to the actual web server, and then get the HTTP responses from the web server. To the actual web
