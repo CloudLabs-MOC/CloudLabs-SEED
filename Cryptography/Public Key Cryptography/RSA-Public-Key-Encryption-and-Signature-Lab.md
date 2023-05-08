@@ -83,10 +83,10 @@ BN_generate_prime_ex(a, 128, 1, NULL, NULL, NULL);
 ```
 - Print out a big number.
 ```
-  void printBN(char *msg, BIGNUM * a)
-    {
-       // Convert the BIGNUM to number string
-       char * number_str = BN_bn2dec(a);
+void printBN(char *msg, BIGNUM * a)
+{
+ // Convert the BIGNUM to number strin
+ char * number_str = BN_bn2dec(a);
        
 // Print out the number string
 printf("%s %s\n", msg, number_str);
