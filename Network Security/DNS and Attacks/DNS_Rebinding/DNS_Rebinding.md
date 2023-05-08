@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2019 - 2020 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-Non Commercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -13,7 +13,7 @@ students gain the first-hand experience on how to use the DNS rebinding techniqu
 the setup, we have a simulated IoT device, which can be controlled through a web interface (this is typical
 for many IoT devices). Many IoT devices do not have a strong protection mechanism, if attackers can
 directly interact with them, they can easily compromise these devices.
-The IoT device simulated in this lab is a thermostat, which controls the room temperature. To success-
+The IoT device simulated in this lab is a the rmostat, which controls the room temperature. To success-
 fully set the temperature, the client needs to be able to interact with the IoT server. Since the IoT device
 is behind the firewall, outside machines cannot interact with the IoT device, and will therefore not be able
 to control the thermostat. To defeat the firewall protection, the attacking code must get into the internal
@@ -23,7 +23,7 @@ side the protected internal network. However, due to the sandbox protection impl
 attacker’s code still cannot interact with the IoT device, even though it is now inside the internal network.
 The objective of this lab is to use the DNS rebinding attack to circumvent the sandbox protection, so
 the JavaScript code from the attacker can successfully get the essential information from the IoT device and
-then use the information to set the temperature of the thermostat to a dangerously high value. This lab covers
+then use the information to set the temperature of the the rmostat to a dangerously high value. This lab covers
 the following topics:
 
 - DNS server setup
@@ -51,11 +51,11 @@ APIs. Typically, these IoT devices are protected by a firewall, they cannot be a
 Due to this type of protection, many IoT devices do not implement a strong authentication mechanism. If
 attackers can find ways to interact with them, they can easily compromise its security.
 We emulate such a vulnerable IoT device using a simple web server, which serves two APIs:password
-andtemperature. The IoT device can set the room temperature. To do that, we need to send out
-an HTTP request to the server’stemperatureAPI; the request should include two pieces of data: the
+and temperature. The IoT device can set the room temperature. To do that, we need to send out
+an HTTP request to the server’s temperature API; the request should include two pieces of data: the
 target temperature value and a password. The password is a secret that changes periodically, but it can be
-fetched using thepasswordAPI. Therefore, to successfully set the temperature, users needs to first get the
-password, and then attach the password in thetemperatureAPI.
+fetched using the passwordAPI. Therefore, to successfully set the temperature, users needs to first get the
+password, and then attach the password in the temperature API.
 The password is not meant for the authentication purpose; it is used to defeat the Cross-Site Request
 Forgery (CSRF) attack. Without this protection, a simple CSRF attack is sufficient; there is no need to use
 the more sophisticated DNS rebinding attack. For the sake of simplicity, we hardcoded the password; in real
@@ -130,13 +130,13 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 sudo unzip Labsetup.zip
 ```
 
-enter theLabsetup
-folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
+enter the Labsetup
+folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
 content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
+we are going to use these commands very frequently, we have created aliases for them in the.bashrc file
 (in our provided SEEDUbuntu 20.04 VM).
 
 $ docker-compose build # Build the container image
@@ -151,7 +151,7 @@ $ dcdown # Alias for: docker-compose down
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the.bashrc file.
 
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
@@ -181,32 +181,32 @@ Step 1. Reduce Firefox’s DNS caching time. To reduce load on DNS servers and t
 time, Firefox browser caches DNS results. By default, the cache’s expiration time is 60 seconds. That means
 that our DNS rebinding attack needs to wait for at least 60 seconds. To make our life easier, we reduce the
 time to 10 seconds or less. Typeabout:configin the URL field. After clicking through a warning page,
-we will see a list of preference names and their values. Search fordnsCache, find the following entry and
+we will see a list of preference names and their values. Search for dns Cache, find the following entry and
 change its value:
 
-**network.dnsCacheExpiration** : change its value to 10 (default is 60)
+**network.dns Cache Expiration** : change its value to 10 (default is 60)
 
 After making the change, we should exit from the Firefox browser, and restart it; otherwise the change
 will not take effect.
 
-Step 2. Change **/etc/hosts**. We need to add the following entry to the/etc/hostsfile. We will
-usewww.seedIoT32.comas the name for the IoT server. Its IP address is192.168.60.80.
+Step 2. Change **/etc/hosts**. We need to add the following entry to the/etc/hosts file. We will
+use www.seedIoT32.com as the name for the IoT server. Its IP address is 192.168.60.80.
 
 192.168.60.80 [http://www.seedIoT32.com](http://www.seedIoT32.com)
 
 We can now test the IoT server. Point the browser to the following URL on the User VM. If everything
-is set up correctly, we should be able to see a thermostat. We can also change the temperature setting by
+is set up correctly, we should be able to see a the rmostat. We can also change the temperature setting by
 dragging the sliding bar. Please provide a screenshot in your lab report.
 
 [http://www.seedIoT32.com](http://www.seedIoT32.com)
 
 Step 3. Local DNS Server. We need to get the User VM to use a particular local DNS server. This is
-achieved by setting the local DNS server as the firstnameserverentry in the resolver configuration file
+achieved by setting the local DNS server as the first name server entry in the resolver configuration file
 (/etc/resolv.conf). One challenge is that the provided VM uses the Dynamic Host Configuration
 Protocol (DHCP) to obtain network configuration parameters, such as IP address, local DNS server, etc.
 DHCP clients overwrite the/etc/resolv.conffile with the information provided by the DHCP server.
 One way to get our information into/etc/resolv.confwithout worrying about the DHCP is to
-add the following entry to the/etc/resolvconf/resolv.conf.d/headfile (10.9.0.53is the
+add the following entry to the/etc/resolvconf/resolv.conf.d/head file (10.9.0.53is the
 IP address of the local DNS server in our setup):
 
 nameserver 10.9.0.
@@ -219,8 +219,8 @@ $ sudo resolvconf -u
 
 ### 3.3 Testing the Lab Setup.
 
-After configuring the User VM, use thedigcommand to get the IP address ofwww.attacker32.com
-andns.attacker32.com. You should get10.9.0.180and10.9.0.153, respectively. If you do
+After configuring the User VM, use the dig command to get the IP address of www.attacker32.com
+and ns.attacker32.com. You should get 10.9.0.180 and 10.9.0.153, respectively. If you do
 not get this, your lab environment is not set up correctly.
 We can now test the attacker’s website. Point the browser to the following URL on the User VM, and
 you should be able to see the attacker’s website. Please provide a screenshot in your lab report.
@@ -243,12 +243,12 @@ URL 1: [http://www.seedIoT32.com](http://www.seedIoT32.com)
 URL 2: [http://www.seedIoT32.com/change](http://www.seedIoT32.com/change)
 URL 3: [http://www.attacker32.com/change](http://www.attacker32.com/change)
 
-The first page lets us see the current temperature setting of the thermostat (see Figure 2.a); it fetches the
+The first page lets us see the current temperature setting of the the rmostat (see Figure 2.a); it fetches the
 temperature value from the IoT server once every second. We should keep this page always visible, so we
-can see the temperature setting on the thermostat. The second and third pages are identical (see Figure 2.b),
+can see the temperature setting on the the rmostat. The second and third pages are identical (see Figure 2.b),
 except that one comes from the IoT server, and the other comes from the attacker’s server. When we click
 the button on both pages, a request will be sent out to the IoT server to set its temperature. we are supposed
-to raise the thermostat’s temperature to 99 Celsius.
+to raise the the rmostat’s temperature to 99 Celsius.
 
 ```
 (a) http://www.seedIoT 32 .com
@@ -272,25 +272,25 @@ Tools -> Web Developer -> Web Console
 
 ### 4.2 Task 2. Defeat the Same-Origin Policy Protection
 
-From the previous task, it seems impossible to set the thermostat’s temperature from the attacker’s page, due
+From the previous task, it seems impossible to set the the rmostat’s temperature from the attacker’s page, due
 to the browser’s same-origin policy protection. The objective of this task is to defeat such a protection, so
 we can set the temperature from this page.
 The main idea for defeating the same origin protection comes from the fact that the policy enforcement
-is based on the host name, not on the IP address, so as long as we usewww.attacker32.comin the
+is based on the host name, not on the IP address, so as long as we use www.attacker32.comin the
 URL, we are complying with the SOP policy, but that does not mean we are restricted to communicate with
-thewww.attacker32.comweb server.
-Before the user’s browser sends out requests towww.attacker32.com, it first needs to know the IP
-address ofwww.attacker32.com. A DNS request will be sent out from the User’s machine. If the IP ad-
-dress is not cached at the local DNS server, a DNS request will eventually be sent toattacker32.com’s
+the www.attacker32.com web server.
+Before the user’s browser sends out requests to www.attacker32.com, it first needs to know the IP
+address of www.attacker32.com. A DNS request will be sent out from the User’s machine. If the IP ad-
+dress is not cached at the local DNS server, a DNS request will eventually be sent to attacker32.com’s
 nameserver, which is controlled by the attacker. Therefore, the attacker can decide what to put in the re-
 sponse.
 
 Step 1: Modify the JavaScript code. On the attacker’s web server, the JavaScript code running inside
-thewww.attacker32.com/changepage is stored in the following file:/app/rebind_server/
-templates/js/change.js. Since this page comes from thewww.attacker32.comserver, ac-
+the www.attacker32.com/changepage is stored in the following file:/app/rebind_server/
+templates/js/change.js. Since this page comes from the www.attacker32.comserver, ac-
 cording to the same-origin policy, it can only interact with the same server. Therefore, we need to change
-the first line of the code fromhttp://www.seediot32.comto the following (we have installed a
-simple editor callednanoin the container):
+the first line of the code from http://www.seediot32.comto the following (we have installed a
+simple editor called nano in the container):
 
 let url_prefix = ’http://www.attacker32.com’
 
@@ -304,14 +304,14 @@ $ docker ps
 
 $ docker container restart 7835
 
-Step 2: Conduct the DNS rebinding. Our JavaScript code sends requests towww.attacker32.com,
+Step 2: Conduct the DNS rebinding. Our JavaScript code sends requests to www.attacker32.com,
 i.e., the requests will come back to the Attacker’s web server. That is not what we want; we want the
 requests to go to the IoT server. This can be achieved using the DNS rebinding technique. We first map
 [http://www.attacker32.comto](http://www.attacker32.comto) the IP address of the attacker’s web server, so the user can get the actual page
-fromhttp://www.attacker32.com/change. Before we click on the button on the page, we remap
-thewww.attacker32.comhostname to the IP address of the IoT server, so the request triggered by the
+from http://www.attacker32.com/change. Before we click on the button on the page, we remap
+the www.attacker32.comhostname to the IP address of the IoT server, so the request triggered by the
 button will go to the IoT server. That is exactly what we want.
-To change the DNS mapping, students can modify thezone_attacker32.comfile inside attacker’s
+To change the DNS mapping, students can modify the zone_attacker32.com file inside attacker’s
 nameserver container. The zone file can be found in the/etc/bindfolder. The following shows the
 content of the zone file. The first entry is the default Time-To-Live (TTL) value (seconds) for the response,
 specifying how long the response can stay in the DNS cache. This value may need to be modified. The
@@ -340,7 +340,7 @@ the revised zone data.
 
 # rndc reload attacker32.com
 
-Because of the tasks conducted previously, the DNS mapping for thewww.attacker32.comhas
+Because of the tasks conducted previously, the DNS mapping for the www.attacker32.comhas
 already been cached by the local DNS server, it will not expire until 1000 seconds later. To shorten the
 waiting, students are allowed to clean out the cache using the following command (on the local DNS server).
 However, this can only be conducted before the attack starts. Once the attack starts, students are not allowed
@@ -349,8 +349,8 @@ to touch the local DNS server.
 // Do it on the local DNS server container
 # rndc flush
 
-If both steps in this task are done correctly, clicking the button on thechangepage fromwww.
-attacker32.comshould be able to change the thermostat’s temperature successfully. Please provide
+If both steps in this task are done correctly, clicking the button on the changepage from www.
+attacker32.com should be able to change the the rmostat’s temperature successfully. Please provide
 evidence in your report to demonstrate your success.
 
 ### 4.3 Task 3. Launch the Attack
@@ -363,8 +363,8 @@ already created a web page for that purpose. It can be accessed using the follow
 
 Once you have loaded this page into the User VM, you should be able to see a page with a timer, which
 goes down from 10 to 0. Once it reaches 0, the JavaScript code on this page will send the set-temperature
-request tohttp://www.attacker32.com, and then reset the timer value to 10. Students need to use
-the DNS rebinding technique, so once the timer reaches 0, the thermostat’s temperature is set to 88 Celsius.
+request to http://www.attacker32.com, and then reset the timer value to 10. Students need to use
+the DNS rebinding technique, so once the timer reaches 0, the the rmostat’s temperature is set to 88 Celsius.
 
 ## 5 Submission
 
