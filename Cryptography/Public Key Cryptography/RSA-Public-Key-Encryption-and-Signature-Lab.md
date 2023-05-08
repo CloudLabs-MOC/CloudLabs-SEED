@@ -44,7 +44,7 @@ The RSA algorithm involves computations on large numbers. These computations can
 using simple arithmetic operators in programs, because those operators can only operate on primitive
 data types, such as 32-bit integer and 64-bit long integer types. The numbers involved in the RSA algorithms
 are typically more than 512 bits long. For example, to multiple two 32-bit integer numbers a and b, we just
-need to use *(a*b)* in our program. However, if they are big numbers, we cannot do that any more; instead,
+need to use (ab) in our program. However, if they are big numbers, we cannot do that any more; instead,
 we need to use an algorithm (i.e., a function) to compute their products.
 There are several libraries that can perform arithmetic operations on integers of arbitrary size. In this
 lab, we will use the Big Number library provided by openssl. To use this library, we will define each big
