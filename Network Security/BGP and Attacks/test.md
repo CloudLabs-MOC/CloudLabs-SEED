@@ -18,8 +18,14 @@ separate document. It is essential for the lab activities, so students should re
 on the lab. This lab covers the following topics:
 
 • How the BGP protocol works
+
 • Autonomous systems
+
 • BGP configuration, BGP Large Communities
+
 • Routing
+
 • Internet Exchange (IX)
+
 • BGP attack, network prefix hijacking
+
