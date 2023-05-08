@@ -96,6 +96,7 @@ configuration file of AS-180):
 ```
 // Find out the IP of the AS-180’s BGP router container
 $ dockps | grep 180
+
  6bf0bcda8d06 as180h-host_1-10.180.0.
  437874056b15 as180h-webservice_0-10.180.0.
  **2967**6d5034ce as180r-router0-10.180.0.254 <- **This is AS-180’s BGP router**
@@ -169,11 +170,10 @@ conf, and then do the following tasks.
     filtering part of the configuration for now. Here is one of the BGP entries in the configuration file. See
     Section 6 of the provided BGP tutorial for the explanation of each entry.
  ```
-    **protocol bgp** u_as2 {
-       ipv4 {
-          table t_bgp;
-          import filter {
-
+ **protocol bgp** u_as2 {
+    ipv4 {
+     table t_bgp;
+      import filter {
 
 
 bgp_large_community.add(PROVIDER_COMM);
@@ -195,15 +195,15 @@ neighbor 10.102.0.2 as 2;
     ular BGP session is disabled/enabled (you can use the"ip route"to see the content of a routing
     table).
 ```
-    root@0c97d3ade85a / # birdc show protocols
+root@0c97d3ade85a / # birdc show protocols
     
-    BIRD 2.0.7 ready.
+BIRD 2.0.7 ready.
     
-    Name Proto Table State Since Info
+Name Proto Table State Since Info
     
-    u_as2 BGP --- **up** 14:51:40.447 Established
+u_as2 BGP --- **up** 14:51:40.447 Established
     
-    u_as4 BGP --- up 14:51:39.500 Established
+u_as4 BGP --- up 14:51:39.500 Established
 
 root@0c97d3ade85a / # birdc disable u_as2              --Disable peering with AS--
 
