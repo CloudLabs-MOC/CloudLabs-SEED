@@ -347,6 +347,7 @@ a wildcard name *(*.bank32.com.)* It should be noted that the field must also in
 common name field; otherwise, the common name will not be accepted as a valid name.
 
                                         Listing 3:serveropenssl.cnf
+```
 [ req ]
 prompt = no
 distinguished_name = req_distinguished_name
@@ -367,7 +368,7 @@ subjectAltName = @alt_names
 DNS.1 = http://www.bank32.com
 DNS.2 = http://www.example.com
 DNS.3 = *(*.bank32.com)*
-
+```
 We can use the following "openssl req" command to generate a pair of public/private keys and a
 certificate signing request:
 ```
