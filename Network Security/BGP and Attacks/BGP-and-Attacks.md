@@ -30,7 +30,7 @@ to security, so if instructors only want students to focus on the security aspec
 1 - 4, and assign Task 5 directly to students, as this task does not depend on the earlier tasks. High-level
 knowledge on BGP should be sufficient for Task 5.
 
-Lab environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 The Lab Setup and the SEED Internet Emulator
 
