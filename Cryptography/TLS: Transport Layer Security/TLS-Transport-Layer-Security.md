@@ -406,7 +406,7 @@ program simply integrates the client and server programs from Task 1 and 2 toget
 illustrated in Figure 1. We will run the proxy on the proxy container.
 The proxy is actually a combination of the TLS client and server programs. To the browser, the TLS
 
-![](images/image1.png)
+![](images/image1.PNG)
 
 proxy is just a server program, which takes the HTTP requests from the browser (the client), and return
 HTTP responses to it. The proxy does not generate any HTTP responses; instead, it forwards the HTTP
