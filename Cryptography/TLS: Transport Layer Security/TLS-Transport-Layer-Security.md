@@ -517,7 +517,7 @@ the following scenarios:
     Please remember to hide your password in your lab report if you are using a real password.
 
 **Cleanup.** After finishing this task, please remember to remove the CA’s certificate from your browser, and
-also remove any entry that you have added to/etc/hosts on your VM.
+also remove any entry that you have added to /etc/hosts on your VM.
 
 ## 6 Submission
 
