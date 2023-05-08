@@ -46,9 +46,9 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 sudo unzip Labsetup.zip
 ```
 
-The files inside theoutputsub-folder are the actual emulation files (container files) that are generated from the Python codemini-internet.py.
+The files inside the output sub-folder are the actual emulation files (container files) that are generated from the Python codemini-internet.py.
 
-Start the emulation. We will directly use the container files in theoutputfolder. Go to this folder,
+Start the emulation. We will directly use the container files in the output folder. Go to this folder,
 and run the following docker commands to build and start the containers. We recommend that you run the
 emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating
 system should not have any problem, as long as the docker software is installed. Readers can find the docker
@@ -70,7 +70,7 @@ with a web application, which visualizes all the hosts, routers, and networks. A
 map can be accessed from this URL:http://localhost:8080/map.html. See Figure 1. Users can
 interact with this map, such as getting a terminal from any of the container, disabling BGP sessions (see
 Figure 2). Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in
-tcpdump; actually, the filter is directly fed into thetcpdumpprogram running on all nodes.
+tcp dump; actually, the filter is directly fed into the tcp dump program running on all nodes.
 
 ### 2.2 Modifying the BGP Configuration File
 
@@ -186,7 +186,7 @@ neighbor 10.102.0.2 as 2;
 ```
 - Task 1.a.2:AS-155 peers with several ASes, so if AS-155 loses the connection with one of them,
     it can still connect to the Internet. Please design an experiment to demonstrate this. You can en-
-    able/disable BGP sessions either from the graph (see Figure 2) or using thebirdccommand (see the
+    able/disable BGP sessions either from the graph (see Figure 2) or using the birdc command (see the
     following examples). In your experiment, please show how the routing table changes when a partic-
     ular BGP session is disabled/enabled (you can use the"ip route"to see the content of a routing
     table).
@@ -210,15 +210,15 @@ u_as4 BGP --- up 14:51:39.500 Established
 ```
 ### 3.2 Task 1.b: Observing BGP UPDATE Messages
 
-The objective of this task is to understand the BGP UPDATE messages. Runtcpdumpon AS-150’s
+The objective of this task is to understand the BGP UPDATE messages. Run tcp dump on AS-150’s
 BGP router, use it to monitor the BGP traffic. This command will save the captured BGP packets into
 /tmp/bgp.pcap.
 
 # tcpdump -i any -w /tmp/bgp.pcap "tcp port 179"
 
 Your job is to do something on AS-155’s BGP router to trigger at least one BGP route withdrawal and
-one BGP route advertisement messages. These UPDATE messages should be captured by thetcpdump
-command on AS-150 and stored insidebgp.pcap. Copy this file to the host computer using the"docker
+one BGP route advertisement messages. These UPDATE messages should be captured by the tcp dump
+command on AS-150 and stored inside bgp.pcap. Copy this file to the host computer using the"docker
 cp"command (from the host), and then load it into Wireshark. Pick a route advertisement message and a
 route withdraw message, provide explanation on these two messages. Screenshots should be provided in the
 lab report.
@@ -280,11 +280,11 @@ configuration of AS-180’s BGP router and all the related BGP routers, so the f
 Shell script. In this task, we need to modify several BIRD configuration files. Instead of going to each
 container to make changes, we can copy all the BIRD configuration files from the containers to the host
 VM, make changes, and then copy them back to the containers. We have included two shell scripts in the
-task1folder to facilitate the process:
+task1 folder to facilitate the process:
 
-- importbirdconf.sh: get all the needed BIRD configuration files from the containers. If a
+- import bird conf.sh: get all the needed BIRD configuration files from the containers. If a
     configuration file already exists in the current folder, the file will not be overwritten.
-- exportbirdconf.sh: copy the BIRD configuration files to the containers and run"birdc
+- export birdconf.sh: copy the BIRD configuration files to the containers and run"birdc
     configure"to reload the configuration.
 
 Debugging. If the result is not what you have expected, you may need to debug to find out what has gone
@@ -344,7 +344,7 @@ results before and after disabling IBGP, and explain your observations.
 ### 4.2 Task 2.b: Experimenting with IGP
 
 In this task, we will use the same BGP router. We will disable the OSPF routing protocol, and see how it
-affects the routing. There are several ways to disable OSPF. One way is to do it insidebirdc:
+affects the routing. There are several ways to disable OSPF. One way is to do it inside birdc:
 
 # bridc
 birdc> show protocols
@@ -391,7 +391,7 @@ Figure 3. In this task, students need to conduct the following tasks:
     should be peer-to-peer, not provider-to-customer. They do not pay each other.
 
 In this task, we need to modify several BIRD configuration files. Just like in Task 1, we have created two
-shell scripts in thetask2folder. They can be used to automate the downloading/uploading of the BIRD
+shell scripts in the task2 folder. They can be used to automate the downloading/uploading of the BIRD
 configuration from/to the containers.
 In your lab report, please include the content you add to the BIRD configuration file, and provide proper
 explanation. Please also include screenshots (such as traceroute) to demonstrate that your task is successful.
@@ -450,14 +450,14 @@ should read Section 12 of the tutorial before working on this task.
 
 In this task, we will launch the prefix hijacking attack using a BGP router in AS-161. Our goal is to hijack
 the IP prefix owned by AS-154. If the attack is successful, all the packets going to AS-154 will be rerouted
-to AS-161, where they will be dropped. Essentially, we are blackholing AS-154.
+to AS-161, where they will be dropped. Essentially, we are black holing AS-154.
 In BIRD, the prefixes announced by a BGP router can come from different sources: they can come from
-thedirectprotocol, i.e., they are obtained from the actual network interface attached to the BGP router.
+the direct protocol, i.e., they are obtained from the actual network interface attached to the BGP router.
 They can also come from thestaticprotocol, which contains pre-defined routes. The easiest way for a
-BGP router to announce a prefix that it does not own is to use thestaticprotocol. The following example
+BGP router to announce a prefix that it does not own is to use the static protocol. The following example
 creates a pre-defined route to10.130.0.0/16. See Section 3 of the tutorial for detailed explanation of
-thestaticprotocol. It should be noted that in the filter part of the route, we need to add the route to the
-LOCALCOMMcommunity; otherwise, the BGP router will not export it to the outside.
+the static protocol. It should be noted that in the filter part of the route, we need to add the route to the
+LOCAL_COMM community; otherwise, the BGP router will not export it to the outside.
 
 protocol static {
 ipv4 {
