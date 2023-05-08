@@ -4,7 +4,7 @@ Copyright © 2021 by Wenliang Du.
 
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 
-##1 Overview
+## 1 Overview
 
 Border Gateway Protocol (BGP) is the standard exterior gateway protocol designed to exchange routing and
 reachability information among autonomous systems (AS) on the Internet. It is the “glue” of the Internet,
