@@ -81,6 +81,7 @@ configuration file of AS-180):
 
 // Find out the IP of the AS-180’s BGP router container
 $ dockps | grep 180
+
 6bf0bcda8d06 as180h-host_1-10.180.0.
 437874056b15 as180h-webservice_0-10.180.0.
 **2967** 6d5034ce as180r-router0-10.180.0.254 Ÿ **This is AS-180’s BGP router**
