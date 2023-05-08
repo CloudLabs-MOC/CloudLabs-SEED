@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2022 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -25,16 +25,16 @@ This lab covers the following topics:
 Readings and videos. Detailed coverage of the DNS protocol and attacks can be found in the following:
 
 - Chapter 11 of the SEED Book,Internet Security: A Hands-on Approach, 3rd Edition, by Wenliang
-    Du. See details athttps://www.handsonsecurity.net.
+    Du. See details at https://www.handsonsecurity.net.
 - Section 7 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
-    athttps://www.handsonsecurity.net/video.html.
+    at https://www.handsonsecurity.net/video.html.
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment Setup
 
 In the lab environment, we provide a mini DNS infrastructure, consisting of a root server, a top-level domain
-server foredu, a domain server forexample.edu, and a local DNS server. Each of these nameservers
+server for edu, a domain server for example.edu, and a local DNS server. Each of these nameservers
 is hosted inside a container. For the sake of simplicity, we put all the containers on the same LAN (see
 Figure 1). This is a simplified setup, because in the real world, these nameservers are not on the same LAN.
 However, the configuration of these nameservers are similar to that in the real world, regardless of whether
@@ -94,8 +94,8 @@ $ docker cp <docker id>:/tmp/abc.
 
 ## 3 Task 1: Set Up the example.edu Domain
 
-In this task, we will go to the container folder for theexample.edunameserver. This container hosts
-theexample.edudomain. We will modify the files inside this folder, so the nameserver can support
+In this task, we will go to the container folder for the example.edu nameserver. This container hosts
+the example.edu domain. We will modify the files inside this folder, so the nameserver can support
 DNSSEC queries.
 
 ### 3.1 Task 1.a: Generate keys for example.edu server
@@ -115,7 +115,7 @@ is provided to the parent zone, but KSK does not change very frequently. When ZS
 to do is to use the KSK to generate a new signature for the ZSK.
 Both ZSK and KSK are public key pairs, but since their roles and lifetime are different, typically the
 KSK key is set to be stronger than the ZSK key, i.e., the key size is longer. In the following, the first
-command generates a ZSK key using theRSASHA256algorithm with the key size 1024. The second
+command generates a ZSK key using the RSASHA256 algorithm with the key size 1024. The second
 command generates a KSK key using the same algorithm, but doubling the key size. If your OS cannot find
 the command, you forgot to install the required software (see the lab setup section).
 
@@ -127,22 +127,22 @@ KSK. Without this option, a default value 256 is put in the key file, indicating
 
 ### 3.2 Task 1.b: Sign the example.edu domain’s zone file
 
-We will sign the zone file using the followingdnssec-signzonecommand.
+We will sign the zone file using the following dnssec-signzone command.
 
 dnssec-signzone -e 20501231000000 -S -o example.edu example.edu.db
 
-With the-Soption, the command will look for the zone signing key and key signing key from the
-specified folder using the zone name (we did not specify the key folder using the-Koption, so the default
+With the -S option, the command will look for the zone signing key and key signing key from the
+specified folder using the zone name (we did not specify the key folder using the -K option, so the default
 is the current folder). If you have multiple pairs of keys in the specified folder, the command will generate
 signatures using each key, so you would get multiple signatures for each record.
-The-eoption specifies the expiration time for the signatures. By default, the expiration time is only one
-month. Therefore, if you do not use the-eoption, when you check your setup a month later, it will not work
+The -e option specifies the expiration time for the signatures. By default, the expiration time is only one
+month. Therefore, if you do not use the -e option, when you check your setup a month later, it will not work
 any more. For students, one month should be sufficient, but for instructors who might reuse their answers in
 the future, setting a long expiration time can avoid unnecessary trouble. The format of the expiration time
-isYYYYMMDDHHMMSS. In the example, we set the expiration time to year 2050.
-Once the zone file is signed, a new zone file ended with.signedwill be generated. Take a look at the
+is YYYY-MM-DD-HH-MM-SS. In the example, we set the expiration time to year 2050.
+Once the zone file is signed, a new zone file ended with .signed will be generated. Take a look at the
 file and describe what new entries are added to the original zone file. Please explain their purposes.
-This new zone file will be used by our nameserver, so we will modify thenamed.conf.seedlabs
+This new zone file will be used by our nameserver, so we will modify the named.conf.seedlabs
 file to tell the nameserver to use this file as its zone file. See the following example:
 
 zone "example.edu" {
@@ -153,8 +153,8 @@ file "/etc/bind/example.edu.db.signed";
 ### 3.3 Task 1.c: Testing
 
 Using the docker-compose command, we can build and start all the containers. We then use the following
-digcommand to conduct the testing. The command allows us to directly ask a server (@server) to get
-a specifictypeof DNS record for a specific domain or hostname. By using the+dnssecflag, we set
+dig command to conduct the testing. The command allows us to directly ask a server (@server) to get
+a specific type of DNS record for a specific domain or hostname. By using the+dnssec flag, we set
 the DNSSEC OK bit (DO) in the OPT record in the additional section of the query, requesting the server to
 send back the related DNSSEC records, such as the signature.
 
@@ -165,9 +165,9 @@ Example:
 $ dig @10.9.0.65 example.edu DNSKEY +dnssec
 
 
-Run the following commands to get different types of records from theexample.edunameserver.
-Provide an explanation for each of the records in the response. In our setup,10.9.0.65is the IP address
-assigned to theexample.edunameserver.
+Run the following commands to get different types of records from the example.edu nameserver.
+Provide an explanation for each of the records in the response. In our setup,10.9.0.65 is the IP address
+assigned to the example.edu nameserver.
 
 $ dig @10.9.0.65 example.edu DNSKEY +dnssec
 $ dig @10.9.0.65 example.edu NS +dnssec
@@ -175,13 +175,13 @@ $ dig @10.9.0.65 [http://www.example.edu](http://www.example.edu) A +dnssec
 
 ## 4 Task 2: Set Up the edu Server
 
-In this task, we will set up theeduserver. The instructions are similar to those in Task 1.
+In this task, we will set up the edu server. The instructions are similar to those in Task 1.
 
 ### 4.1 Task 2.a: Find and add the DS record
 
-After signing the zone file ofexample.edu, a DS record is generated for the Key Signing Key. By
-default, it is placed inside a file calleddsset-<xyz>, where<xyz>is the zone name. In our case,
-dsset-example.edu.is the file name.
+After signing the zone file of example.edu, a DS record is generated for the Key Signing Key. By
+default, it is placed inside a file called dsset-<xyz>, where <xyz> is the zone name. In our case,
+dsset-example.edu. is the file name.
 DS (Delegation Signer) record holds the name of a delegated zone. It references a DNSKEY record in
 the sub-delegated zone. The DS record should be placed in the parent zone along with the delegating NS
 records. The following gives an example of the DS record:
@@ -192,17 +192,17 @@ example.edu. IN DS 10246 8 2 **563D...(omitted)...1D59D**
 A DS record contains a key tag (marked as¿), which is a short numeric value identifying the referenced
 key. This key is the Key Signing Key (KSK) for the domain. The most important element in a DS record is
 the digest (marked by¡), which is the one-way hash value of the KSK. By putting this digest value in the
-parent zone (i.e., theeduzone), the integrity of the sub-delegated zone’s KSK can be verified. That is the
+parent zone (i.e., the edu zone), the integrity of the sub-delegated zone’s KSK can be verified. That is the
 main purpose of this DS record.
 
 ### 4.2 Task 2.b: Set up the edu server
 
 Follow the instruction in Task 1 to generate the ZSK and KSK keys for this domain, and then use the keys
 to sign the zone file. Before signing the zone file, we need to add an entry to it. The entry is the DS record
-of the sub-delegated zone. In our case, theexample.eduzone is delegated to another nameserver, so the
-digest of its Key Signing Key must be included in theeduzone; this way, the integrity of the key can be
+of the sub-delegated zone. In our case, the example.edu zone is delegated to another nameserver, so the
+digest of its Key Signing Key must be included in the edu zone; this way, the integrity of the key can be
 verified.
-We can copy and paste the content of the DS record toedu’s zone file, or use the followingINCLUDE
+We can copy and paste the content of the DS record to edu’s zone file, or use the following INCLUDE
 entry to include the file. The latter method is more convenient for the lab, because even if we change the Key
 Signing Key of a zone, the DS record’s file name stays the same, so there is no need to change the parent’s
 zone file.
@@ -212,8 +212,8 @@ $INCLUDE ../edu.example/dsset-example.edu.
 ### 4.3 Task 2.c: Testing
 
 Build and run all the containers. Then run the following commands to get different types of records from the
-edunameserver. Provide an explanation for each of the records in the response. In our setup,10.9.0.
-is the IP address assigned to theedunameserver.
+edu nameserver. Provide an explanation for each of the records in the response. In our setup,10.9.0.
+is the IP address assigned to the edu nameserver.
 
 
 $ dig @10.9.0.60 edu DNSKEY +dnssec
@@ -222,7 +222,7 @@ $ dig @10.9.0.60 example.edu +dnssec
 
 ## 5 Task 3: Set Up the Root Server
 
-The procedure to set up the root server is the same as that in the previous task. Remember to add theedu
+The procedure to set up the root server is the same as that in the previous task. Remember to add the edu
 zone’s DS record to the zone file, before signing the zone.
 
 Testing. Run the following commands to get different types of records from the root nameserver. Provide
@@ -246,7 +246,7 @@ in the parent zone. The parent will provide the DS record for its sub-zone, and 
 verify the KSK of sub-zone.
 Since the root server does not have a parent zone, how do we verify the authenticity of the root server?
 The root servers’ public keys are the root of the trust, so they are the most important keys in the DNSSEC
-infrastructure, and they are calledtrust anchors. They must be obtained using a secure way.
+infrastructure, and they are called trust anchors. They must be obtained using a secure way.
 BIND 9 has built-in DNSSEC trust anchors, but they can be overridden by the content inside/etc/
 bind/bind.keys. In this task, we will put our root server’s public key into this file. Make sure to use
 KSK here, not ZSK.
@@ -257,14 +257,14 @@ trust-anchors {
 };
 
 We also need to enable DNSSEC on the local DNS server, so it will conduct DNSSEC validation. We
-just need to modify thenamed.conf.optionsfile for the local DNS server container, changing the
+just need to modify the named.conf.options file for the local DNS server container, changing the
 DNSSEC entries to the following:
 
 dnssec-validation auto;
 dnssec-enable yes;
 
 
-Testing. After starting the local server container, run the following command (10.9.0.53is the IP
+Testing. After starting the local server container, run the following command (10.9.0.53 is the IP
 address assigned to the local DNS server in our setup).
 
 $ dig @10.9.0.53 [http://www.example.edu](http://www.example.edu) +dnssec
@@ -276,8 +276,8 @@ $ dig @10.9.0.53 [http://www.example.edu](http://www.example.edu) +dnssec
 [http://www.example.edu.](http://www.example.edu.) 259200 IN A 1.2.3.
 [http://www.example.edu.](http://www.example.edu.) 259200 IN RRSIG ... <signature>
 
-If everything has been set up correctly, you should able to get the answer, the IP address ofwww.
-example.eduif the reply is authentic. Pay attention to theadflag, which meansauthentic data. If
+If everything has been set up correctly, you should able to get the answer, the IP address of www.
+example.edu if the reply is authentic. Pay attention to the ad flag, which means authentic data. If
 this flag is set, all the records in the reply are authentic, i.e., the DNSSEC validation is successful. If the
 DNSSEC is not enabled, you will still get answers, but this flag will not be set.
 If the reply is not authentic, you will get an error message. Please design an experiment to demonstrate
@@ -287,11 +287,11 @@ without regenerating a signature (you can also corrupt a signature).
 
 ## 7 Task 5: Adding Another Domain Nameserver
 
-Assume that you own a domain name insideedu, and you want to set up a DNSSEC-enabled nameserver
+Assume that you own a domain name inside edu, and you want to set up a DNSSEC-enabled nameserver
 for this domain. We have already created a spare container for this purpose (the BIND9 server is already
 installed on this container). Your task is to configure the nameserver, so it supports DNSSEC. The name of
 the domain should contain your last name and the year when this lab is conducted. For example, if your
-last name is Smith and the year is 2022, the domain name should besmith2022.edu. You do not need
+last name is Smith and the year is 2022, the domain name should be smith2022.edu. You do not need
 to actually own this domain in the real world. We only set it up in the DNS infrastructure within our lab
 environment.
 
