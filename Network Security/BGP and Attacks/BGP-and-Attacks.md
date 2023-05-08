@@ -224,7 +224,7 @@ The objective of this task is to understand the BGP UPDATE messages. Run tcp dum
 BGP router, use it to monitor the BGP traffic. This command will save the captured BGP packets into
 /tmp/bgp.pcap.
 
-# tcpdump -i any -w /tmp/bgp.pcap "tcp port 179"
+#tcpdump -i any -w /tmp/bgp.pcap "tcp port 179"
 
 Your job is to do something on AS-155’s BGP router to trigger at least one BGP route withdrawal and
 one BGP route advertisement messages. These UPDATE messages should be captured by the tcp dump
@@ -249,15 +249,23 @@ one of the hosts in AS-156, we can see the following results (please do not run 
 only run it from a host):
 
 // On 10.156.0.
-# ping 10.155.0.
+
+#ping 10.155.0.
+
 PING 10.155.0.71 (10.155.0.71) 56(84) bytes of data.
+
 64 bytes from 10.155.0.71: icmp_seq=1 ttl=62 time=14.6 ms
+
 64 bytes from 10.155.0.71: icmp_seq=2 ttl=62 time=0.363 ms
 
-# ping 10.161.0.
+#ping 10.161.0.
+
 PING 10.161.0.71 (10.161.0.71) 56(84) bytes of data.
+
 From 10.156.0.254 icmp_seq=1 Destination Net Unreachable
+
 From 10.156.0.254 icmp_seq=2 Destination Net Unreachable
+
 From 10.156.0.254 icmp_seq=3 Destination Net Unreachable
 
 We can see that10.155.0.71is still reachable, because it belongs to AS-155, which is still peered
@@ -271,12 +279,12 @@ requires some changes on AS-155’s BGP router. Please make such changes, so AS-
 provide a transit service to AS-156. Please read Section 9 before working on this task. After making the
 changes, please make sure run the following command to reload the BIRD configuration.
 
-# birdc configure
+#birdc configure
 BIRD 2.0.7 ready.
 Reading configuration from /etc/bird/bird.conf
 Reconfigured
 
-### 3.4 Task 1.d: Configuring AS-
+### 3.4 Task 1.d: Configuring AS-180
 
 AS-180 is already included in the emulator. It connects to the IX-105 Internet exchange (Houston), but it
 does not peer with anybody, so it is not connected to the Internet. In this task, students need to complete the
@@ -303,8 +311,10 @@ not get a reply, you want to know where the problem is. You can use the filter o
 visualize the traffic flow. The syntax of the filter is the same as that intcpdump. We give a few examples
 in the following.
 
-"icmp" **show all icmp traffic**
+"icmp"  **show all icmp traffic**
+
 "icmp and src 10.180.0.71" **show icmp traffic from 10.180.0.**
+
 "icmp and dst 10.180.0.71" **show icmp traffic to 10.180.0.**
 
 Lab report. In your lab report, please include the content that you add to the BIRD configuration files,
@@ -335,18 +345,26 @@ We will now disable the IBGP sessions on AS-3’s BGP router at IX-103 either us
 from the command line (see the following example).
 
 
-# birdc
+#birdc
+
 bird> show protocols
-Name Proto Table State Since Info
+
+Name  Proto  Table  State  Since  Info
 ...
-ibgp1 BGP --- up 20:19:03.800 Established
-ibgp2 BGP --- up 20:19:11.921 Established
-ibgp3 BGP --- **up** 20:20:50.238 Established
+
+ibgp1  BGP  ---  up  20:19:03.800  Established
+
+ibgp2  BGP  ---  up  20:19:11.921  Established
+
+ibgp3  BGP  ---  **up**  20:20:50.238  Established
 
 bird> disable ibgp
+
 bird> show protocols ibgp
-Name Proto Table State Since Info
-ibgp3 BGP --- **down** 20:26:44.
+
+Name  Proto  Table  State  Since  Info
+
+ibgp3  BGP  ---  **down**  20:26:44. 
 
 Before disabling IBGP, show the routing table on the BGP router (using"ip route"). Compare the
 results before and after disabling IBGP, and explain your observations.
@@ -356,21 +374,26 @@ results before and after disabling IBGP, and explain your observations.
 In this task, we will use the same BGP router. We will disable the OSPF routing protocol, and see how it
 affects the routing. There are several ways to disable OSPF. One way is to do it inside birdc:
 
-# bridc
+#birdc
 birdc> show protocols
+
 ...
-ospf1 OSPF t_ospf **up** 19:49:43.343 Running
+
+ospf1  OSPF  t_ospf  **up**  19:49:43.343  Running
+
 ...
 
 birdc> disable ospf
+
 birdc> show protocols ospf
-ospf1 OSPF t_ospf **down** 19:57:37.
+
+ospf1  OSPF  t_ospf  **down**  19:57:37.
 
 Before and after disabling OSPF, show the routing table on the BGP router (using"ip route").
 Compare the results. Based on the observation, explain why the IGP is essential for the transit autonomous
 systems.
 
-### 4.3 Task 2.c: Configuring AS-
+### 4.3 Task 2.c: Configuring AS-5
 
 ```
 Internet Exchange
