@@ -165,7 +165,7 @@ return 0;
 }
 ```
 **Compilation.** We can use the following command to compile bnsample.c (the character after - is the
-letter`, not the number 1; it tells the compiler to use the crypto library).
+letter `, not the number 1; it tells the compiler to use the crypto library).
 ```
 $ gcc bn_sample.c -lcrypto
 ```
