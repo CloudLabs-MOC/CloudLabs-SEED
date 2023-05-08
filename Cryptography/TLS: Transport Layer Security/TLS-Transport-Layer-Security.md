@@ -211,7 +211,7 @@ side. Please conduct the following steps using the client program.
     (you may want to run this command in your VM or host computers, because the dig command is not
     installed inside the container):
     ```
-    $ dig  `http://www.example.com
+    $ dig  http://www.example.com
     ...
     ;; ANSWER SECTION:
     `http://www.example.com. 403 IN A 93.184.216.
@@ -332,8 +332,8 @@ display the content returned by the server.
 
 ### 4.3 Task 2.c. Certificate with multiple names
 
-Many websites have different URLs. For example,www.example.com,www.example.org,example.
-com all point to the same web server. Due to the hostname matching policy enforced by most TLS client
+Many websites have different URLs. For example,www.example.com,www.example.org,example.com 
+all point to the same web server. Due to the hostname matching policy enforced by most TLS client
 programs, the common name in a certificate must match with the server’s hostname, or TLS clients will
 refuse to communicate with the server.
 To allow a certificate to have multiple names, the X.509 specification defines extensions to be attached
