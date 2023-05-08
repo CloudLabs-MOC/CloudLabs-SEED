@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2019 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -29,7 +29,7 @@ attack and defense tools. Students will use Scapy to conduct lab tasks. This lab
 Videos. Detailed coverage of the ARP protocol and attacks can be found in the following:
 
 - Section 3 of the SEED Lecture at Udemy,Internet Security: A Hands-on Approach, by Wenliang Du.
-    See details athttps://www.handsonsecurity.net/video.html.
+    See details at https://www.handsonsecurity.net/video.html.
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
@@ -73,12 +73,12 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 sudo unzip Labsetup.zip
 ```
 
-Enter theLabsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved Dockerfile can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
+we are going to use these commands very frequently, we have created aliases for them in the .bashrc file
 (in our provided SEEDUbuntu 20.04 VM).
 
 $ docker-compose build # Build the container image
@@ -93,7 +93,7 @@ $ dcdown # Alias for: docker-compose down
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the .bashrc file.
 
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
@@ -121,17 +121,17 @@ In this lab, we can either use the VM or the attacker container as the attacker 
 the Docker Compose file, you will see that the attacker container is configured differently from the other
 containers. Here are the differences:
 
-- Shared folder.When we use the attacker container to launch attacks, we need to put the attacking code
+- Shared folder. When we use the attacker container to launch attacks, we need to put the attacking code
     inside the container. Code editing is more convenient inside the VM than in containers, because we
     can use our favorite editors. In order for the VM and container to share files, we have created a shared
-    folder between the VM and the container using the Dockervolumes. If you look at the Docker
+    folder between the VM and the container using the Docker volumes. If you look at the Docker
     Compose file, you will find out that we have added the following entry to some of the containers.
-    It indicates mounting the./volumesfolder on the host machine (i.e., the VM) to the/volumes
-    folder inside the container. We will write our code in the./volumesfolder (on the VM), so they
+    It indicates mounting the./volumes folder on the host machine (i.e., the VM) to the/volumes
+    folder inside the container. We will write our code in the./volumes folder (on the VM), so they
     can be used inside the containers.
     volumes:
        - ./volumes:/volumes
-- Privileged mode.To be able to modify kernel parameters at runtime (usingsysctl), such as enabling
+- Privileged mode. To be able to modify kernel parameters at runtime (usingsysctl), such as enabling
     IP forwarding, a container needs to be privileged. This is achieved by including the following entry
     in the Docker Compose file for the container.
     privileged: true
@@ -142,25 +142,25 @@ Being able to sniff packets is very important in this lab, because if things do 
 to look at where packets go can help us identify the problems. There are several different ways to do packet
 sniffing:
 
-- Runningtcpdumpon containers. We have already installedtcpdumpon each container. To sniff
+- Running tcp dump on containers. We have already installed tcp dump on each container. To sniff
     the packets going through a particular interface, we just need to find out the interface name, and then
-    do the following (assume that the interface name iseth0):
-    # tcpdump -i eth0 -n
+    do the following (assume that the interface name is eth0):
+    # tcp dump -i eth0 -n
 
 ```
 It should be noted that inside containers, due to the isolation created by Docker, when we run
-tcpdumpinside a container, we can only sniff the packets going in and out of this container. We
-won’t be able to sniff the packets between other containers. However, if a container uses thehost
+tcp dump inside a container, we can only sniff the packets going in and out of this container. We
+won’t be able to sniff the packets between other containers. However, if a container uses the host
 mode in its network setup, it can sniff other containers’ packets.
 ```
 
-- Runningtcpdumpon the VM. If we runtcpdumpon the VM, we do not have the restriction on the
+- Running tcp dump on the VM. If we run tcp dump on the VM, we do not have the restriction on the
     containers, and we can sniff all the packets going among containers. The interface name for a network
     is different on the VM than on the container. On containers, each interface name usually starts with
     eth; on the VM, the interface name for the network created by Docker starts withbr-, followed by
-    the ID of the network. You can always use theip addresscommand to get the interface name on
+    the ID of the network. You can always use theip address command to get the interface name on
     the VM and containers.
-- We can also run Wireshark on the VM to sniff packets. Similar totcpdump, we need to select what
+- We can also run Wireshark on the VM to sniff packets. Similar to tcp dump, we need to select what
     interface we want Wireshark to sniff on.
 
 ## 3 Task 1: ARP Cache Poisoning
@@ -182,8 +182,8 @@ pkt = E/A
 sendp(pkt)
 
 The above program constructs and sends an ARP packet. Please set necessary attribute names/values to
-define your own ARP packet. We can usels(ARP)andls(Ether)to see the attribute names of theARP
-andEtherclasses. If a field is not set, a default value will be used (see the third column of the output):
+define your own ARP packet. We can use ls(ARP) and ls(Ether)to see the attribute names of the ARP
+and Ether classes. If a field is not set, a default value will be used (see the third column of the output):
 
 $ python
 >>> from scapy.all import *
@@ -208,7 +208,7 @@ pdst : IPField = (’0.0.0.0’)
 In this task, we have three machines (containers), A, B, and M. We use M as the attacker machine. We
 would like to cause A to add a fake entry to its ARP cache, such that B’s IP address is mapped to M’s MAC
 address. We can check a computer’s ARP cache using the following command. If you want to look at the
-ARP cache associated with a specific interface, you can use the-ioption.
+ARP cache associated with a specific interface, you can use the -i option.
 
 $ arp -n
 Address HWtype HWaddress Flags Mask Iface
@@ -382,9 +382,9 @@ not what you have typed.
 
 ## 5 Task 3: MITM Attack on Netcat using ARP Cache Poisoning
 
-This task is similar to Task 2, except that Hosts A and B are communicating usingnetcat, instead of
+This task is similar to Task 2, except that Hosts A and B are communicating using net cat, instead of
 telnet. Host M wants to intercept their communication, so it can make changes to the data sent between
-A and B. You can use the following commands to establish anetcatTCP connection between A and B:
+A and B. You can use the following commands to establish a net cat TCP connection between A and B:
 
 On Host B (server, IP address is 10.9.0.6), run the following:
 # nc -lp 9090
