@@ -423,8 +423,7 @@ under development); nothing will show up inside the pop-up window unless you cha
 that re-drawing is not automatically triggered when the window pops up, but changing its size will trigger
 the re-drawing).
 
-
-![alt text](images/figure1.PNG)
+![alt text](images/figure1.png)
 
 Figure 1: Enable the HTTP Header Live Add-on
 
@@ -441,9 +440,10 @@ Click the "Tools" menu --> Web Developer --> Network
 We use the user login page in Elgg as an example. Figure 2 shows the Network Tool showing the HTTP
 POST request that was used for login.
 
-```
+![alt text](images/figure2.png)
+
 Figure 2: HTTP Request in Web Developer Network Tool
-```
+
 To further see the details of the request, we can click on a particular HTTP request and the tool will
 show the information in two panes (see Figure 3).
 The details of the selected request will be visible in the right pane. Figure 4(a) shows the details of the
@@ -457,15 +457,15 @@ HTTP POST requests.
 focusing click anywhere in the Network Tool window, and then using _Ctrl_ and _+_ button.
 
 
-```
+![alt text](images/figure3.png)
+
 Figure 3: HTTP Request and Request Details in Two Panes
-```
-```
 (a) HTTP Request Headers (b) HTTP Request Parameters
-```
-```
+
+![alt text](images/figure4.png)
+
 Figure 4: HTTP Headers and Parameters
-```
+
 ### 5.3 JavaScript Debugging
 
 We may also need to debug our JavaScript code. Firefox’s Developer Tool can also help debug JavaScript
@@ -484,12 +484,14 @@ appears on the right side of the error message in the console. Click on the line
 to the exact place that has the error. See Figure 6.
 
 
-```
+![alt text](images/figure5.png)
+
 Figure 5: Debugging JavaScript Code (1)
-```
-```
+
+![alt text](images/figure6.png)
+
 Figure 6: Debugging JavaScript Code (2)
-```
+
 ## 6 Submission
 
 You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
