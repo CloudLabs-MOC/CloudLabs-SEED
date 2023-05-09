@@ -25,9 +25,9 @@ master the techniques that can help defend against such type of attacks. This la
 - SQL injection
 - Prepared statement
 
-Readings. Detailed coverage of the SQL injection can be found in the following:
+**Readings.** Detailed coverage of the SQL injection can be found in the following:
 
-- Chapter 12 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
+- Chapter 12 of the SEED Book,_Computer & Internet Security: A Hands-on Approach_, 2nd Edition,
     by Wenliang Du. See details athttps://www.handsonsecurity.net.
 
 Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
