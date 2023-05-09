@@ -153,10 +153,10 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
 You will be prompted for a password. Do not lose this password, because you will have to type the
 passphrase each time you want to use this CA to sign certificates for others. You will also be asked to fill in
 the subject information, such as the Country Name, Common Name, etc. The output of the command are
-stored in two files:ca.keyandca.crt. The fileca.keycontains the CA’s private key, while ca.crt
+stored in two files:ca.key and ca.crt. The file ca.key contains the CA’s private key, while ca.crt
 contains the public-key certificate.
 You can also specify the subject information and password in the command line, so you will not be
-prompted for any additional information. In the following command, we use-subj to set the subject
+prompted for any additional information. In the following command, we use -subj to set the subject
 information and we use -passout pass:dees to set the password todees.
 ```
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
