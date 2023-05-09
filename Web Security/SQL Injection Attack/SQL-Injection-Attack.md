@@ -180,19 +180,18 @@ as an attacker, is to log into the web application without knowing any employee�
 Figure 1: The Login page
 
 To help you started with this task, we explain how authentication is implemented in the web application.
-The PHP codeunsafehome.php, located in the/var/www/SQL_Injectiondirectory, is used to
+The PHP code unsafe_home.php, located in the /var/www/SQL_Injection directory, is used to
 conduct user authentication. The following code snippet show how users are authenticated.
-
+```
 $input_uname = $_GET[’username’];
 $input_pwd = $_GET[’Password’];
 $hashed_pwd = sha1($input_pwd);
-...
+
 $sql = "SELECT id, name, eid, salary, birth, ssn, address, email,
 nickname, Password
 FROM credential
 WHERE name= ’$input_uname’ and Password=’$hashed_pwd’";
 $result = $conn -> query($sql);
-
 
 // The following is Pseudo Code
 if(id != NULL) {
@@ -204,33 +203,33 @@ return employee information;
 } else {
 Authentication Fails;
 }
-
+```
 The above SQL statement selects personal employee information such as id, name, salary, ssn etc from
-thecredentialtable. The SQL statement uses two variablesinputunameandhashedpwd, where
-inputunameholds the string typed by users in the username field of the login page, whilehashedpwd
-holds thesha1hash of the password typed by the user. The program checks whether any record matches
+the credential table. The SQL statement uses two variables input_uname and hashed_pwd, where
+input_uname holds the string typed by users in the username field of the login page, while hashed_pwd
+holds the sha1 hash of the password typed by the user. The program checks whether any record matches
 with the provided username and password; if there is a match, the user is successfully authenticated, and is
 given the corresponding employee information. If there is no match, the authentication fails.
 
-Task 2.1: SQL Injection Attack from webpage. Your task is to log into the web application as the
+**Task 2.1: SQL Injection Attack from webpage.** Your task is to log into the web application as the
 administrator from the login page, so you can see the information of all the employees. We assume that
-you do know the administrator’s account name which isadmin, but you do not the password. You need to
-decide what to type in theUsernameandPasswordfields to succeed in the attack.
+you do know the administrator’s account name which is admin, but you do not the password. You need to
+decide what to type in the Username and Password fields to succeed in the attack.
 
-Task 2.2: SQL Injection Attack from command line. Your task is to repeat Task 2.1, but you need to
-do it without using the webpage. You can use command line tools, such ascurl, which can send HTTP
+**Task 2.2: SQL Injection Attack from command line.** Your task is to repeat Task 2.1, but you need to
+do it without using the webpage. You can use command line tools, such as curl, which can send HTTP
 requests. One thing that is worth mentioning is that if you want to include multiple parameters in HTTP
 requests, you need to put the URL and the parameters between a pair of single quotes; otherwise, the special
-characters used to separate parameters (such as&) will be interpreted by the shell program, changing the
+characters used to separate parameters (such as &) will be interpreted by the shell program, changing the
 meaning of the command. The following example shows how to send an HTTP GET request to our web
-application, with two parameters (usernameandPassword) attached:
-
+application, with two parameters (username and Password) attached:
+```
 $ curl ’www.seed-server.com/unsafe_home.php?username=alice&Password=11’
-
-If you need to include special characters in theusernameorPasswordfields, you need to encode
+```
+If you need to include special characters in the username or Password fields, you need to encode
 them properly, or they can change the meaning of your requests. If you want to include single quote in those
-fields, you should use%27instead; if you want to include white space, you should use%20. In this task,
-you do need to handle HTTP encoding while sending requests usingcurl.
+fields, you should use %27 instead; if you want to include white space, you should use %20. In this task,
+you do need to handle HTTP encoding while sending requests using curl.
 
 Task 2.3: Append a new SQL statement. In the above two attacks, we can only steal information from
 the database; it will be better if we can modify the database using the same vulnerability in the login page.
