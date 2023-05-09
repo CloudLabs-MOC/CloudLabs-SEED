@@ -226,8 +226,8 @@ side. Please conduct the following steps using the client program.
     ```
     context.check_hostname = False # try both True and False
     ```
-The importance of hostname check: Based on this experiment, please explain the importance of host-
-name check. If the client program does not perform the hostname check, what is the security consequence?
+The importance of hostname check: Based on this experiment, please explain the importance of hostname
+check. If the client program does not perform the hostname check, what is the security consequence?
 Please explain.
 
 ### 3.4 Task 1.d: Sending and getting Data
@@ -332,17 +332,17 @@ display the content returned by the server.
 
 ### 4.3 Task 2.c. Certificate with multiple names
 
-Many websites have different URLs. For example,www.example.com,www.example.org,example.com 
+Many websites have different URLs. For example, www.example.com, www.example.org, example.com 
 all point to the same web server. Due to the hostname matching policy enforced by most TLS client
 programs, the common name in a certificate must match with the server’s hostname, or TLS clients will
 refuse to communicate with the server.
 To allow a certificate to have multiple names, the X.509 specification defines extensions to be attached
 to a certificate. This extension is called Subject Alternative Name (SAN). Using the SAN extension, it’s
-possible to specify several hostnames in thesubjectAltNamefield of a certificate.
+possible to specify several hostnames in the subjectAltName field of a certificate.
 To generate a certificate signing request with such a field, we can use a configuration file, and put
 all the necessary information in this file (the PKI lab shows how you can do everything in the command
 line). The following configuration file gives an example. It specifies the content for the subject field and
-add a subjectAltNamefield in the extension. The field specifies several alternative names, including
+add a subjectAltName field in the extension. The field specifies several alternative names, including
 a wildcard name *(*.bank32.com.)* It should be noted that the field must also include the one from the
 common name field; otherwise, the common name will not be accepted as a valid name.
 
@@ -377,7 +377,7 @@ openssl req -newkey rsa:2048 -config ./server_openssl.cnf -batch \
 ```
 When the CA signs a certificate, for the security reason, by default, it does not copy the extension field
 from the certificate signing request into the final certificate. In order to allow the copying, we need to change
-theopenssl’s configuration file. By default,openssluses the configuration fileopenssl.cnffrom
+the openssl’s configuration file. By default, openssl uses the configuration file openssl.cnf from
 the /usr/lib/ssl directory. Inside this file, the copy_extensions option is disabled (commented
 out). We do not want to modify this system-wide configuration file. Let us copy it file to our own folder,
 and rename it as myopenssl.cnf. We then uncomment the following line from this file:
@@ -476,9 +476,9 @@ By doing the above, we simulate the result of redirection attacks: the victim’
 (http://www.example.com) will be redirected to the attacker’s machine, where your mHTTPSproxy is waiting
 for HTTP requests.
 
-The proxy setup. It should be noted that changes on the VM’s/etc/hostsfile will affect all the
+The proxy setup. It should be noted that changes on the VM’s /etc/hosts file will affect all the
 containers, because containers uses Docker’s embedded DNS server, which forwards external DNS lookups
-to the DNS servers configured on the host (i.e., the VM), and the host’s DNS server do use the/etc/hosts
+to the DNS servers configured on the host (i.e., the VM), and the host’s DNS server do use the /etc/hosts 
 file. Therefore, due to the change above, on the proxy container, the IP address to www.example.com is
 also mapped to 10.9.0.143. This is a problem, because the proxy needs to communicate with the actual
 web server.
