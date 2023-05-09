@@ -24,13 +24,7 @@ Readings and videos. Detailed coverage of the Heartbleed attack can be found in 
 - Section 11 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See
     details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 12.04 VM, which can be downloaded
-from the SEED website. If you are using our SEEDUbuntu 16.04 VM, this attack will not work, because
-the vulnerability has already been patched. You can download the SEEDUbuntu12.04 VM from the SEED
-web site. If you have an Amazon EC2 account, you can find our VM from the “Community AMIs”. The
-name of the VM isSEEDUbuntu12.04-Generic. It should be noted that Amazon’s site says that this
-is a 64-bit VM; that is incorrect. The VM is 32-bit. However, this incorrect information does not cause any
-problem.
+Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment
 
