@@ -21,34 +21,33 @@ application includes the common mistakes made by many web developers. Students�
 exploit the SQL injection vulnerabilities, demonstrate the damage that can be achieved by the attack, and
 master the techniques that can help defend against such type of attacks. This lab covers the following topics:
 
-- SQL statements: SELECTandUPDATEstatements
+- SQL statements: SELECT and UPDATE statements
 - SQL injection
 - Prepared statement
 
 **Readings.** Detailed coverage of the SQL injection can be found in the following:
 
 - Chapter 12 of the SEED Book,_Computer & Internet Security: A Hands-on Approach_, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+    by Wenliang Du. See details at https://www.handsonsecurity.net.
 
-Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+**Lab Environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 ## 2 Lab Environment
 
 We have developed a web application for this lab, and we use containers to set up this web application.
 There are two containers in the lab setup, one for hosting the web application, and the other for hosting the
-database for the web application. The IP address for the web application container is10.9.0.5, and The
+database for the web application. The IP address for the web application container is 10.9.0.5, and The
 URL for the web application is the following:
-
-[http://www.seed-server.com](http://www.seed-server.com)
-
+```
+http://www.seed-server.com
+```
 We need to map this hostname to the container’s IP address. Please add the following entry to the
-/etc/hostsfile. You need to use the root privilege to change this file (usingsudo). It should be noted
+/etc/hosts file. You need to use the root privilege to change this file (using sudo). It should be noted
 that this name might have already been added to the file due to some other labs. If it is mapped to a different
 IP address, the old entry must be removed.
-
-
-10.9.0.5 [http://www.seed-server.com](http://www.seed-server.com)
-
+```
+10.9.0.5 http://www.seed-server.com
+```
 #### 2.1 Container Setup and Commands
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands. 
@@ -56,18 +55,17 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Web%20Security/SQL%20Injection%20Attack/Lab%20files/Labsetup.zip
 ```
-
 ```
 sudo unzip Labsetup.zip
 ```
-Enter the Labsetup folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved Dockerfile can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
 we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
-
+```
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
 $ docker-compose down # Shut down the container
@@ -76,12 +74,12 @@ $ docker-compose down # Shut down the container
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
-
+```
 All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
-the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
-
+to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
+the container, and then use "docker exec" to start a shell on that container. We have created aliases for
+them in the .bashrc file.
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
@@ -97,28 +95,27 @@ root@9652715c8e0a:/#
 // Note: If a docker command requires a container ID, you do not need to
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
-
+```
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
-MySQL database. Containers are usually disposable, so once it is destroyed, all the data inside the con-
-tainers are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose
-our work when we shutdown our container. To achieve this, we have mounted themysqldatafolder
-on the host machine (insideLabsetup, it will be created after the MySQL container runs once) to the
-/var/lib/mysqlfolder inside the MySQL container. This folder is where MySQL stores its database.
-
+**MySQL database.** Containers are usually disposable, so once it is destroyed, all the data inside the containers
+are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose
+our work when we shutdown our container. To achieve this, we have mounted the mysql_data folder
+on the host machine (inside Labsetup, it will be created after the MySQL container runs once) to the
+/var/lib/mysql folder inside the MySQL container. This folder is where MySQL stores its database.
 
 Therefore, even if the container is destroyed, data in the database are still kept. If you do want to start from
 a clean database, you can remove this folder:
-
+```
 $ sudo rm -rf mysql_data
-
+```
 #### 2.2 About the Web Application
 
 We have created a web application, which is a simple employee management application. Employees can
 view and update their personal information in the database through this web application. There are mainly
-two roles in this web application:Administratoris a privilege role and can manage each individual
-employees’ profile information;Employeeis a normal role and can view or update his/her own profile
+two roles in this web application: Administrator is a privilege role and can manage each individual
+employees’ profile information; Employee is a normal role and can view or update his/her own profile
 information. All employee information is described in Table 1.
 
 ```
@@ -137,21 +134,21 @@ Ted 50000 seedted 110000 11/3 24343244
 
 The objective of this task is to get familiar with SQL commands by playing with the provided database. The
 data used by our web application is stored in a MySQL database, which is hosted on our MySQL container.
-We have created a database calledsqllabusers, which contains a table calledcredential. The table
+We have created a database called sqllab_users, which contains a table called credential. The table
 stores the personal information (e.g. eid, password, salary, ssn, etc.) of every employee. In this task, you
 need to play with the database to get familiar with SQL queries.
 Please get a shell on the MySQL container (see the container manual for instruction; the manual is linked
-to the lab’s website). Then use themysqlclient program to interact with the database. The user name is
-rootand password isdees.
-
+to the lab’s website). Then use the mysql client program to interact with the database. The user name is
+root and password is dees.
+```
 // Inside the MySQL container
 # mysql -u root -pdees
-
+```
 After login, you can create new database or load an existing one. As we have already created the
-sqllabusersdatabase for you, you just need to load this existing database using theusecommand. To
-show what tables are there in thesqllabusersdatabase, you can use theshow tablescommand to
+sqllab_usersdatabase for you, you just need to load this existing database using the use command. To
+show what tables are there in the sqllab_users database, you can use theshow tables command to
 print out all the tables of the selected database.
-
+```
 mysql> use sqllab_users;
 Database changed
 mysql> show tables;
@@ -162,25 +159,26 @@ mysql> show tables;
 
 | credential |
 +------------------------+
-
+```
 After running the commands above, you need to use a SQL command to print all the profile information
 of the employee Alice. Please provide the screenshot of your results.
 
 #### 3.2 Task 2: SQL Injection Attack on SELECT Statement
 
-SQL injection is basically a technique through which attackers can execute their own malicious SQL state-
-ments generally referred as malicious payload. Through the malicious SQL statements, attackers can steal
+SQL injection is basically a technique through which attackers can execute their own malicious SQL statements
+generally referred as malicious payload. Through the malicious SQL statements, attackers can steal
 information from the victim database; even worse, they may be able to make changes to the database. Our
-employee management web application has SQL injection vulnerabilities, which mimic the mistakes fre-
-quently made by developers.
-We will use the login page fromwww.seed-server.comfor this task. The login page is shown in
+employee management web application has SQL injection vulnerabilities, which mimic the mistakes frequently
+made by developers.
+We will use the login page from www.seed-server.com for this task. The login page is shown in
 Figure 1. It asks users to provide a user name and a password. The web application authenticate users based
 on these two pieces of data, so only employees who know their passwords are allowed to log in. Your job,
 as an attacker, is to log into the web application without knowing any employee’s credential.
 
-```
+![alt text](images/figure1.PNG)
+
 Figure 1: The Login page
-```
+
 To help you started with this task, we explain how authentication is implemented in the web application.
 The PHP codeunsafehome.php, located in the/var/www/SQL_Injectiondirectory, is used to
 conduct user authentication. The following code snippet show how users are authenticated.
