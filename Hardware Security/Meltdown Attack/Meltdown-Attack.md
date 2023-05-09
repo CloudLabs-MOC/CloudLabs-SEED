@@ -25,6 +25,14 @@ Readings and videos. Detailed coverage of the Meltdown attack can be found in th
 
 Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Hardware%20Security/Meltdown%20Attack/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+
 
 Acknowledgment This lab was developed with the help of Hao Zhang and Kuber Kohli, graduate students in the Department of Electrical Engineering and Computer Science at Syracuse University.
 
