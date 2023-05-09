@@ -104,9 +104,9 @@ that have the same hash value. This property holds not only for the MD5 hash alg
 other hash algorithms. Your job in this taskis to design an experiment to demonstrates that this property
 holds for MD5.
 You can use thecatcommand to concatenate two files (binary or text files) into one. The following
-command concatenates the contents of file2 to the contents of file1, and places the result in file3.
+command concatenates the contents of file2 to the contents of file1, and places the result in file 3.
 ```
-$ cat file1 file2 > file
+$ cat file1 file2 > file3
 ```
 ### 2.3 Task 3: Generating Two Executable Files with the Same MD5 Hash
 
