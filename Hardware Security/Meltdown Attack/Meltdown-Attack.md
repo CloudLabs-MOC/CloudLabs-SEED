@@ -23,7 +23,7 @@ Readings and videos. Detailed coverage of the Meltdown attack can be found in th
 - Chapter 13 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
 - Section 8 of the SEED Lecture,Computer Security: A Hands-on Approach, by Wenliang Du. See details at https://www.handsonsecurity.net/video.html.
 
-Lab Environment. This lab has been tested on our pre-built Ubuntu 16.04 VM, which can be downloaded from the SEED website. On the SEED Ubuntu 20.04 VM, Tasks 1 to 6 still work as expected, but Tasks 7  nd 8 will not work due to the countermeasures implemented inside the OS. When using this lab, instructors should keep the followings in mind: First, the Meltdown vulnerability is a flaw inside Intel CPUs, so if a student’s machine is an AMD machine, the attack will not work. Second, Intel is working on fixing this problem in its CPUs, so if a student’s computer uses new Intel CPUs, the attack may not work. It is not a problem for now (February 2018), but six months from now, situations like this may arise. Third, although most students’ computers have already been patched, the attack is conducted inside our pre-built VM, which is not patched, so the attack will still be effective. Therefore, students should not update the VM’s operating system, or the attack may be fixed.
+Lab Environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 
 Acknowledgment This lab was developed with the help of Hao Zhang and Kuber Kohli, graduate students in the Department of Electrical Engineering and Computer Science at Syracuse University.
