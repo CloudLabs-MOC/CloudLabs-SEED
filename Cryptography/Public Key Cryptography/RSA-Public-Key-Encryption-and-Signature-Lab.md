@@ -289,7 +289,7 @@ same as the issuer field of the first certificate. Basically, the second certifi
 CA. In this task, we will use CA’s certificate to verify a server certificate.
 If you only get one certificate back using the above command, that means the certificate you get is signed
 by a root CA. Root CAs’ certificates can be obtained from the Firefox browser installed in our pre-built VM.
-Go to the Edit’Preferences’Privacyand then Security’View Certificates. Search
+Go to the Edit -> Preferences -> Privacy and then Security -> View Certificates. Search
 for the name of the issuer and download its certificate.
 Copy and paste each of the certificate (the text between the line containing "Begin CERTIFICATE"
 and the line containing "END CERTIFICATE", including these two lines) to a file. Let us call the first one
