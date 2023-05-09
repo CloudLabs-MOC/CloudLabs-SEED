@@ -34,10 +34,9 @@ the following:
 - Chapter 22 of the SEED Book,_Computer & Internet Security: A Hands-on Approach,_ 2nd Edition,
     by Wenliang Du. See details at https://www.handsonsecurity.net.
 
-**Lab Environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. The lab uses a tool called “Fast MD5 Collision Generation”, which was written
-by Marc Stevens. The name of the binary is called md5collgen in our VM, and it is installed inside the
-/usr/bin folder. If it is not there, Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+**Lab Environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs. 
+
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files/Labsetup.zip
 ```
