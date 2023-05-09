@@ -185,7 +185,7 @@ is0x012345, the length field in the padding should be:
 "\x00\x00\x00\x00\x00\x01\x23\x45"
 
 **Task.** Students need to construct the padding for the following message (the actual value of the<key>
-and<uid>should be obtained from the LabHome/key.txt file.
+and<uid>should be obtained from the  LabHome/key.txt file.
 ```
 <key>:myname=<name>&uid=<uid>&lstcmd=
 ```
@@ -253,7 +253,7 @@ Students can compile the program as follows:
 $ gcc length_ext.c -o length_ext -lcrypto
 ```
 **Task.** Students should first generate a valid MAC for the following request (where <uid>and the MAC
-key should be obtained from theLabHome/key.txt file):
+key should be obtained from the LabHome/key.txt file):
 ```
 http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
 &lstcmd=1&mac=<mac>
