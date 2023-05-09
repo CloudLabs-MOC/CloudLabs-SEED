@@ -460,9 +460,11 @@ focusing click anywhere in the Network Tool window, and then using _Ctrl_ and _+
 ![alt text](images/figure3.png)
 
 Figure 3: HTTP Request and Request Details in Two Panes
-(a) HTTP Request Headers (b) HTTP Request Parameters
+
 
 ![alt text](images/figure4.png)
+
+(a) HTTP Request Headers (b) HTTP Request Parameters
 
 Figure 4: HTTP Headers and Parameters
 
