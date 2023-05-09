@@ -348,8 +348,8 @@ URL: http://www.seed-server.com/defense/
 The data typed in this page will be sent to the server program getinfo.php, which invokes a program
 called unsafe.php. The SQL query inside this PHP program is vulnerable to SQL injection attacks. Your
 job is modify the SQL query in unsafe.phpusing the prepared statement, so the program can defeat SQL
-injection attacks. Inside the lab setup folder, the unsafe.php program is in the image_www/Code/
-defense folder. You can directly modify the program there. After you are done, you need to rebuild and
+injection attacks. Inside the lab setup folder, the unsafe.php program is in the image_www/Code/defense 
+folder. You can directly modify the program there. After you are done, you need to rebuild and
 restart the container, or the changes will not take effect.
 
 You can also modify the file while the container is running. On the running container, the unsafe.php
