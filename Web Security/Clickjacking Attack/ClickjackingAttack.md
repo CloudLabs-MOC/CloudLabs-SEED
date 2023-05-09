@@ -268,7 +268,7 @@ Policy (CSP) header to contain the directive "_frame-ancestors ‘none’ _".
 **Hint.** Because you are making a change to the server’s configuration, you will need to rebuild and restart
 the containers for the change to take effect.
 
-Questions:
+**Questions:**
 
 10. What is the X-Frame-Options HTTP header attribute, and why is it set to “DENY” to prevent the
     attack?
