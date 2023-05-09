@@ -254,7 +254,8 @@ WHERE ID=$id;";
 $conn->query($sql);
 ``` 
 
-![alt text](images/figure2.png)
+
+![alt text](images/figure2.PNG)
 
 Figure 2: The Edit-Profile page
 
@@ -265,9 +266,7 @@ salary this year. You want to increase your own salary by exploiting the SQL inj
 Edit-Profile page. Please demonstrate how you can achieve that. We assume that you do know that salaries
 are stored in a column called salary.
 
-
-
-![alt text](images/figure3.png)
+![alt text](images/figure3.PNG)
 
 Figure 3: Prepared Statement Workflow
 
