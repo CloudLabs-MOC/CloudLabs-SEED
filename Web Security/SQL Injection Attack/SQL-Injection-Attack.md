@@ -278,7 +278,7 @@ you want to change Boby’s password to something that you know, and then you ca
 do further damage. Please demonstrate how you can achieve that. You need to demonstrate that you can
 successfully log into Boby’s account using the new password. One thing worth mentioning here is that the
 database stores the hash value of passwords instead of the plaintext password string. You can again look at
-the unsafe_edit_backend.phpcode to see how password is being stored. It uses SHA1 hash function
+the unsafe_edit_backend.php code to see how password is being stored. It uses SHA1 hash function
 to generate the hash value of password.
 
 #### 3.4 Task 4: Countermeasure — Prepared Statement
