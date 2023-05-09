@@ -2,7 +2,7 @@
 
 ```
 Copyright © 2006 - 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-Share Alike 4.0 International
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
@@ -12,6 +12,7 @@ The learning objective of this lab is two-fold: learning how firewalls work, and
 for a network. Students will first implement a simple stateless packet-filtering firewall, which inspects pack-
 ets, and decides whether to drop or forward a packet based on firewall rules. Through this implementation
 task, students can get the basic ideas on how firewall works.
+
 Actually, Linux already has a built-in firewall, also based on netfilter. This firewall is called
 iptables. Students will be given a simple network topology, and are asked to use iptables to set up
 firewall rules to protect the network. Students will also be exposed to several other interesting applications
@@ -26,9 +27,9 @@ of iptables. This lab covers the following topics:
 Readings and videos. Detailed coverage of firewalls can be found in the following:
 
 - Chapter 17 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+    by Wenliang Du. See details at https://www.handsonsecurity.net.
 - Section 9 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
-    athttps://www.handsonsecurity.net/video.html.
+    at https://www.handsonsecurity.net/video.html.
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
@@ -50,50 +51,18 @@ sudo unzip Labsetup.zip
 
 Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the content in this file and all the involved Dockerfile can be found from the user manual, which is linked
 
+![](Images/Lab_firewa.png)
 
-```
-192.168.60.5 192.168.60.6^ 192.168.60.
-```
-#### `
-
-```
-192.168.60.
-```
-#### `
-
-```
-192.168.60.0/
-```
-```
-Attacker
-10.9.0.
-```
-```
-10.9.0.
-```
-#### `
-
-```
-Router
-`
-```
-```
-10.9.0.
-```
-```
-10.9.0.0/
-```
-#### `
-
-```
 Figure 1: Lab setup
-```
+
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
+
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrc file
+we are going to use these commands very frequently, we have created aliases for them in the .bashrc file
 (in our provided SEED Ubuntu 20.04 VM).
 
+```
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
 $ docker-compose down # Shut down the container
@@ -102,17 +71,20 @@ $ docker-compose down # Shut down the container
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
 them in the .bashrc file.
 
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
+
 b1004832e275 hostA-10.9.0.
 0af4ea7a3e2e hostB-10.9.0.
 9652715c8e0a hostC-10.9.0.
@@ -121,10 +93,9 @@ $ docksh 96
 root@9652715c8e0a:/#
 
 // Note: If a docker command requires a container ID, you do not need to
-
-
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
+```
 
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
@@ -143,6 +114,7 @@ Notes about containers. Since all the containers share the same kernel, kernel m
 fore, if we set a kernel model from a container, it affects all the containers and the host. For this reason, it
 does not matter where you set the kernel module. In this lab, we will just set the kernel module from the
 host VM.
+
 Another thing to keep in mind is that containers’ IP addresses are virtual. Packets going to these virtual
 IP addresses may not traverse the same path as what is described in the Netfilter document. Therefore, in
 this task, to avoid confusion, we will try to avoid using those virtual addresses. We do most tasks on the
@@ -150,14 +122,16 @@ host VM. The containers are mainly for the other tasks.
 
 ### 3.1 Task 1.A: Implement a Simple Kernel Module
 
-LKMallows us to add a new module to the kernel at the runtime. This new module enables us to extend
+LKM allows us to add a new module to the kernel at the runtime. This new module enables us to extend
 the functionalities of the kernel, without rebuilding the kernel or even rebooting the computer. The packet
 filtering part of a firewall can be implemented as an LKM. In this task, we will get familiar with LKM.
-The following is a simple loadable kernel module. It prints out"Hello World!"when the module
-is loaded; when the module is removed from the kernel, it prints out"Bye-bye World!". The messages
-are not printed out on the screen; they are actually printed into the/var/log/syslogfile. You can use
-"dmesg"to view the messages.
 
+The following is a simple loadable kernel module. It prints out "Hello World!" when the module
+is loaded; when the module is removed from the kernel, it prints out "Bye-bye World!". The messages
+are not printed out on the screen; they are actually printed into the/var/log/syslog file. You can use
+"dmesg" to view the messages.
+
+```
 Listing 1:hello.c(included in the lab setup files)
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -173,15 +147,16 @@ void cleanup(void)
 printk(KERN_INFO "Bye-bye World!.\n");
 }
 
-
 module_init(initialization);
 module_exit(cleanup);
+```
 
-We now need to create Make file, which includes the following contents (the file is included in the lab
+We now need to create Makefile, which includes the following contents (the file is included in the lab
 setup files). Just typemake, and the above program will be compiled into a loadable kernel module (if you
-copy and paste the following into Make file, make sure replace the spaces before the make commands
+copy and paste the following into Makefile, make sure replace the spaces before the make commands
 with a tab).
 
+```
 obj-m += hello.o
 
 all:
@@ -189,15 +164,18 @@ make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
 make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+```
 
-The generated kernel module is inhello.ko. You can use the following commands to load the module,
+The generated kernel module is in hello.ko. You can use the following commands to load the module,
 list all modules, and remove the module. Also, you can use"modinfo hello.ko"to show information
 about a Linux Kernel module.
 
+```
 $ sudo insmod hello.ko (inserting a module)
 $ lsmod | grep hello (list modules)
 $ sudo rmmod hello (remove the module)
 $ dmesg (check the messages)
+```
 
 Task. Please compile this simple kernel module on your VM, and run it on the VM. For this task, we will
 not use containers. Please show your running results in the lab report.
@@ -207,12 +185,14 @@ not use containers. Please show your running results in the lab report.
 In this task, we will write our packet filtering program as an LKM, and then insert in into the packet process-
 ing path inside the kernel. This cannot be easily done in the past before the netfilter was introduced
 into the Linux.
+
 Netfilter is designed to facilitate the manipulation of packets by authorized users. It achieves this
 goal by implementing a number of hooks in the Linux kernel. These hooks are inserted into various
 places, including the packet incoming and outgoing paths. If we want to manipulate the incoming packets,
 we simply need to connect our own programs (within LKM) to the corresponding hooks. Once an incoming
 packet arrives, our program will be invoked. Our program can decide whether this packet should be blocked
 or not; moreover, we can also modify the packets in the program.
+
 In this task, you need to use LKM and Netfilter to implement a packet filtering module. This module
 will fetch the firewall policies from a data structure, and use the policies to decide whether packets should
 be blocked or not. We would like students to focus on the filtering part, the core of firewalls, so students are
@@ -223,39 +203,39 @@ Hooking to **Netfilter**. Using netfilter is quite straight forward. All we need
 functions (in the kernel module) to the correspond in gnetfilter hooks. Here we show an example (the
 code is in Labsetup/packet_filter, but it may not be exactly the same as this example).
 
-
 The structure of the code follows the structure of the kernel module implemented earlier. When the
 kernel module is added to the kernel, the register Filter()function in the code will be invoked.
 Inside this function, we register two hooks to netfilter.
+
 To register a hook, you need to prepare a hook data structure, and set all the needed parameters, the
 most important of which are a function name (Line ) and a hook number (LineÀ). The hook number is
 one of the 5 hooks in netfilter, and the specified function will be invoked when a packet has reached
-this hook. In this example, when a packet gets to the LOCALIN hook, the function print Info()will
+this hook. In this example, when a packet gets to the LOCALIN hook, the function printInfo () will
 be invoked (this function will be given later). Once the hook data structure is prepared, we attach the hook
 to netfilter in LineÃ).
 
 Listing 2: Register hook functions to netfilter
+
+```
 static struct nf_hook_ops hook1, hook2;
 
 int registerFilter(void) {
 printk(KERN_INFO "Registering filters.\n");
 
-```
 // Hook 1
 hook1.hook = printInfo;
 hook1.hooknum = NF_INET_LOCAL_IN; À
 hook1.pf = PF_INET;
 hook1.priority = NF_IP_PRI_FIRST;
 nf_register_net_hook(&init_net, &hook1); Ã
-```
-```
+
 // Hook 2
 hook2.hook = blockUDP;
 hook2.hooknum = NF_INET_POST_ROUTING;
 hook2.pf = PF_INET;
 hook2.priority = NF_IP_PRI_FIRST;
 nf_register_net_hook(&init_net, &hook2);
-```
+
 return 0;
 }
 
@@ -267,22 +247,23 @@ nf_unregister_net_hook(&init_net, &hook2);
 
 module_init(registerFilter);
 module_exit(removeFilter);
+```
 
 Note for Ubuntu 20.04 VM: The code in the SEED book was developed in Ubuntu 16.04. It needs to be
 changed slightly to work in Ubuntu 20.04. The change is in the hook registration and un-registration APIs.
 See the difference in the following:
 
+```
 // Hook registration:
 nf_register_hook(&nfho); // For Ubuntu 16.04 VM
 nf_register_net_hook(&init_net, &nfho); // For Ubuntu 20.04 VM
 
 // Hook unregistration:
 
-
-```
 nf_unregister_hook(&nfho); // For Ubuntu 16.04 VM
 nf_unregister_net_hook(&init_net, &nfho); // For Ubuntu 20.04 VM
 ```
+
 Hook functions. We give an example of hook function below. It only prints out the packet information.
 When netfilter invokes a hook function, it passes three arguments to the function, including a pointer
 to the actual packet (skb). In the following code, Line shows how to retrieve the hook number from the
@@ -290,39 +271,45 @@ state argument. In Line À, we useiphdr()function to get the pointer for the IP 
 the %pI4 format string specifier to print out the source and destination IP addresses in Line Ã.
 
 Listing 3: An example of hook function
+
+```
 unsigned int printInfo(void *priv, struct sk_buff *skb,
 const struct nf_hook_state *state)
 {
 struct iphdr *iph;
 char *hook;
 
-```
 switch (state->hook){
 case NF_INET_LOCAL_IN:
 printk("*** LOCAL_IN"); break;
 .. (code omitted) ...
 }
-```
+
 iph = ip_hdr(skb); À
 printk(" %pI4 --> %pI4\n", &(iph->saddr), &(iph->daddr)); Ã
 return NF_ACCEPT;
 }
+```
 
 If you need to get the headers for other protocols, you can use the following functions defined in various
 header files. The structure definition of these headers can be found inside the/lib/modules/5.4.
-0-54-generic/build/include/uapi/linuxfolder, where the version number in the path is the
-result of"uname -r", so it may be different if the kernel version is different.
+0-54-generic/build/include/uapi/linux folder, where the version number in the path is the
+result of "uname -r", so it may be different if the kernel version is different.
 
+```
 struct iphdr *iph = ip_hdr(skb) // (need to include <linux/ip.h>)
 struct tcphdr *tcph = tcp_hdr(skb) // (need to include <linux/tcp.h>)
 struct udphdr *udph = udp_hdr(skb) // (need to include <linux/udp.h>)
 struct icmphdr *icmph = icmp_hdr(skb) // (need to include <linux/icmp.h>)
+```
 
 Blocking packets. We also provide a hook function example to show how to block a packet, if it satisfies
-the specified condition. The following example blocks the UDP packets if their destination IP is8.8.8.
-and the destination port is 53. This means blocking the DNS query to the nameserver8.8.8.8.
+the specified condition. The following example blocks the UDP packets if their destination IP is 8.8.8.
+and the destination port is 53. This means blocking the DNS query to the nameserver 8.8.8.8.
 
 Listing 4: Code example: blocking UDP
+
+```
 unsigned int blockUDP(void *priv, struct sk_buff *skb,
 const struct nf_hook_state *state)
 {
@@ -331,11 +318,9 @@ struct udphdr *udph;
 u32 ip_addr;
 char ip[16] = "8.8.8.8";
 
-
-```
 // Convert the IPv4 address from dotted decimal to a 32-bit number
 in4_pton(ip, -1, (u8*)&ip_addr, ’\0’, NULL);
-```
+
 iph = ip_hdr(skb);
 if (iph->protocol == IPPROTO_UDP) {
 udph = udp_hdr(skb);
@@ -347,13 +332,14 @@ return NF_DROP; Ã
 }
 return NF_ACCEPT; Õ
 }
+```
 
 In the code above, Line shows, inside the kernel, how to convert an IP address in the dotted decimal
-format (i.e., a string, such as1.2.3.4) to a 32-bit binary (0x01020304), so it can be compared with the
+format (i.e., a string, such as 1.2.3.4) to a 32-bit binary (0x01020304), so it can be compared with the
 binary number stored inside packets. Line À compares the destination IP address and port number with the
 values in our specified rule. If they match the rule, the NFDROP will be returned to netfilter, which
 will drop the packet. Otherwise, the NFACCEPT will be returned, and netfilter will let the packet
-continue its journey (NFACCEPT only means that the packet is accepted by this hook function; it may still
+continue its journey (NF_ACCEPT only means that the packet is accepted by this hook function; it may still
 be dropped by other hook functions).
 
 Tasks. The complete sample code is called seedFilter.c, which is included in the lab setup files
@@ -361,35 +347,44 @@ Tasks. The complete sample code is called seedFilter.c, which is included in the
 
 1. Compile the sample code using the provided Make file. Load it into the kernel, and demonstrate
     that the firewall is working as expected. You can use the following command to generate UDP packets
-    to8.8.8.8, which is Google’s DNS server. If your firewall works, your request will be blocked;
+    to 8.8.8.8, which is Google’s DNS server. If your firewall works, your request will be blocked;
     otherwise, you will get a response.
-    dig @8.8.8.8 [http://www.example.com](http://www.example.com)
+    
+```
+    dig @8.8.8.8 www.example.com
+```
+
 2. Hook the print Info function to all of the net filter hooks. Here are the macros of the hook
     numbers. Using your experiment results to help explain at what condition will each of the hook
     function be invoked.
+
+```
     NF_INET_PRE_ROUTING
     NF_INET_LOCAL_IN
     NF_INET_FORWARD
     NF_INET_LOCAL_OUT
     NF_INET_POST_ROUTING
+```
+
 3. Implement two more hooks to achieve the following: (1) preventing other computers to ping the
     VM, and (2) preventing other computers to telnet into the VM. Please implement two different hook
     functions, but register them to the same netfilter hook. You should decide what hook to use.
-    Telnet’s default port is TCP port 23. To test it, you can start the containers, go to10.9.0.5, run the
-    following commands (10.9.0.1is the IP address assigned to the VM; for the sake of simplicity,
+    Telnet’s default port is TCP port 23. To test it, you can start the containers, go to 10.9.0.5, run the
+    following commands (10.9.0.1 is the IP address assigned to the VM; for the sake of simplicity,
     you can hardcode this IP address in your firewall rules):
-
 
 ```
 ping 10.9.0.
 telnet 10.9.0.
 ```
+
 Important note: Since we make changes to the kernel, there is a high chance that you would crash the
 kernel. Make sure you back up your files frequently, so you don’t lose them. One of the common reasons
 for system crash is that you forget to unregister hooks. When a module is removed, these hooks will still
 be triggered, but the module is no longer present in the kernel. That will cause system crash. To avoid this,
 make sure for each hook you add to your module, add a line in remove Filter to unregister it, so when
 the module is removed, those hooks are also removed.
+
 
 ## 4 Task 2: Experimenting with Stateless Firewall Rules
 
@@ -406,15 +401,18 @@ to filter packets, but also to make changes to packets. To help manage these fir
 purposes,iptables organizes all rules using a hierarchical structure: table, chain, and rules. There are
 several tables, each specifying the main purpose of the rules as shown in Table 1. For example, rules for
 packet filtering should be placed in the filter table, while rules for making changes to packets should be
-placed in the nat or mangletables.
+placed in the nat or mangle
+tables.
+
 Each table contains several chains, each of which corresponds to a netfilter hook. Basically, each
 chain indicates where its rules are enforced. For example, rules on the FORWARD chain are enforced at the
-NFINETFORWARD hook, and rules on the INPUT chain are enforced at the NFINETLOCALIN hook.
+NF_INET_FORWARD hook, and rules on the INPUT chain are enforced at the NF_INET_LOCALIN hook.
+
 Each chain contains a set of firewall rules that will be enforced. When we set up firewalls, we add rules
 to these chains. For example, if we would like to block all in coming telnet traffic, we would add a rule
 to the INPUT chain of the filter table. If we would like to redirect all incoming telnet traffic to a
 different port on a different host, basically doing port forwarding, we can add a rule to the INPUT chain of
-the mangletable, as we need to make changes to packets.
+the mangle table, as we need to make changes to packets.
 
 ### 4.2 Using iptables
 
@@ -423,6 +421,7 @@ command. Students can find the manual of iptables by typing"man iptables"or easi
 tutorials from online. What makes iptables complicated is the many command-line arguments that we
 need to provide when using the command. However, if we understand the structure of these command-line
 arguments, we will find out that the command is not that complicated.
+
 In a typical iptables command, we add a rule to or remove a rule from one of the chains in one of
 the tables, so we need to specify a table name (the default isfilter), a chain name, and an operation on
 the chain. After that, we specify the rule, which is basically a pattern that will be matched with each of
@@ -430,29 +429,20 @@ the packets passing through. If there is a match, an action will be performed on
 structure of the command is depicted in the following:
 
 
-```
 Table 1:iptablesTables and Chains
-Table Chain Functionality
-filter INPUT Packet filtering
-FORWARD
-OUTPUT
-nat PREROUTING Modifying source or destination
-INPUT network addresses
-OUTPUT
-POSTROUTING
-mangle PREROUTING Packet content modification
-INPUT
-FORWARD
-OUTPUT
-POSTROUTING
+
+![](Images/IPTables_row.png)
+
 ```
 iptables -t <table> -<operation> <chain> <rule> -j <target>
 ---------- -------------------- ------- -----------
 Table Chain Rule Action
+```
 
 The rule is the most complicated part of the iptables command. We will provide additional informa-
 tion later when we use specific rules. In the following, we list some commonly used commands:
 
+```
 // List all the rules in a table (without line number)
 iptables -t nat -L -n
 
@@ -464,10 +454,11 @@ iptables -t filter -D INPUT 2
 
 // Drop all the incoming packets that satisfy the <rule>
 iptables -t filter -A INPUT <rule> -j DROP
+```
 
 Note. Docker relies on iptables to manage the networks it creates, so it adds many rules to thenat
 table. When we manipulate iptables rules, we should be careful not to remove Docker rules. For
-example, it will be quite dangerous to run the"iptables -t nat -F"command, because it removes
+example, it will be quite dangerous to run the"iptables -t nat -F "command, because it removes
 all the rules in the nat table, including many of the Docker rules. That will cause trouble to Docker
 containers. Doing this for the filter table is fine, because Docker does not touch this table.
 
@@ -476,37 +467,44 @@ containers. Doing this for the filter table is fine, because Docker does not tou
 In this task, we will set up rules to prevent outside machines from accessing the router machine, except ping.
 Please execute the following iptables command on the router container, and then try to access it from
 10.9.0.5. (1) Can you ping the router? (2) Can you telnet into the router (a telnet server is running on
-all the containers; an account called seed was created on them with a passworddees). Please report your
+all the containers; an account called seed was created on them with a password dees). Please report your
 observation and explain the purpose for each rule.
 
-
+```
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
 iptables -P OUTPUT DROP Ÿ **Set default rule for OUTPUT**
 iptables -P INPUT DROP Ÿ **Set default rule for INPUT**
+```
 
 Cleanup. Before moving on to the next task, please restore the filter table to its original state by
 running the following commands:
 
+```
 iptables -F
 iptables -P OUTPUT ACCEPT
 iptables -P INPUT ACCEPT
+```
 
 Another way to restore the states of all the tables is to restart the container. You can do it using the
 following command (you need to find the container’s ID first):
 
+```
 $ docker restart <Container ID>
+```
 
 ### 4.4 Task 2.B: Protecting the Internal Network
 
 In this task, we will set up firewall rules on the router to protect the internal network 192.168.60.0/24.
 We need to use the FORWARD chain for this purpose.
+
 The directions of packets in the INPUT and OUTPUT chains are clear: packets are either coming
 into (for INPUT) or going out (for OUTPUT). This is not true for the FORWARD chain, because it is
 bi-directional: packets going into the internal network or going out to the external network all go through
-this chain. To specify the direction, we can add the interface options using"-i xyz"(coming in from the
-xyzinterface) and/or"-o xyz"(going out from thexyzinterface). The interfaces for the internal and
+this chain. To specify the direction, we can add the interface options using "-i xyz" (coming in from the
+xyzinterface) and/or "-o xyz"(going out from thexyzinterface). The interfaces for the internal and
 external networks are different. You can find out the interface names via the"ip addr"command.
+
 In this task, we want to implement a firewall to protect the internal network. More specifically, we need
 to enforce the following restrictions on the ICMP traffic:
 
@@ -519,7 +517,9 @@ You will need to use the"-p icmp"options to specify the match options related to
 You can run"iptables -p icmp -h"to find out all the ICMP match options. The following example
 drops the ICMP echo request.
 
+```
 iptables -A FORWARD -p icmp --icmp-type echo-request -j DROP
+```
 
 In your lab report, please include your rules and screenshots to demonstrate that your firewall works
 as expected. When you are done with this task, please remember to clean the table or restart the container
@@ -532,17 +532,19 @@ specifically, we would like to achieve the following objectives.
 
 
 1. All the internal hosts run a telnet server (listening to port 23 ). Outside hosts can only access the telnet
-    server on192.168.60.5, not the other internal hosts.
+    server on 192.168.60.5, not the other internal hosts.
 2. Outside hosts cannot access other internal servers.
 3. Internal hosts can access all the internal servers.
 4. Internal hosts cannot access external servers.
 5. In this task, the connection tracking mechanism is not allowed. It will be used in a later task.
 
 You will need to use the"-p tcp"options to specify the match options related to the TCP protocol.
-You can run"iptables -p tcp -h"to find out all the TCP match options. The following example
+You can run "iptables -p tcp -h" to find out all the TCP match options. The following example
 allows the TCP packets coming from the interfaceeth0if their source port is 5000.
 
+```
 iptables -A FORWARD -i eth0 -p tcp --sport 5000 -j ACCEPT
+```
 
 When you are done with this task, please remember to clean the table or restart the container before
 moving on to the next task.
@@ -565,7 +567,9 @@ mechanism inside the kernel. In this task, we will conduct experiments related t
 familiar with the connection tracking mechanism. In our experiment, we will check the connection tracking
 information on the router container. This can be done using the following command:
 
+```
 # conntrack -L
+```
 
 The goal of the task is to use a series of experiments to help students understand the connection concept
 in this tracking mechanism, especially for the ICMP and UDP protocols, because unlike TCP, they do not
@@ -574,8 +578,12 @@ observation, along with your explanation.
 
 - ICMP experiment: Run the following command and check the connection tracking information on
     the router. Describe your observation. How long is the ICMP connection state be kept?
+    
+```
     // On 10.9.0.5, send out ICMP packets
     # ping 192.168.60.
+```
+
 - UDP experiment: Run the following command and check the connection tracking information on the
     router. Describe your observation. How long is the UDP connection state be kept?
 
@@ -583,22 +591,24 @@ observation, along with your explanation.
 ```
 // On 192.168.60.5, start a netcat UDP server
 # nc -lu 9090
-```
-```
+
 // On 10.9.0.5, send out UDP packets
 # nc -u 192.168.60.5 9090
 <type something, then hit return>
 ```
+
 - TCP experiment: Run the following command and check the connection tracking information on the
     router. Describe your observation. How long is the TCP connection state be kept?
+    
+```
     // On 192.168.60.5, start a netcat TCP server
     # nc -l 9090
 
-```
 // On 10.9.0.5, send out TCP packets
 # nc 192.168.60.5 9090
 <type something, then hit return>
 ```
+
 ### 5.2 Task 3.B: Setting Up a Stateful Firewall
 
 Now we are ready to set up firewall rules based on connections. In the following example, the"-m
@@ -608,20 +618,26 @@ stateful firewalls. The--ctsate ESTABLISHED,RELATED indicates that whether a pac
 to an ESTABLISHED or RELATED connection. The rule allows TCP packets belonging to an existing
 connection to pass through.
 
+```
 iptables -A FORWARD -p tcp -m conntrack \
 --ctstate ESTABLISHED,RELATED -j ACCEPT
+```
 
 The rule above does not cover the SYN packets, which do not belong to any established connection.
 Without it, we will not be able to create a connection in the first place. Therefore, we need to add a rule to
 accept incoming SYN packet:
 
+```
 iptables -A FORWARD -p tcp -i eth0 --dport 8080 --syn \
 -m conntrack --ctstate NEW -j ACCEPT
+```
 
 Finally, we will set the default policy on FORWARD to drop everything. This way, if a packet is not
 accepted by the two rules above, they will be dropped.
 
+```
 iptables -P FORWARD DROP
+```
 
 Please rewrite the firewall rules in Task 2.C, but this time,we will add a rule allowing internal hosts to
 visit any external server(this was not allowed in Task 2.C). After you write the rules using the connection
@@ -635,25 +651,29 @@ to clear all the rules.
 
 In addition to blocking packets, we can also limit the number of packets that can pass through the firewall.
 This can be done using thelimitmodule ofiptables. In this task, we will use this module to limit how
-many packets from10.9.0.5are allowed to get into the internal network. You can use"iptables -m
-limit -h"to see the manual.
+many packets from 10.9.0.5 are allowed to get into the internal network. You can use "iptables -m
+limit -h" to see the manual.
 
+```
 $ iptables -m limit -h
 limit match options:
+
 --limit avg max average match rate: default 3/hour
 [Packets per second unless followed by
 /sec /minute /hour /day postfixes]
 --limit-burst number number to match in a burst, default 5
+```
 
 Please run the following commands on router, and then ping192.168.60.5from10.9.0.5. De-
 scribe your observation. Please conduct the experiment with and without the second rule, and then explain
 whether the second rule is needed or not, and why.
 
+```
 iptables -A FORWARD -s 10.9.0.5 -m limit \
 --limit 10/minute --limit-burst 5 -j ACCEPT
 
 iptables -A FORWARD -s 10.9.0.5 -j DROP
-
+```
 ## 7 Task 5: Load Balancing
 
 The iptables is very powerful. In addition to firewalls, it has many other applications. We will not be
@@ -662,12 +682,15 @@ balancing. In this task, we will use it to load balance three UDP servers runnin
 Let’s first start the server on each of the hosts:192.168.60.5,192.168.60.6, and 192.168.60.
 (the -k option indicates that the server can receive UDP datagrams from multiple hosts):
 
+```
 nc -luk 8080
+```
 
 We can use the statistic module to achieve load balancing. You can type the following command
 to get its manual. You can see there are two modes:random and nth. We will conduct experiments using
 both of them.
 
+```
 $ iptables -m statistic -h
 statistic match options:
 --mode mode Match mode (random, nth)
@@ -676,26 +699,30 @@ random mode:
 nth mode:
 [!] --every n Match every nth packet
 --packet p Initial counter value (0 <= p <= n-1, default 0)
+```
 
 Using the **nth** mode (round-robin). On the router container, we set the following rule, which applies to
 all the UDP packets going to port 8080. Thenth mode of the statistic module is used; it implements
 a round-robin load balancing policy: for every three packets, pick the packet 0 (i.e., the first one), change its
 
-
-destination IP address and port number to192.168.60.5and 8080 , respectively. The modified packets
+destination IP address and port number to 192.168.60.5 and 8080 , respectively. The modified packets
 will continue on its journey.
 
+```
 iptables -t nat -A PREROUTING -p udp --dport 8080 \
 -m statistic --mode nth --every 3 --packet 0 \
 -j DNAT --to-destination 192.168.60.5:
+```
 
 It should be noted that those packets that do not match the rule will continue on their journeys; they will
 not be modified or blocked. With this rule in place, if you send a UDP packet to the router’s 8080 port, you
-will see that one out of three packets gets to192.168.60.5.
+will see that one out of three packets gets to 192.168.60.5.
 
+```
 // On 10.9.0.
 echo hello | nc -u 10.9.0.11 8080
 <hit Ctrl-C>
+```
 
 Please add more rules to the router container, so all the three internal hosts get the equal number of
 packets. Please provide some explanation for the rules.
@@ -703,9 +730,11 @@ packets. Please provide some explanation for the rules.
 Using the **random** mode. Let’s use a different mode to achieve the load balancing. The following rule
 will select a matching packet with the probability P. You need to replace P with a probability number.
 
+```
 iptables -t nat -A PREROUTING -p udp --dport 8080 \
 -m statistic --mode random --probability P \
--j DNAT --to-destination 192.168.60.5:
+-j DNAT --to-destination 192.168.60.5:8080
+```
 
 Please use this mode to implement your load balancing rules, so each internal server get roughly the
 same amount of traffic (it may not be exactly the same, but should be close when the total number of packets
