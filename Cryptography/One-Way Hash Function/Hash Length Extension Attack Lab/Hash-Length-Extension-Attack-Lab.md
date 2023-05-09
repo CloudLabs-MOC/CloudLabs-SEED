@@ -146,7 +146,6 @@ contents of the requests R (the argument part only), with a colon added in betwe
 example:
 ```
 Key:R = 123456:myname=JohnDoe&uid=1001&lstcmd=
-
 ```
 The MAC will be calculated using the following command:
 ```
