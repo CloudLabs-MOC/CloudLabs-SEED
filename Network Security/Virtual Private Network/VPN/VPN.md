@@ -37,9 +37,7 @@ students finish these two crypto labs before working on this comprehensive VPN l
 interested in the tunneling part of the VPN (without the crypto part), they should use the VPN Tunneling
 Lab, instead of this one.
 
-Lab Environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. We need to use theopensslpackage in this lab. The package includes the header
-files, libraries, and commands. The package was already installed in our pre-built VM image.
+Lab Environment.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 
 ### 2 Lab Tasks
