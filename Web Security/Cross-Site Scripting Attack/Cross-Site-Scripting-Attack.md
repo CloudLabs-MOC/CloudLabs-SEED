@@ -547,7 +547,8 @@ that re-drawing is not automatically triggered when the window pops up, but chan
 the re-drawing).
 
 
-
+![alt text](images/figure1.png)
+    
 Figure 1: Enable the HTTP Header Live Add-on
 
 ### 5.2 Using the Web Developer Tool to Inspect HTTP Headers
@@ -563,6 +564,8 @@ Click the "Tools" menu --> Web Developer --> Network
 We use the user login page in Elgg as an example. Figure 2 shows the Network Tool showing the HTTP
 POST request that was used for login.
 
+![alt text](images/figure2.png)    
+    
 Figure 2: HTTP Request in Web Developer Network Tool
 
 To further see the details of the request, we can click on a particular HTTP request and the tool will
@@ -578,14 +581,14 @@ HTTP POST requests.
 **Font Size.** The default font size of Web Developer Tools window is quite small. It can be increased by
 focusing click anywhere in the Network Tool window, and then using _Ctrl_ and _+_ button.
 
-
+![alt text](images/figure3.png)
 
 Figure 3: HTTP Request and Request Details in Two Panes
 
-
+![alt text](images/figure4.png)
+    
 (a) HTTP Request Headers (b) HTTP Request Parameters
-
-
+    
 Figure 4: HTTP Headers and Parameters
     
 ### 5.3 JavaScript Debugging
@@ -606,10 +609,12 @@ If there are any errors in the code, a message will display in the console. The 
 appears on the right side of the error message in the console. Click on the line number and you will be taken
 to the exact place that has the error. See Figure 6.
 
-
+![alt text](images/figure5.png)
 
 Figure 5: Debugging JavaScript Code (1)
 
+![alt text](images/figure6.png)    
+    
 Figure 6: Debugging JavaScript Code (2)
 
 ## 6 Submission
