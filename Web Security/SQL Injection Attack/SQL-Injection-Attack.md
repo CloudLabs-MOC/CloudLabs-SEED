@@ -46,7 +46,7 @@ We need to map this hostname to the container’s IP address. Please add the fol
 that this name might have already been added to the file due to some other labs. If it is mapped to a different
 IP address, the old entry must be removed.
 ```
-10.9.0.5 http://www.seed-server.com
+10.9.0.5        http://www.seed-server.com
 ```
 #### 2.1 Container Setup and Commands
 
