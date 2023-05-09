@@ -162,7 +162,7 @@ resultant data will also have the same hash value. Basically, the following is t
 ```
 MD5 (prefix ‖ P ‖ suffix) = MD5 (prefix‖ Q ‖ suffix)
 ```
-Therefore, we just need to usePandQto replace 128 bytes of the array (between the two dividing
+Therefore, we just need to use P and Q to replace 128 bytes of the array (between the two dividing
 points), and we will be able to create two binary programs that have the same hash value. Their outcomes
 are different, because they each print out their own arrays, which have different contents.
 
@@ -176,11 +176,11 @@ $ tail -c 100 a.out > suffix
 $ tail -c +3300 a.out > suffix
 ```
 The first command above saves the first 3200 bytes of a.out to prefix. The second command saves
-the last 100 bytes of a.out to suffix. The third command saves the data from the 3300 th byte to the
+the last 100 bytes of a.out to suffix. The third command saves the data from the 3300th byte to the
 end of the file a.out to suffix. With these two commands, we can divide a binary file into pieces from
 any location. If we need to glue some pieces together, we can use the cat command.
 If you use bless to copy-and-paste a block of data from one binary file to another file, the menu item
-"Edit -> Select Range"is quite handy, because you can select a block of data using a starting point
+"Edit -> Select Range" is quite handy, because you can select a block of data using a starting point
 and a range, instead of manually counting how many bytes are selected.
 
 ### 2.4 Task 4: Making the Two Programs Behave Differently
@@ -247,8 +247,8 @@ the two versions of the program look like.
 
 ![alt text](images/image4.PNG)
 
-From Figure 4, we know that these two binary files have the same MD5 hash value, as long asPand
-Qare generated accordingly. In the first version, we make the contents of arrays X and Y the same, while
+From Figure 4, we know that these two binary files have the same MD5 hash value, as long as P and 
+Q are generated accordingly. In the first version, we make the contents of arrays X and Y the same, while
 in the second version, we make their contents different. Therefore, the only thing we need to change is the
 contents of these two arrays, and there is no need to change the logic of the programs.
 
