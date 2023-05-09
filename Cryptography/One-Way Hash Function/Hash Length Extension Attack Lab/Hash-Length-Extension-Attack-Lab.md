@@ -119,8 +119,8 @@ copy from one another. The server does not use this argument, but it checks whet
 or not. Requests will be rejected if this field is not included. Instructors can use this argument to check
 whether students have done the work by themselves. No point will be given if students do not use their real
 names in this task.
-The following shows another example. The request includes two commands: list all the files and down-
-load the file secret.txt. Similarly, a valid MAC needs to be attached, or the server will not execute
+The following shows another example. The request includes two commands: list all the files and download
+the file secret.txt. Similarly, a valid MAC needs to be attached, or the server will not execute
 these commands.
 ```
 http://www.seedlab-hashlen.com/?myname=JohnDoe&uid=1001&lstcmd=
