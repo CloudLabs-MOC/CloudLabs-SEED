@@ -199,11 +199,11 @@ Please encrypt the file using the ECB (Electronic Code Book) and CBC (Cipher Blo
 and then do the following:
 
 1. Let us treat the encrypted picture as a picture, and use a picture viewing software to display it. How-
-    ever, For the.bmp file, the first 54 bytes contain the header information about the picture, we have
+    ever, For the .bmp file, the first 54 bytes contain the header information about the picture, we have
     to set it correctly, so the encrypted file can be treated as a legitimate.bmp file. We will replace the
     header of the encrypted picture with that of the original picture. We can use the bless hex editor
     tool (already installed on our VM) to directly modify binary files. We can also use the following
-    commands to get the header from p1.bmp, the data from p2.bmp(from offset 55 to the end of the
+    commands to get the header from p1.bmp, the data from p2.bmp (from offset 55 to the end of the
     file), and then combine the header and data together into a new file.
 
 
@@ -301,7 +301,7 @@ cryptanalysis where the attacker has access to both the plaintext and its encryp
 this can lead to the revealing of further secret information, the encryption scheme is not considered as secure.
 
 
-Sample Code. We provide a sample program called samplecode.py, which can be found inside the
+**Sample Code.** We provide a sample program called samplecode.py, which can be found inside the
 Labsetup/Files folder. It shows you how to XOR strings (ascii strings and hex strings). The code is
 shown in the following:
 ```
@@ -383,14 +383,14 @@ their courses or not.
 In this task, you are given a plain text and a cipher text, and your job is to find the key that is used for the
 encryption. You do know the following facts:
 
-- Theaes-128-cbccipher is used for the encryption.
+- The aes-128-cbc cipher is used for the encryption.
 - The key used to encrypt this plaintext is an English word shorter than 16 characters; the word can be
     found from a typical English dictionary. Since the word has less than 16 characters (i.e. 128 bits),
     pound signs (#: hexadecimal value is0x23) are appended to the end of the word to form a key of
     128 bits.
 
 Your goal is to write a program to find out the encryption key. You can download a English word list
-from the Internet. We have also included one in theLabsetup.zipfile. The plaintext, ciphertext, and IV
+from the Internet. We have also included one in the Labsetup.zip file. The plaintext, ciphertext, and IV
 are listed in the following:
 ```
 Plaintext (total 21 characters): This is a top secret.
@@ -411,7 +411,7 @@ You need to pay attention to the following issues:
 $ echo -n "This is a top secret." > file
 ```
 - In this task, you are supposed to write your own program to invoke the crypto library. No credit will
-    be given if you simply use theopensslcommands to do this task. Sample code can be found from
+    be given if you simply use the openssl commands to do this task. Sample code can be found from
     the following URL:
        https://www.openssl.org/docs/man1.1.1/man3/EVP_CipherInit.html
 - When you compile your code using gcc, do not forget to include the -lcrypto flag, because your
