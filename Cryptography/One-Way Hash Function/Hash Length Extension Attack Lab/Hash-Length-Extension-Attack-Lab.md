@@ -87,20 +87,20 @@ root@9652715c8e0a:/#
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
-About the web server. We use the domainwww.seedlab-hashlen.comto host the server program.
+About the web server. We use the domain www.seedlab-hashlen.com to host the server program.
 In our VM, we map this hostname to the web server container (10.9.0.80). This can be achieved by
-adding the following entry to the /etc/hostsfile (please add it if the entry is not in the VM).
+adding the following entry to the /etc/hosts file (please add it if the entry is not in the VM).
 ```
 10.9.0.80 http://www.seedlab-hashlen.com
 ```
-The server code is in theLabsetup/image_flask/appfolder. It has two directories. Thewww
-directory contains the server code, and theLabHomedirectory contains a secret file and the key used for
+The server code is in the Labsetup/image_flask/app folder. It has two directories. The www
+directory contains the server code, and the LabHome directory contains a secret file and the key used for
 computing the MAC.
 
 Sending requests. The server program accepts the following commands:
 ```
 - The lstcmd command: the server will list all the files in the LabHome folder.
-- Thed ownload command: the server will return the contents of the specified file from theLabHome
+- Thed download command: the server will return the contents of the specified file from the LabHome
     directory.
 ```
 
@@ -142,7 +142,7 @@ Students need to pick a uid number from the key.txt in the LabHome directory. Th
 of colon-separated uid and key values. Students can use any uid and its associated key value. For example,
 students can use uid 1001 and its key 123456.
 The second missing argument is the MAC, which can be calculated by concatenating the key with the
-contents of the requests R(the argument part only), with a colon added in between. See the following
+contents of the requests R (the argument part only), with a colon added in between. See the following
 example:
 ```
 Key:R = 123456:myname=JohnDoe&uid=1001&lstcmd=
@@ -165,11 +165,11 @@ http://www.seedlab-hashlen.com/?myname=JohnDoe&uid=1001&lstcmd=
 ### 3.2 Task 2: Create Padding
 
 To conduct the hash length extension attack, we need to understand how padding is calculated for one-way
-hash. The block size of SHA-256 is 64 bytes, so a messageMwill be padded to the multiple of 64 bytes
+hash. The block size of SHA-256 is 64 bytes, so a message M will be padded to the multiple of 64 bytes
 during the hash calculation. According to RFC 6234, paddings for SHA256 consist of one byte of \x80,
 followed by a many 0’s, followed by a 64-bit (8 bytes) length field (the length is the number of bits in the
 M).
-Assume that the original message isM = "This is a test message". The length of Mis 22
+Assume that the original message is M = "This is a test message". The length of Mis 22
 bytes, so the padding is 64 - 22 = 42bytes, including 8 bytes of the length field. The length ofM interm
 of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following padded message:
 ```
@@ -184,18 +184,20 @@ of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following pad
 It should be noted that the length field uses the Big-Endian byte order, i.e., if the length of the message
 is0x012345, the length field in the padding should be:
 "\x00\x00\x00\x00\x00\x01\x23\x45"
+
 **Task.** Students need to construct the padding for the following message (the actual value of the<key>
-and<uid>should be obtained from theLabHome/key.txt file.
+and<uid>should be obtained from the LabHome/key.txt file.
 ```
 <key>:myname=<name>&uid=<uid>&lstcmd=
 ```
 It should be noted that in the URL, all the hexadecimal numbers in the padding need to be encoded by
-changing \x to %. For example,\x80in the padding should be replaced with%80in the URL above. On
+changing \x to %. For example,\x80in the padding should be replaced with %80 in the URL above. On
 the server side, encoded data in the URL will be changed back to the binary numbers. See the following
 example:
 ```
 "\x80\x00\x00\x99" should be encoded as "%80%00%00%99"
-```
+```    
+
 ### 3.3 Task 3: The Length Extension Attack
 
 In this task, we will generate a valid MAC for a URL without knowing the MAC key. Assume that we know
