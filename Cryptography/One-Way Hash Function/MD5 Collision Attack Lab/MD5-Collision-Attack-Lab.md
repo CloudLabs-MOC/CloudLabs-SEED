@@ -9,11 +9,11 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ## 1 Introduction
 
 A secure one-way hash function needs to satisfy two properties: the one-way property and the collision-
-resistance property. The one-way property ensures that given a hash valueh, it is computationally infeasible
-to find an inputM, such thathash(M) = h. The collision-resistance property ensures that it is compu-
-tationally infeasible to find two different inputsM 1 andM 2 , such thathash(M 1 ) = hash(M 2 ).
-Several widely-used one-way hash functions have trouble maintaining the collision-resistance prop-
-erty. At the rump session of CRYPTO 2004, Xiaoyun Wang and co-authors demonstrated a collision attack
+resistance property. The one-way property ensures that given a hash value h, it is computationally infeasible
+to find an input M, such that hash(M) = h. The collision-resistance property ensures that it is computationally
+infeasible to find two different inputs M1 and M2 , such that hash(M1) = hash(M2).
+Several widely-used one-way hash functions have trouble maintaining the collision-resistance property.
+At the rump session of CRYPTO 2004, Xiaoyun Wang and co-authors demonstrated a collision attack
 against MD5 [1]. In February 2017, CWI Amsterdam and Google Research announced theSHAtteredat-
 tack, which breaks the collision-resistance property of SHA-1 [3]. While many students do not have trouble
 understanding the importance of the one-way property, they cannot easily grasp why the collision-resistance
@@ -29,15 +29,15 @@ the following:
 - The collision-resistance property
 - Collision attacks
 
-Readings. Detailed coverage of the one-way hash function can be found in the following:
+**Readings.** Detailed coverage of the one-way hash function can be found in the following:
 
-- Chapter 22 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+- Chapter 22 of the SEED Book,_Computer & Internet Security: A Hands-on Approach,_ 2nd Edition,
+    by Wenliang Du. See details at https://www.handsonsecurity.net.
 
-Lab Environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
+**Lab Environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
 from the SEED website. The lab uses a tool called “Fast MD5 Collision Generation”, which was written
-by Marc Stevens. The name of the binary is calledmd5collgenin our VM, and it is installed inside the
-/usr/binfolder. If it is not there, Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+by Marc Stevens. The name of the binary is called md5collgen in our VM, and it is installed inside the
+/usr/bin folder. If it is not there, Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files/Labsetup.zip
 ```
@@ -45,9 +45,9 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography
 sudo unzip Labsetup.zip
 ```
 If you are interested in installing the tool to your own machine, you can download the source code directly
-fromhttps://www.win.tue.nl/hashclash/.
+from https://www.win.tue.nl/hashclash/.
 
-Acknowledgment This lab was developed with the help of Vishtasp Jokhi, a graduate student in the De-
+**Acknowledgment** This lab was developed with the help of Vishtasp Jokhi, a graduate student in the De-
 partment of Electrical Engineering and Computer Science at Syracuse University.
 
 
@@ -58,35 +58,23 @@ partment of Electrical Engineering and Computer Science at Syracuse University.
 In this task, we will generate two different files with the same MD5 hash values. The beginning parts of these
 two files need to be the same, i.e., they share the same prefix. We can achieve this using themd5collgen
 program, which allows us to provide a prefix file with any arbitrary content. The way how the program works
-is illustrated in Figure 1. The following command generates two output files,out1.binandout2.bin,
-for a given a prefix fileprefix.txt:
-
+is illustrated in Figure 1. The following command generates two output files out1.bin and out2.bin,
+for a given a prefix file prefix.txt:
+```
 $ md5collgen -p prefix.txt -o out1.bin out2.bin
+```
+![alt text](images/image1.PNG)
 
-```
-MD5 Collision
-Generation
-Prefix
-```
-```
-Prefix + (Padding) + P
-```
-```
-Prefix + (Padding) + Q
-```
-```
-Figure 1: MD5 collision generation from a prefix
-```
 We can check whether the output files are distinct or not using thediffcommand. We can also use the
-md5sumcommand to check the MD5 hash of each output file. See the following commands.
-
+md5sum command to check the MD5 hash of each output file. See the following commands.
+```
 $ diff out1.bin out2.bin
 $ md5sum out1.bin
 $ md5sum out2.bin
-
-Sinceout1.binandout2.binare binary, we cannot view them using a text-viewer program, such
-ascatormore; we need to use a binary editor to view (and edit) them. We have already installed a hex
-editor software calledblessin our VM. Please use such an editor to view these two output files, and
+```
+Since out1.bin and out2.bin are binary, we cannot view them using a text-viewer program, such
+as cat or more; we need to use a binary editor to view (and edit) them. We have already installed a hex
+editor software called blessin our VM. Please use such an editor to view these two output files, and
 describe your observations. In addition, you should answer the following questions:
 
 - Question 1.If the length of your prefix file is not multiple of 64, what is going to happen?
@@ -106,39 +94,26 @@ compression function produces a 128-bit IHV, which stands for “Intermediate Ha
 then fed into the next iteration. If the current iteration is the last one, the IHV will be the final hash value.
 The IHV input for the first iteration (IHV 0 ) is a fixed value.
 
+![alt text](images/image2.PNG)
 
-```
-Compression
-Function
-```
-```
-Compression
-Function
-```
-```
-Compression
-```
-**IHV 0 IHV 1 IHV 2 IHVn‐** (^1) Function **IHVn
-M 1 M 2 Mn
-Final Hash**
-Figure 2: How the MD5 algorithm works
 Based on how MD5 works, we can derive the following property of the MD5 algorithm: Given two
-inputsMandN, ifMD5(M) = MD5(N), i.e., the MD5 hashes ofMandNare the same, then for any input
+inputs M and N, if MD5(M) = MD5(N), i.e., the MD5 hashes ofMandNare the same, then for any input
 T,MD5(M ‖ T) = MD5(N ‖ T), where‖represents concatenation.
-That is, if inputsMandNhave the same hash, adding the same suffixTto them will result in two outputs
+That is, if inputs M and N have the same hash, adding the same suffix T to them will result in two outputs
 that have the same hash value. This property holds not only for the MD5 hash algorithm, but also for many
 other hash algorithms. Your job in this taskis to design an experiment to demonstrates that this property
 holds for MD5.
 You can use thecatcommand to concatenate two files (binary or text files) into one. The following
-command concatenates the contents offile2to the contents offile1, and places the result infile3.
+command concatenates the contents of file2 to the contents of file1, and places the result in file3.
+```
 $ cat file1 file2 > file
-
+```
 ### 2.3 Task 3: Generating Two Executable Files with the Same MD5 Hash
 
 In this task, you are given the following C program. Your job is to create two different versions of this
 program, such that the contents of theirxyzarrays are different, but the hash values of the executables are
 the same.
-
+```
 #include <stdio.h>
 
 unsigned char xyz[200] = {
@@ -153,17 +128,18 @@ printf("%x", xyz[i]);
 }
 printf("\n");
 }
-
+```
 You may choose to work at the source code level, i.e., generating two versions of the above C program,
 such that after compilation, their corresponding executable files have the same MD5 hash value. However,
-it may be easier to directly work on the binary level. You can put some arbitrary values in thexyzarray,
-compile the above code to binary. Then you can use a hex editor tool to modify the content of thexyzarray
+it may be easier to directly work on the binary level. You can put some arbitrary values in the xyz array,
+compile the above code to binary. Then you can use a hex editor tool to modify the content of the xyz array
 directly in the binary file.
+
 Finding where the contents of the array are stored in the binary is not easy. However, if we fill the array
 with some fixed values, we can easily find them in the binary. For example, the following code fills the array
-with0x41, which is the ASCII value for letterA. It will not be difficult to locate 200A’s in the binary.
+with 0x41, which is the ASCII value for letter A. It will not be difficult to locate 200A’s in the binary.
 
-
+```
 unsigned char xyz[200] = {
 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41,
 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41,
@@ -171,51 +147,40 @@ unsigned char xyz[200] = {
 ... (omitted) ...
 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41,
 }
-
-Guidelines. From inside the array, we can find two locations, from where we can divide the executable
+```
+**Guidelines.** From inside the array, we can find two locations, from where we can divide the executable
 file into three parts: a prefix, a 128-byte region, and a suffix. The length of the prefix needs to be multiple
 of 64 bytes. See Figure 3 for an illustration of how the file is divided.
-
-### AAAAAA...AAAAAAAAAAA
-
-### Prefix (multiple of  64  bytes) Suffix (the rest of the program)
-
-### A  128 ‐byte region
-
-```
-Figure 3: Break the executable file into three pieces.
-```
-We can runmd5collgenon the prefix to generate two outputs that have the same MD5 hash value.
-Let us usePandQto represent the second part (each having 128 bytes) of these outputs (i.e., the part after
+![alt text](images/image3.PNG)
+We can run md5collgen on the prefix to generate two outputs that have the same MD5 hash value.
+Let us use P and Q to represent the second part (each having 128 bytes) of these outputs (i.e., the part after
 the prefix). Therefore, we have the following:
-
-MD5 (prefix ‖ P) = MD5 (prefix‖ Q)
-
+```
+MD5(prefix ‖ P) = MD5(prefix‖ Q)
+```
 Based on the property of MD5, we know that if we append the same suffix to the above two outputs, the
 resultant data will also have the same hash value. Basically, the following is true for any suffix:
-
+```
 MD5 (prefix ‖ P ‖ suffix) = MD5 (prefix‖ Q ‖ suffix)
-
+```
 Therefore, we just need to usePandQto replace 128 bytes of the array (between the two dividing
 points), and we will be able to create two binary programs that have the same hash value. Their outcomes
 are different, because they each print out their own arrays, which have different contents.
 
-Tools. You can useblessto view the binary executable file and find the location for the array. For
+**Tools.** You can use bless to view the binary executable file and find the location for the array. For
 dividing a binary file, there are some tools that we can use to divide a file from a particular location. The
-headandtailcommands are such useful tools. You can look at their manuals to learn how to use them.
+head and tail commands are such useful tools. You can look at their manuals to learn how to use them.
 We give three examples in the following:
-
+```
 $ head -c 3200 a.out > prefix
 $ tail -c 100 a.out > suffix
 $ tail -c +3300 a.out > suffix
-
-The first command above saves the first 3200 bytes ofa.outtoprefix. The second command saves
-the last 100 bytes ofa.outtosuffix. The third command saves the data from the 3300 th byte to the
-
-
-end of the filea.outtosuffix. With these two commands, we can divide a binary file into pieces from
-any location. If we need to glue some pieces together, we can use thecatcommand.
-If you useblessto copy-and-paste a block of data from one binary file to another file, the menu item
+```
+The first command above saves the first 3200 bytes of a.out to prefix. The second command saves
+the last 100 bytes of a.out to suffix. The third command saves the data from the 3300 th byte to the
+end of the file a.out to suffix. With these two commands, we can divide a binary file into pieces from
+any location. If we need to glue some pieces together, we can use the cat command.
+If you use bless to copy-and-paste a block of data from one binary file to another file, the menu item
 "Edit -> Select Range"is quite handy, because you can select a block of data using a starting point
 and a range, instead of manually counting how many bytes are selected.
 
@@ -242,14 +207,14 @@ will pass the certification, and you will get a certificate that contains the ha
 Because your malicious program has the same hash value, this certificate is also valid for your malicious
 program. Therefore, you have successfully obtained a valid certificate for your malicious program. If other
 people trusted the certificate issued by the authority, they will download your malicious program.
-The objective of this taskis to launch the attack described above. Namely, you need to create two pro-
-grams that share the same MD5 hash. However, one program will always execute benign instructions, while
+The objective of this taskis to launch the attack described above. Namely, you need to create two programs
+that share the same MD5 hash. However, one program will always execute benign instructions, while
 the other program will execute malicious instructions. In your work, what benign/malicious instructions are
 executed is not important; it is sufficient to demonstrate that the instructions executed by these two programs
 are different.
 
-Guidelines. Creating two completely different programs that produce the same MD5 hash value is quite
-hard. The two hash-colliding programs produced bymd5collgenneed to share the same prefix; moreover,
+**Guidelines.** Creating two completely different programs that produce the same MD5 hash value is quite
+hard. The two hash-colliding programs produced by md5collgen need to share the same prefix; moreover,
 as we can see from the previous task, if we need to add some meaningful suffix to the outputs produced by
 md5collgen, the suffix added to both programs also needs to be the same. These are the limitations of
 the MD5 collision generation program that we use. Although there are other more complicated and more
@@ -258,12 +223,10 @@ much more computing power, so they are out of the scope for this lab. We need to
 two different programs within the limitations.
 There are many ways to achieve the above goal. We provide one approach as a reference, but students
 are encouraged to come up their own ideas. Instructors may consider rewarding students for their own
-ideas. In our approach, we create two arraysXandY. We compare the contents of these two arrays; if they
-
-
+ideas. In our approach, we create two arrays X and Y. We compare the contents of these two arrays; if they
 are the same, the benign code is executed; otherwise, the malicious code is executed. See the following
 pseudo-code:
-
+```
 Array X;
 Array Y;
 
@@ -275,38 +238,16 @@ else
 run malicious code;
 return;
 }
-
-We can initialize the arraysXandYwith some values that can help us find their locations in the exe-
-cutable binary file. Our job is to change the contents of these two arrays, so we can generate two different
+```
+We can initialize the arrays X and Y with some values that can help us find their locations in the executable
+binary file. Our job is to change the contents of these two arrays, so we can generate two different
 versions that have the same MD5 hash. In one version, the contents of X and Y are the same, so the benign
-code is executed; in the other version, the contents of X and Y are different, so the malicious code is exe-
-cuted. We can achieve this goal using a technique similar to the one used in Task 3. Figure 4 illustrates what
+code is executed; in the other version, the contents of X and Y are different, so the malicious code is executed.
+We can achieve this goal using a technique similar to the one used in Task 3. Figure 4 illustrates what
 the two versions of the program look like.
 
-```
-AAAAAA...AAAAAAAAAAA
-```
-```
-Prefix (multiple of  64  bytes) Suffix (the rest of the program)
-```
-# P
+![alt text](images/image4.PNG)
 
-# AAAAAA...AAAAAAAAAAA Q
-
-# AAAAAA...AAAAAAAAAAA P
-
-# AAAAAA...AAAAAAAAAAA P
-
-```
-Array X Array Y
-```
-```
-P and Q are generated to
-cause collision
-```
-```
-Figure 4: An approach to generate two hash-colliding programs with different behaviors.
-```
 From Figure 4, we know that these two binary files have the same MD5 hash value, as long asPand
 Qare generated accordingly. In the first version, we make the contents of arrays X and Y the same, while
 in the second version, we make their contents different. Therefore, the only thing we need to change is the
