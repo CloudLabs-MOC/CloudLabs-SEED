@@ -118,16 +118,8 @@ two roles in this web application: Administrator is a privilege role and can man
 employees’ profile information; Employee is a normal role and can view or update his/her own profile
 information. All employee information is described in Table 1.
 
-```
-Table 1: Database
-Name Employee ID Password Salary Birthday SSN Nickname Email Address Phone#
-Admin 99999 seedadmin 400000 3/5 43254314
-Alice 10000 seedalice 20000 9/20 10211002
-Boby 20000 seedboby 50000 4/20 10213352
-Ryan 30000 seedryan 90000 4/10 32193525
-Samy 40000 seedsamy 40000 1/11 32111111
-Ted 50000 seedted 110000 11/3 24343244
-```
+![alt text](images/table.PNG)
+
 ## 3 Lab Tasks
 
 #### 3.1 Task 1: Get Familiar with SQL Statements
