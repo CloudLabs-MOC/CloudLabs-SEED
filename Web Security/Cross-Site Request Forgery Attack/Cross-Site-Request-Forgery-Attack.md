@@ -39,7 +39,6 @@ Files needed for this lab are included in _Labsetup.zip_, which can be fetched b
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files
 ```
-
 ```
 sudo unzip Labsetup.zip
 ```
@@ -189,8 +188,8 @@ upgrade the Firefox to the more recent version.
 After adding himself to Alice’s friend list, Samy wants to do something more. He wants Alice to say “Samy is my Hero” in her profile, so everybody knows about that. Alice does not like Samy, let alone putting that statement in her profile. Samy plans to use a CSRF attack to achieve that goal. That is the purpose of this task. 
 
 One way to do the attack is to post a message to Alice’s Elgg account, hoping that Alice will click 
-the URL inside the message. This URL will lead Alice to your (i.e., Samy’s) malicious web site www. 
-attacker32.com, where you can launch the CSRF attack. 
+the URL inside the message. This URL will lead Alice to your (i.e., Samy’s) malicious web site www.attacker32.com,
+where you can launch the CSRF attack. 
 
 The objective of your attack is to modify the victim’s profile. In particular, the attacker needs to forge a 
 request to modify the profile information of the victim user of Elgg. Allowing users to modify their profiles is a feature of Elgg. If users want to modify their profiles, they go to the profile page of Elgg, fill out a form, and then submit the form—sending a POST request—to the server-side script /profile/edit.php, which processes the request and does the profile modification. 
