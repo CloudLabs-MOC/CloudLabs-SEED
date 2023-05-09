@@ -240,8 +240,8 @@ cause attackers can use the vulnerability to modify databases. In our Employee M
 there is an Edit Profile page (Figure 2) that allows employees to update their profile information, including
 nickname, email, address, phone number, and password. To go to this page, employees need to log in first.
 When employees update their information through the Edit Profile page, the following SQL UPDATE
-query will be executed. The PHP code implemented inunsafeeditbackend.phpfile is used to up-
-date employee’s profile information. The PHP file is located in the /var/www/SQLInjection directory.
+query will be executed. The PHP code implemented in unsafe_edit_backend.php file is used to update
+employee’s profile information. The PHP file is located in the /var/www/SQLInjection directory.
 ```
 $hashed_pwd = sha1($input_pwd);
 $sql = "UPDATE credential SET
