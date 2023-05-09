@@ -51,7 +51,7 @@ SEED lab environment using containers, it is very important that you read the us
 
 
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
+we are going to use these commands very frequently, we have created aliases for them in the .bashrc file
 (in our provided SEEDUbuntu 20.04 VM).
 ```
 $ docker-compose build # Build the container image
