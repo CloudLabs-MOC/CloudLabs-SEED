@@ -21,7 +21,7 @@ application includes the common mistakes made by many web developers. Studentsâ€
 exploit the SQL injection vulnerabilities, demonstrate the damage that can be achieved by the attack, and
 master the techniques that can help defend against such type of attacks. This lab covers the following topics:
 
-- SQL statements:SELECTandUPDATEstatements
+- SQL statements: SELECTandUPDATEstatements
 - SQL injection
 - Prepared statement
 
