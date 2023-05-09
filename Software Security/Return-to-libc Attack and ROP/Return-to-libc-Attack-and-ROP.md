@@ -25,6 +25,14 @@ In this lab, students are given a program with a buffer-overflow vulnerability; 
 
 **Lab environment**. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Return-to-libc%20Attack%20and%20ROP/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+
 **Note for instructors**. Instructors can customize this lab by choosing a value for the buffer size in the vulnerable program. See Section 2.3 for details.
 
 ## 2 Environment Setup
