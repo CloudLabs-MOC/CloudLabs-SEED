@@ -218,9 +218,9 @@ side. Please conduct the following steps using the client program.
     ```
 - Step 2: Modify the /etc/hostsfile (inside the container), add the following entry at the end of the
     file (the IP address is what you get from the dig command).
-    
+    ```
     93.184.216.34 http://www.example2020.com
-    
+    ```
 - Step 3: Switch the following line in the client program between True and False, and then connect
     your client program to www.example2020.com. Describe and explain your observation.
     ```
