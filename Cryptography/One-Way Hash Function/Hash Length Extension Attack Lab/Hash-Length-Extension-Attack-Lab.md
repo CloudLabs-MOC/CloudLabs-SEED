@@ -208,7 +208,6 @@ knowing the secret MAC key.
 ```
 $ echo -n "This is a test message" | sha256sum
 6f3438001129a90c5b1637928bf38bf26e39e57c6e9511005682048bedbef
-
 ```
 The program below can be used to compute the MAC for the new message:
 ```
@@ -248,13 +247,12 @@ printf("%02x", buffer[i]);
 printf("\n");
 return 0;
 }
-
 ```
 Students can compile the program as follows:
 ```
 $ gcc length_ext.c -o length_ext -lcrypto
 ```
-Task. Students should first generate a valid MAC for the following request (where <uid>and the MAC
+**Task.** Students should first generate a valid MAC for the following request (where <uid>and the MAC
 key should be obtained from theLabHome/key.txt file):
 ```
 http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
@@ -265,11 +263,8 @@ command. You are not allowed to use the secret key this time. The URL looks like
 ```
 http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
 &lstcmd=1<padding>&download=secret.txt&mac=<new-mac>
-
 ```
 Please send the constructed request to the server, and show that you can successfully get the content of
-```
-
 the secret.txt file.
 
 ### 3.4 Task 4: Attack Mitigation using HMAC
