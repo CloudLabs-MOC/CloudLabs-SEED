@@ -118,8 +118,8 @@ CA’s certificates are unconditionally trusted.
 
 The Configuration File openssl.conf. In order to use OpenSSLto create certificates, you have to
 have a configuration file. The configuration file usually has an extension.cnf. It is used by three OpenSSL
-commands: ca,reqandx509. The manual page ofopenssl.conf can be found from online resources.
-By default,OpenSSL use the configuration file from /usr/lib/ssl/openssl.cnf. Since we need
+commands: ca, req and x509. The manual page of openssl.conf can be found from online resources.
+By default, OpenSSL use the configuration file from /usr/lib/ssl/openssl.cnf. Since we need
 to make changes to this file, we will copy it into our current directory, and instruct OpenSSL to use this
 copy instead.
 The [CA_default] section of the configuration file shows the default setting that we need to prepare.
@@ -153,7 +153,7 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 \
 You will be prompted for a password. Do not lose this password, because you will have to type the
 passphrase each time you want to use this CA to sign certificates for others. You will also be asked to fill in
 the subject information, such as the Country Name, Common Name, etc. The output of the command are
-stored in two files:ca.key and ca.crt. The file ca.key contains the CA’s private key, while ca.crt
+stored in two files: ca.key and ca.crt. The file ca.key contains the CA’s private key, while ca.crt
 contains the public-key certificate.
 You can also specify the subject information and password in the command line, so you will not be
 prompted for any additional information. In the following command, we use -subj to set the subject
@@ -175,7 +175,7 @@ openssl rsa -in ca.key -text -noout
 Please run the above commands. From the output, please identify the followings:
 - What part of the certificate indicates this is a CA’s certificate?
 - What part of the certificate indicates this is a self-signed certificate?
-- In the RSA algorithm, we have a public exponente, a private exponentd, a modulusn, and two secret
+- In the RSA algorithm, we have a public exponente, a private exponent d, a modulus n, and two secret
   numbers p and q , such that n=pq. Please identify the values for these elements in your certificate
   and key files.
 
@@ -270,20 +270,20 @@ which contains the following entry:
 ```
 <VirtualHost *:443>
 DocumentRoot /var/www/bank
-ServerName [http://www.bank32.com](http://www.bank32.com)
-ServerAlias [http://www.bank32A.com](http://www.bank32A.com)
-ServerAlias [http://www.bank32B.com](http://www.bank32B.com)
+ServerName http://www.bank32.com
+ServerAlias http://www.bank32A.com
+ServerAlias http://www.bank32B.com
 DirectoryIndex index.html
 SSLEngine On
-SSLCertificateFile /certs/bank32.crt 1
-SSLCertificateKeyFile /certs/bank32.key 2
+SSLCertificateFile /certs/bank32.crt   (1)
+SSLCertificateKeyFile /certs/bank32.key (2)
 </VirtualHost>
 ```
 The above example sets up the HTTPS site https://www.bank32.com(port 443 is the default
-HTTPS port). The ServerName entry specifies the name of the website, while the DocumentRoot
+HTTPS port). The ServerName entry specifies the name of the website, while the Document Root
 entry specifies where the files for the website are stored. Using the ServerAlias entries, we allow the
 website to have different names. You should also provide two alias entries.
-We also need to tell Apache where the server certificate (Line 1) and private key (Line 2) are stored. In
+We also need to tell Apache where the server certificate (Line (1)) and private key (Line (2)) are stored. In
 the Docker file, we have already included the commands to copy the certificate and key to the/certs
 folder of the container.
 In order to make the website work, we need to enable Apache’sssl module and then enable this site.
@@ -326,8 +326,8 @@ explanation in their lab reports). Please fix the problem and demonstrate that y
 HTTPS website.
 In the following, we provide instructions on how to load a certificate into Firefox. We intentionally
 do not explain why and what certificate should be loaded; students need to figure that out. To manually
-add a certificate to the Firefox browser, type the following URL in the address bar, and click theView
-Certificatesbutton on the page (scroll to the bottom).
+add a certificate to the Firefox browser, type the following URL in the address bar, and click the View
+Certificates button on the page (scroll to the bottom).
 ```
 about:preferences#privacy
 ```
@@ -340,7 +340,7 @@ accepted certificates.
 
 In this task, we will show how PKI can defeat Man-In-The-Middle (MITM) attacks. Figure 1 depicts how
 MITM attacks work. Assume Alice wants to visitexample.comvia the HTTPS protocol. She needs to get
-the public key from theexample.comserver; Alice will generate a secret, and encrypt the secret using the
+the public key from the example.com server; Alice will generate a secret, and encrypt the secret using the
 server’s public key, and send it to the server. If an attacker can intercept the communication between Alice
 and the server, the attacker can replace the server’s public key with its own public key. Therefore, Alice’s
 secret is actually encrypted with the attacker’s public key, so the attacker will be able to read the secret. The
