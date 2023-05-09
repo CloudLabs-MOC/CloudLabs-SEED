@@ -22,6 +22,14 @@ The learning objectiveof this lab is for students to gain first-hand experiences
 
 **Lab Environment**. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Hardware%20Security/Spectre%20Attack/Lab%20files/Labsetup.zip
+```
+```
+sudo unzip Labsetup.zip
+```
+
 When using this lab, instructors should keep the followings in mind: First, although the Spectre vulnerability is a common design flaw inside Intel, AMD, and ARM CPUs, we have only tested the lab activities on Intel CPUs. Second, Intel is working on fixing this problem in its CPUs, so if a student’s computer uses new Intel CPUs, the attack may not work. As of May 2021, it is not a problem for most students, but as time goes on, problems may arise.
 
 **Acknowledgment** This lab was developed with the help of Kuber Kohli and Hao Zhang, graduate students in the Department of Electrical Engineering and Computer Science at Syracuse University.
