@@ -82,7 +82,7 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Se
 change its permission so the file is executable as follows:
 
 ```
-sudo chmod 755 attack.py
+sudo chmod 775 attack.py
 ```
 
 You can then run the attack code as follows:
