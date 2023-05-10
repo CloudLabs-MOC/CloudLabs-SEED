@@ -74,7 +74,12 @@ scratch is not easy, because it requires the low-level knowledge of the Heartbea
 people have already written the attack code. Therefore, we will use the existing code to gain first-hand
 experience in the Heartbleed attack. The code that we use is called attack.py, which was originally
 written by Jared Stafford. We made some small changes to the code for educational purposes. You can
-download the code from the lab’s web site, change its permission so the file is executable. You can then run
+download the code from the lab’s web site or which can be fetched by running the following commands.
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/The%20Heartbleed%20Bug%20and%20Attack/Attackfile/attack.py
+```
+change its permission so the file is executable. You can then run
 the attack code as follows:
 
 ```
