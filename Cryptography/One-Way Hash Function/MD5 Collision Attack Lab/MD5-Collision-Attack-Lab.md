@@ -38,7 +38,7 @@ the following:
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/One-Way%20Hash%20Function/MD5%20Collision%20Attack%20Lab/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
