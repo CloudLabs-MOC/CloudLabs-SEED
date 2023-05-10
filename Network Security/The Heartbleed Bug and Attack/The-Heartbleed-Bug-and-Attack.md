@@ -77,7 +77,7 @@ written by Jared Stafford. We made some small changes to the code for educationa
 download the code from the lab’s web site or which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/The%20Heartbleed%20Bug%20and%20Attack/Attackfile/attack.py
+sudo wget https://seedsecuritylabs.org/Labs_20.04/Networking/Heartbleed/files/attack.py
 ```
 change its permission so the file is executable as follows:
 
