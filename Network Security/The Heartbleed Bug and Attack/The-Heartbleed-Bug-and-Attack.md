@@ -60,7 +60,7 @@ is stored in the server memory. If there has not been much activity on the serve
 steal useful data. Therefore, we need to interact with the web server as legitimate users. Let us do it as the
 administrator, and do the followings:
 
-- Visit https://www.heartbleedlabelgg.comfrom your browser.
+- Visit https://www.heartbleedlabelgg.com from your browser.
 
 - Login as the site administrator. (User Name:admin; Password:seedelgg)
 
