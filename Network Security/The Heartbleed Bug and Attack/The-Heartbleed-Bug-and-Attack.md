@@ -79,8 +79,13 @@ download the code from the lab’s web site or which can be fetched by running t
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/The%20Heartbleed%20Bug%20and%20Attack/Attackfile/attack.py
 ```
-change its permission so the file is executable. You can then run
-the attack code as follows:
+change its permission so the file is executable as follows:
+
+```
+sudo chmod 744 attack.py
+```
+
+You can then run the attack code as follows:
 
 ```
 $ ./attack.py www.heartbleedlabelgg.com
