@@ -121,11 +121,11 @@ unsigned char xyz[200] = {
 
 int main()
 {
-int i;
-for (i=0; i<200; i++){
-printf("%x", xyz[i]);
-}
-printf("\n");
+    int i;
+    for (i=0; i<200; i++){
+        printf("%x", xyz[i]);
+    }
+    printf("\n");
 }
 ```
 You may choose to work at the source code level, i.e., generating two versions of the above C program,
