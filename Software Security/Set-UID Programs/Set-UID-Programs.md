@@ -35,6 +35,9 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20S
 ```
 sudo unzip Labsetup.zip
 ```
+```
+sudo chmod 777 Labsetup
+```
 
 ### 2.1 Task 1: Manipulating Environment Variables
 
@@ -47,7 +50,7 @@ In this task, we study the commands that can be used to set and unset environmen
 
 In this task, we study how a child process gets its environment variables from its parent. In Unix, `fork()` creates a new process by duplicating the calling process. The new process, referred to as the child, is an exact duplicate of the calling process, referred to as the parent; however, several things are not inherited by the child (please see the manual of `fork()` by typing the following command:man fork). In this task, we would like to know whether the parent’s environment variables are inherited by the child process or not.
 
-**Step 1**. Please compile and run the following program, and describe your observation. The program can be found in theLabsetupfolder; it can be compiled using "gcc myprintenv.c", which will generate a binary called a.out. Let’s run it and save the output into a file using "a.out > file".
+**Step 1**. Please compile and run the following program, and describe your observation. The program can be found in the **Labsetup** folder, run `cd Labsetup` to change the folder; it can be compiled using "gcc myprintenv.c", which will generate a binary called a.out. Let’s run it and save the output into a file using "./a.out > file".
 
 Listing 1:myprintenv.c
 
@@ -80,7 +83,7 @@ void main()
 }
 ```
 
-**Step 2**. Now comment out theprintenv()statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
+**Step 2**. Now comment out the `printenv()` statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
 
 **Step 3**. Compare the difference of these two files using the `diff` command. Please draw your conclusion.
 
