@@ -110,7 +110,7 @@ $ cat file1 file2 > file3
 ### 2.3 Task 3: Generating Two Executable Files with the Same MD5 Hash
 
 In this task, you are given the following C program. Your job is to create two different versions of this
-program, such that the contents of theirxyzarrays are different, but the hash values of the executables are
+program, such that the contents of their xyz arrays are different, but the hash values of the executables are
 the same.
 ```
 #include <stdio.h>
