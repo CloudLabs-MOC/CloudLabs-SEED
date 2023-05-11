@@ -64,7 +64,7 @@ $ md5collgen -p prefix.txt -o out1.bin out2.bin
 ```
 ![alt text](images/image1.PNG)
 
-We can check whether the output files are distinct or not using thediffcommand. We can also use the
+We can check whether the output files are distinct or not using the diff command. We can also use the
 md5sum command to check the MD5 hash of each output file. See the following commands.
 ```
 $ diff out1.bin out2.bin
