@@ -102,7 +102,7 @@ That is, if inputs M and N have the same hash, adding the same suffix T to them 
 that have the same hash value. This property holds not only for the MD5 hash algorithm, but also for many
 other hash algorithms. Your job in this taskis to design an experiment to demonstrates that this property
 holds for MD5.
-You can use thecatcommand to concatenate two files (binary or text files) into one. The following
+You can use the cat command to concatenate two files (binary or text files) into one. The following
 command concatenates the contents of file2 to the contents of file1, and places the result in file3.
 ```
 $ cat file1 file2 > file3
