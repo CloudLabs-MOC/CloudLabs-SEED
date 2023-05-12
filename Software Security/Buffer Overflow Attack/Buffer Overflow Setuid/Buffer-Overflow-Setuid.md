@@ -23,6 +23,17 @@ In this lab, students will be given a program with a buffer-overflow vulnerabili
 
 **Lab environment**.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+``` 
+
 **Note for instructors**. Instructors can customize this lab by choosing values for L1, ..., L4. See Section 4 for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks. 
 
 
