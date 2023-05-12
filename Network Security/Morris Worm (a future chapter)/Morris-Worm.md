@@ -54,7 +54,7 @@ the README.md file for instructions.
 Download the emulator files. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/Morris%20Worm%20(a%20future%20chapter)/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Morris%20Worm%20(a%20future%20chapter)/Lab%20files/Labsetup.zip
 ```
 
 ```
