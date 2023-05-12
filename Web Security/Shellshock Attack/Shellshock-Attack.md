@@ -81,9 +81,9 @@ $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
-b1004832e275 hostA-10.9.0.
-0af4ea7a3e2e hostB-10.9.0.
-9652715c8e0a hostC-10.9.0.
+b1004832e275 hostA-10.9.0.5
+0af4ea7a3e2e hostB-10.9.0.6
+9652715c8e0a hostC-10.9.0.7
 
 $ docksh 96
 root@9652715c8e0a:/#
