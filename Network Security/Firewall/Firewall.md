@@ -43,7 +43,7 @@ set up this lab environment.
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/Firewall/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Firewall/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
