@@ -47,7 +47,7 @@ This lab will be performed inside the SEED Internet Emulator (simply called the 
 Download the emulator files. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/BGP%20and%20Attacks/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/BGP%20and%20Attacks/Lab%20files/Labsetup.zip
 ```
  
 ```
