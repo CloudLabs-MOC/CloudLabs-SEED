@@ -46,7 +46,7 @@ From the above experiment, we can see that if we try to write to this file as a 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Dirty%20COW/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Dirty%20COW/Lab%20files/Labsetup.zip
 ```
 
 ```
