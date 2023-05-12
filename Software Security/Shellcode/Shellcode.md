@@ -35,7 +35,7 @@ Shellcode is typically written using assembly languages, which depend on the com
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Shellcode/Lab%20files/Labsetup.zip 
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Shellcode/Lab%20files/Labsetup.zip 
 ```
 
 ```
