@@ -31,7 +31,7 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Server/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Server/Lab%20files/Labsetup.zip
 ```
 
 ```
