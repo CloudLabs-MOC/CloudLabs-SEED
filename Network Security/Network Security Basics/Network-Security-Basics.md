@@ -60,7 +60,7 @@ Figure 1: Lab environment setup
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/Network%20Security%20Basics/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Network%20Security%20Basics/Lab%20files/Labsetup.zip
 ```
 
 ```
