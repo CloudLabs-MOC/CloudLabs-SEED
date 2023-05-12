@@ -45,7 +45,7 @@ We use containers to set up the web servers.
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Web%20Security/Clickjacking%20Attack/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Clickjacking%20Attack/Lab%20files/Labsetup.zip
 ```
 
 ```
