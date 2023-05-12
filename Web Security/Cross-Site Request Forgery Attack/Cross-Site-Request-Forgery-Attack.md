@@ -37,7 +37,7 @@ In this lab, we will use three websites. The first website is the vulnerable Elg
 Files needed for this lab are included in _Labsetup.zip_, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
