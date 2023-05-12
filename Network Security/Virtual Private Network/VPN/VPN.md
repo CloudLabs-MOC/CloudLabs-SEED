@@ -126,6 +126,22 @@ ter the program runs, a virtual TUN network interface will appear in the system 
 where X is a number). This new interface is not yet configured, so we need to configure it by giving it an IP
 address. We use 192.168.53.1 for this interface.
 
+Lab Files can be downloaded using this link
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Virtual%20Private%20Network/VPN/VPNFiles/vpn.zip
+```
+```
+sudo unzip vpn.zip
+```
+
+```            
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Virtual%20Private%20Network/VPN/VPNFiles/tls.zip
+```
+```
+sudo unzip tls.zip
+```
+
 Run the following commands. The first command will start the server program, and the second command
 assigns an IP address to the tun0 interface and then activates it. It should be noted that the first command
 will block and wait for connections, so we need to find another window run the second command.
