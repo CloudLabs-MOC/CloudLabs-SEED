@@ -31,6 +31,17 @@ Readings and videos. Detailed coverage of the DNS protocol and attacks can be fo
 
 Lab environment. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/DNSSEC/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+``` 
+
 ## 2 Lab Environment Setup
 
 In the lab environment, we provide a mini DNS infrastructure, consisting of a root server, a top-level domain
