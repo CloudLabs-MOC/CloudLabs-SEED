@@ -44,7 +44,7 @@ generation tasks will be conducted on the VM, but we will use a container to hos
 
 Container Setup and Commands. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/PKI:%20Public%20Key%20Infrastructure/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/PKI:%20Public%20Key%20Infrastructure/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
