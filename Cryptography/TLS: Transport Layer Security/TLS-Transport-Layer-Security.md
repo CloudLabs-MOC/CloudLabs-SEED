@@ -50,7 +50,7 @@ proxy:  10.9.0.
 ```
 **Container Setup and Commands.** Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Cryptography/TLS:%20Transport%20Layer%20Security/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/TLS:%20Transport%20Layer%20Security/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
