@@ -60,7 +60,7 @@ Figure 1: Lab environment setup
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/Packet%20Sniffing%20%26%20Spoofing/Lab%20Files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Packet%20Sniffing%20%26%20Spoofing/Lab%20Files/Labsetup.zip
 ```
 
 ```
