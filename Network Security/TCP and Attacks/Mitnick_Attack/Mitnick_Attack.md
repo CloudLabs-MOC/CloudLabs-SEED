@@ -122,7 +122,7 @@ this lab, but it will be much more convenient to use containers. The lab environ
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Network%20Security/TCP%20and%20Attacks/Mitnick_Attack/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/TCP%20and%20Attacks/Mitnick_Attack/Lab%20files/Labsetup.zip
 ```
 
 ```
