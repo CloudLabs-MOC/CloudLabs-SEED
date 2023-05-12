@@ -27,7 +27,7 @@ Lab Environment. You can perform the lab exercise on the SEED VM provided by the
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Hardware%20Security/Meltdown%20Attack/Lab%20files/Labsetup.zip
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Hardware%20Security/Meltdown%20Attack/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
