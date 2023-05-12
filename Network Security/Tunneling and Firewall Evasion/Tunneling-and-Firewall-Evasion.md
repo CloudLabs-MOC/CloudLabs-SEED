@@ -39,6 +39,16 @@ in two separate networks. The experiment setup is depicted in Figure 1. We use d
 machines. Readers can find the container setup file from the website of this lab. In this lab, the network
 10.8.0.0/24 serves as an external network, while 192.168.20.0/24 serves as the internal network.
 
+Lab Files can be downloaded using this link
+
+```
+sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Security/Tunneling%20and%20Firewall%20Evasion/Lab%20files/Labsetup.zip
+```
+
+```
+sudo unzip Labsetup.zip
+```
+
 The host 10.8.0.1 is not a container; this IP address is given to the host machine (i.e., the VM
 in our case). This machine is the gateway to the Internet. To reach the Internet from the hosts in both
 192.168.20.0/24 and 10.8.0.0/24 networks, packets must be routed to 10.8.0.1. The routing
