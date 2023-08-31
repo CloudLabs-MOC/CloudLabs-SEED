@@ -35,13 +35,13 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
+wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
 ```
-![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/aead090a-6c6d-48c9-8849-c59412561cc6)
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/b7f8bc2c-4bf3-46d7-9192-b5c036c5af70)
 ```
-sudo unzip Labsetup.zip
-``` 
-![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/47a75e8d-15ba-4d94-93b3-4051d6063779)
+unzip Labsetup.zip
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/fbe4890d-16ac-4abe-8ef0-deb842d923f4)
 
 **Note for instructors**. Instructors can customize this lab by choosing values for L1, ..., L4. See Section 4 for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks. 
 
