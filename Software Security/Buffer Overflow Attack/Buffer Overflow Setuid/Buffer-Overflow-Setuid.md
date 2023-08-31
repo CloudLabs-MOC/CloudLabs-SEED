@@ -23,16 +23,25 @@ In this lab, students will be given a program with a buffer-overflow vulnerabili
 
 **Lab environment**.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+First we need to make sure that we are logged in to **seed** user. Type the below commmands to log in as seed user and change directory.
+```
+sudo su seed
+cd
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6252c5b5-7bd6-4fd7-b995-4dc0d7cbd62c)
+
+
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
 ```
-
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/aead090a-6c6d-48c9-8849-c59412561cc6)
 ```
 sudo unzip Labsetup.zip
 ``` 
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/47a75e8d-15ba-4d94-93b3-4051d6063779)
 
 **Note for instructors**. Instructors can customize this lab by choosing values for L1, ..., L4. See Section 4 for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks. 
 
@@ -48,6 +57,7 @@ Modern operating systems have implemented several security mechanisms to make th
 ```
 $ sudo sysctl -w kernel.randomize_va_space=
 ```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6ab0b49f-b018-4d3e-ad02-63e966467e33)
 
  **Configuring /bin/sh**. In the recent versions of Ubuntu OS, the /bin/sh symbolic link points to the `/bin/dash` shell. The dash program, as well as bash, has implemented a security countermeasure that prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed in a Set-UID process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
  
@@ -56,6 +66,8 @@ Since our victim program is a Set-UID program, and our attack relies on running 
 ```
 $ sudo ln -sf /bin/zsh /bin/sh
 ```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/dd4072c8-ed58-499f-841d-ad4a55918df1)
+
 
 **StackGuard and Non-Executable Stack**. These are two additional countermeasures implemented in the system. They can be turned off during the compilation. We will discuss them later when we compile the vulnerable program. 
 
