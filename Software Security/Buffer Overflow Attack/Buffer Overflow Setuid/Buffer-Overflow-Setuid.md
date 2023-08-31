@@ -66,7 +66,11 @@ Since our victim program is a Set-UID program, and our attack relies on running 
 ```
 sudo ln -sf /bin/zsh /bin/sh
 ```
-or we can type `-v`
+or we can type `-v` to see what is happening behind.
+```
+sudo ln -sf /bin/zsh /bin/sh -v
+```
+
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9f20070f-2150-42bd-ab90-b9f54e18d374)
 
 **StackGuard and Non-Executable Stack**. These are two additional countermeasures implemented in the system. They can be turned off during the compilation. We will discuss them later when we compile the vulnerable program. 
@@ -142,6 +146,14 @@ syscall
 ### 3.4 Task: Invoking the Shellcode
 
 We have generated the binary code from the assembly code above, and put the code in a C program called call_shellcode.c inside the shellcode folder. If you would like to learn how to generate the binary code yourself, you should work on the Shellcode lab. In this task, we will test the shellcode. 
+
+Redirect to shellcode and open the `call_shellcode.c` 
+
+```
+cd shellcode/
+cat call_shellcode.c
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/17703a08-8b32-41ba-a704-ed0575b248e4)
 
 Listing 1:callshellcode.c
 
