@@ -165,7 +165,7 @@ cat call_shellcode.c
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/17703a08-8b32-41ba-a704-ed0575b248e4)
 
-Listing 1:callshellcode.c
+Listing 1 : `callshellcode.c`
 
 ```
 #include <stdlib.h>
@@ -201,7 +201,16 @@ The code above includes two copies of shellcode, one is 32-bit and the other is 
 
 The vulnerable program used in this lab is called stack.c, which is in the code folder. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. The code listed below has some non-essential information removed, so it is slightly different from what you get from the lab setup file. 
 
-Listing 2: The vulnerable program (stack.c)
+We have to change the file location since the **stack.c** file is present in "code" folder. To do that type (make sure you are in /Labsetup/shellcode directory):
+
+```
+cd ..
+cd code/
+ls
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/78315387-ca4b-4e04-9d1d-65dd834a436f)
+
+Listing 2: The vulnerable program `stack.c`
 ```
 #include <stdlib.h>
 #include <stdio.h>
