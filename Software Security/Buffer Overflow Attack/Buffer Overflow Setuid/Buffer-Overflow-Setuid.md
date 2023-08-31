@@ -318,43 +318,22 @@ quit
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/89f7f694-38e8-4919-b7c0-8b5d4ccb269b)
 
-```
-$ touch badfile ➝ Create an empty badfile
-$ gdb stack-L1-dbg
-gdb-peda$ b bof ➝ Set a break point at function bof() 
-Breakpoint 1 at 0x124d: file stack.c, line 18.
-gdb-peda$ run ➝ Set a break point at function bof() 
-...
-Breakpoint 1, bof (str=0xffffcf57 ...) at stack.c:
-18 {
-gdb-peda$ next ➝ See the note below 
-...
-22 strcpy(buffer, str);
-
-
-gdb-peda$ p $ebp ➝ Get the ebp value
-$1 = (void *) 0xffffdfd
-gdb-peda$ p &buffer ➝ Get the buffer’s address
-$2 = (char (*)[100]) 0xffffdfac
-gdb-peda$ quit ➝ exit
-```
-
 **Note 1**. When gdb stops inside the _bof()_ function, it stops before the _ebp_ register is set to point to the current stack frame, so if we print out the value of ebp here, we will get the caller’s _ebp_ value. We need to use next to execute a few instructions and stop after the ebp register is modified to point to the stack frame of the _bof()_ function. The SEED book is based on Ubuntu 16.04, and gdb’s behavior is slightly different, so the book does not have the next step 
 
 Note 2. It should be noted that the frame pointer value obtained from gdb is different from that during the actual execution (without using _gdb_). This is because gdb has pushed some environment data into the stack before running the debugged program. When the program runs directly without using gdb, the stack does not have those data, so the actual frame pointer value will be larger. You should keep this in mind when constructing your payload. 
 
 ### 5.2 Launching Attacks
 
-To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside _badfile_. We will use a Python program to do that. We provide a skeleton program called _exploit.py_, which is included in the lab setup file. The code is incomplete, and students need to replace some of the essential values in the code. 
+To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside _badfile_. We will use a Python program to do that. We provide a skeleton program called _exploit.py_, which is included in the lab setup file. The code is `incomplete`, and students need to `replace some of the essential values` in the code. 
 
-Listing 3:exploit.py
+Listing 3: **exploit.py**
 
-```
+```python
 #!/usr/bin/python
 import sys
 
 shellcode= (
-"" # I Need to changeI
+""                                           #Need to change
 ).encode(’latin-1’)
 
 # Fill the content with NOP’s
@@ -362,18 +341,17 @@ content = bytearray(0x90 for i in range(517))
 
 ##################################################################
 # Put the shellcode somewhere in the payload
-start = 0 # I Need to changeI
+start = 0                                    #Need to change
 content[start:start + len(shellcode)] = shellcode
 
 # Decide the return address value
 # and put it somewhere in the payload
-ret = 0x00 # I Need to changeI
-offset = 0 # I Need to changeI
+ret = 0x00                                   #Need to change
+offset = 0                                   #Need to change
 
 L = 4 # Use 4 for 32-bit address and 8 for 64-bit address
 content[offset:offset + L] = (ret).to_bytes(L,byteorder=’little’)
 ##################################################################
-
 
 # Write the content to a file
 with open(’badfile’, ’wb’) as f:
