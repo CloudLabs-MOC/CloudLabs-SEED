@@ -369,18 +369,20 @@ Change the following values:
 | start | 400 |
 | ret | 0xffffcfa8 + 100 _(something more than `$ebp` value which you copied in previous task)_ |
 
+After you finish the above program, run it. This will generate the contents for _badfile_. Then run the vulnerable program _stack_. If your exploit is implemented correctly, you should be able to get a root shell: 
+
+```bash
+./exploit.py 
+./stack-L1
+
+# <---- Bingo! You’ve got a root shell!
+```
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/cafdeb3a-cc7b-4a8e-b9df-aaae70d819f0)
+
 > If faced the issue, Please add more in the ret value. Instead of `0xffffcfa8 + 100` try `0xffffcfa8 + 200`.
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/1afabe86-1b6b-44c7-ad44-790a73b11b7c)
-
-
-After you finish the above program, run it. This will generate the contents for _badfile_. Then run the vulnerable program _stack_. If your exploit is implemented correctly, you should be able to get a root shell: 
-
-```
-$./exploit.py 
-$./stack-L1 
-# <---- Bingo! You’ve got a root shell!
-```
 
 In your lab report, in addition to providing screenshots to demonstrate your investigation and attack, you also need to explain how the values used in your _exploit.py_ are decided. These values are the most important part of the attack, so a detailed explanation can help the instructor grade your report. Only demonstrating a successful attack without explaining why the attack works will not receive many points. 
 
