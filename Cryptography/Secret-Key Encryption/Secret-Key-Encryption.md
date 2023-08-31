@@ -1,11 +1,11 @@
 # Secret-Key Encryption Lab
 
-```
+
 Copyright © 2018 by Wenliang Du.
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
-```
+
 ## 1 Overview
 
 The learning objective of this lab is for students to get familiar with the concepts in the secret-key encryption
@@ -36,6 +36,10 @@ In this lab, we use a container to run an encryption oracle. The container is on
 do not need to start the container for other tasks.
 
 **Container Setup and Commands.** Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+- In the SEED VM Open the Terminal and run the following commands.
+  
+![01](media/01.png)
+
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/Secret-Key%20Encryption/Lab%20files/Labsetup.zip
 ```
@@ -50,26 +54,42 @@ In the following, we list some of the commonly used commands related to Docker a
 we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
 
+- Run the following commands in the terminal.
 ```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
+sudo su
+```
 
-// Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
+```
+cd Labsetup
+```
+
+```
+docker-compose build # Build the container image
+```
+
+```
+docker-compose up # Start the container
 ```
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
 them in the .bashrc file.
+Open the new terminal window and run the following commands:
 ```
-$ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id> // Alias for: docker exec -it <id> /bin/bash
+sudo su
+```
 
-// The following example shows how to get a shell inside hostC
+```
+docker ps --format "{{.ID}} {{.Names}}"
+```
+Replace the docker id with id
+
+```
+docker exec -it <id> /bin/bash
+```
+```
+The following example shows how to get a shell inside hostC
 $ dockps
 b1004832e275 hostA-10.9.0.
 0af4ea7a3e2e hostB-10.9.0.
@@ -77,11 +97,10 @@ b1004832e275 hostA-10.9.0.
 
 $ docksh 96
 root@9652715c8e0a:/#
-
-// Note: If a docker command requires a container ID, you do not need to
-// type the entire ID string. Typing the first few characters will
-// be sufficient, as long as they are unique among all the containers.
 ```
+
+> **Note**: If a docker command requires a container ID, you do not need to type the entire ID string. Typing the first few characters will be sufficient, as long as they are unique among all the containers.
+
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
