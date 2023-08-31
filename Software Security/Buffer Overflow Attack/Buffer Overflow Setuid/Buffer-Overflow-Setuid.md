@@ -368,6 +368,7 @@ Change the following values:
 | ----------- | ----------- |
 | start | 400 |
 | ret | 0xffffcfa8 + 100 _(something more than `$ebp` value which you copied in previous task)_ |
+| offset | 132 |
 
 After you finish the above program, run it. This will generate the contents for _badfile_. Then run the vulnerable program _stack_. If your exploit is implemented correctly, you should be able to get a root shell: 
 
