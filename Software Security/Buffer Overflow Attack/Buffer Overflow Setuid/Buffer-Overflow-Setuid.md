@@ -55,19 +55,19 @@ Modern operating systems have implemented several security mechanisms to make th
 **Address Space Randomization**. Ubuntu and several other Linux-based systems uses address space randomization to randomize the starting address of heap and stack. This makes guessing the exact addresses difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be disabled using the following command: 
 
 ```
-$ sudo sysctl -w kernel.randomize_va_space=
+sudo sysctl -w kernel.randomize_va_space=0
 ```
-![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6ab0b49f-b018-4d3e-ad02-63e966467e33)
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/facfa7fd-4d17-421f-8bc3-10bbb903b263)
 
  **Configuring /bin/sh**. In the recent versions of Ubuntu OS, the /bin/sh symbolic link points to the `/bin/dash` shell. The dash program, as well as bash, has implemented a security countermeasure that prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed in a Set-UID process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
  
 Since our victim program is a Set-UID program, and our attack relies on running `/bin/sh`, the countermeasure in `/bin/dash` makes our attack more difficult. Therefore, we will link `/bin/sh` to another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit more effort, the countermeasure in `/bin/dash` can be easily defeated). We have installed a shell program called `zsh` in our Ubuntu 20.04 VM. The following command can be used to link `/bin/sh` to `zsh`: 
 
 ```
-$ sudo ln -sf /bin/zsh /bin/sh
+sudo ln -sf /bin/zsh /bin/sh
 ```
-![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/dd4072c8-ed58-499f-841d-ad4a55918df1)
-
+or we can type `-v`
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9f20070f-2150-42bd-ab90-b9f54e18d374)
 
 **StackGuard and Non-Executable Stack**. These are two additional countermeasures implemented in the system. They can be turned off during the compilation. We will discuss them later when we compile the vulnerable program. 
 
@@ -76,6 +76,8 @@ $ sudo ln -sf /bin/zsh /bin/sh
 The ultimate goal of buffer-overflow attacks is to inject malicious code into the target program, so the code can be executed using the target program’s privilege. Shellcode is widely used in most code-injection attacks. Let us get familiar with it in this task. 
 
 ### 3.1 The C Version of Shellcode
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/d1425f16-6a4d-4672-8620-60aba8b6ad4b)
 
 A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look like the following: 
 
