@@ -166,7 +166,7 @@ cat call_shellcode.c
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/17703a08-8b32-41ba-a704-ed0575b248e4)
 
-Listing 1 : `callshellcode.c`
+Listing 1 : **callshellcode.c**
 
 ```
 #include <stdlib.h>
@@ -256,7 +256,9 @@ The above program has a buffer overflow vulnerability. It first reads an input f
 > No need to type these commands as the `Makefile` has already included these commands
 
 gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c 
+
 sudo chown root stack ➀  
+
 sudo chmod 4755 stack ➁ 
 
 To run the **Makefile**, simply type:
@@ -283,6 +285,38 @@ The compilation and setup commands are already included in _Makefile_, so we jus
 To exploit the buffer-overflow vulnerability in the target program, the most important thing to know is the distance between the buffer’s starting position and the place where the return-address is stored. We will use a debugging method to find it out. Since we have the source code of the target program, we can compile it with the debugging flag turned on. That will make it more convenient to debug. 
 
 We will add the _-g_ flag to _gcc_ command, so debugging information is added to the binary. If you run _make_, the debugging version is already created. We will use _gdb_ to debug _stack-L1-dbg_. We need to create a file called badfile before running the program. 
+
+Type the following command to Investigate.
+
+```
+ls
+touch badfile
+gdb stack-L1-dbg
+```
+
+> Make sure your current working directry is "/Labsetup/code" and it has the following files :
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/19918c34-34b4-40db-819f-72ad3fb7d7cb)
+
+```
+b bof
+```
+```
+run
+```
+```
+next
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/db2ecd92-6d1b-4163-b7b6-27d406020512)
+
+```
+p $ebp
+```
+```
+p &buffer
+quit
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/89f7f694-38e8-4919-b7c0-8b5d4ccb269b)
 
 ```
 $ touch badfile ➝ Create an empty badfile
