@@ -158,7 +158,7 @@ syscall
 
 We have generated the binary code from the assembly code above, and put the code in a C program called call_shellcode.c inside the shellcode folder. If you would like to learn how to generate the binary code yourself, you should work on the Shellcode lab. In this task, we will test the shellcode. 
 
-Redirect to shellcode and open the `call_shellcode.c` 
+Redirect to shellcode and open the **call_shellcode.c**
 
 ```
 cd shellcode/
@@ -213,7 +213,7 @@ ls
 
 type `cat stack.c` to view the file content.
 
-Listing 2: The vulnerable program `stack.c`
+Listing 2: The vulnerable program **stack.c**
 
 ```c
 #include <stdlib.h>
@@ -253,11 +253,19 @@ The above program has a buffer overflow vulnerability. It first reads an input f
 
 **Compilation**. To compile the above vulnerable program, do not forget to turn off the StackGuard and the non-executable stack protections using the _-fno-stack-protector_ and "-z execstack" options. After the compilation, we need to make the program a root-owned Set-UID program. We can achieve this by first change the ownership of the program to root (Line ➀), and then change the permission to 4755 to enable the Set-UID bit (Line ➁). It should be noted that changing ownership must be done before turning on the Set-UID bit, because ownership change will cause the Set-UID bit to be turned off. 
 
+> No need to type these commands as the `Makefile` has already included these commands
+
+gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c 
+sudo chown root stack ➀  
+sudo chmod 4755 stack ➁ 
+
+To run the **Makefile**, simply type:
+
+```bash
+make
+ls
 ```
-$ gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c 
-$ sudo chown root stack ➀  
-$ sudo chmod 4755 stack ➁ 
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9ab968b8-d417-4595-ae0e-1f79ac168bba)
 
 The compilation and setup commands are already included in _Makefile_, so we just need to type make to execute those commands. The variables _L1, ..., L4_ are set in _Makefile_; they will be used during the compilation. If the instructor has chosen a different set of values for these variables, you need to change them in Makefile. 
 
