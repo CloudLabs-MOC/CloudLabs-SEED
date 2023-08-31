@@ -24,7 +24,8 @@ In this lab, students will be given a program with a buffer-overflow vulnerabili
 **Lab environment**.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
 First we need to make sure that we are logged in to **seed** user. Type the below commmands to log in as seed user and change directory.
-```
+
+```bash
 sudo su seed
 cd
 ```
@@ -210,8 +211,11 @@ ls
 ```
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/78315387-ca4b-4e04-9d1d-65dd834a436f)
 
+type `cat stack.c` to view the file content.
+
 Listing 2: The vulnerable program `stack.c`
-```
+
+```c
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -225,25 +229,23 @@ Listing 2: The vulnerable program `stack.c`
 
 int bof(char *str)
 {
-char buffer[BUF_SIZE];
+    char buffer[BUF_SIZE];
 
-```
-/* The following statement has a buffer overflow problem */
-strcpy(buffer, str);
-```
-return 1;
+    /* The following statement has a buffer overflow problem */
+    strcpy(buffer, str);
+    return 1;
 }
 
 int main(int argc, char **argv)
 {
-char str[517];
-FILE *badfile;
+    char str[517];
+    FILE *badfile;
 
-badfile = fopen("badfile", "r");
-fread(str, sizeof(char), 517, badfile);
-bof(str);
-printf("Returned Properly\n");
-return 1;
+    badfile = fopen("badfile", "r");
+    fread(str, sizeof(char), 517, badfile);
+    bof(str);
+    printf("Returned Properly\n");
+    return 1;
 }
 ```
 
