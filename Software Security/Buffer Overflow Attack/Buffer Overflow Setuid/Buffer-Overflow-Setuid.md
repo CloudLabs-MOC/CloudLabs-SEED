@@ -81,6 +81,16 @@ The ultimate goal of buffer-overflow attacks is to inject malicious code into th
 
 ### 3.1 The C Version of Shellcode
 
+First we redirect to the lab files with the help of following commands:
+
+```
+ls
+cd Labsetup/
+ls
+```
+
+> Here Labsetup is the folder name which you download and unzipped in previous steps.
+
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/d1425f16-6a4d-4672-8620-60aba8b6ad4b)
 
 A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look like the following: 
