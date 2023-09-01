@@ -339,18 +339,48 @@ for details). We will conduct the following experiments to understand how this t
     with length 5 (without the-n option, the length will be 6, because a newline character will be added
     by echo):
 ```    
-    $ echo -n "12345" > f1.txt
+     echo -n "12345" > f1.txt
 
 ```
+
+```
+echo -n "1234567890" > f2.txt
+```
+
+```
+echo -n "1234567890123456" > f3.txt
+```
+
+
 We then use "openssl enc -aes-128-cbc -e" to encrypt these three files using 128-bit AES
 with CBC mode. Please describe the size of the encrypted files.
 We would like to see what is added to the padding during the encryption. To achieve this goal, we
-will decrypt these files using "openssl enc -aes-128-cbc -d". Unfortunately, decryption
-by default will automatically remove the padding, making it impossible for us to see the padding.
+will decrypt these files using "openssl enc -aes-128-cbc -d".
+
+```
+openssl enc -aes-128-cbc -e -in f1.txt -out f1_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+```
+openssl enc -aes-128-cbc -e -in f2.txt -out f2_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+```
+openssl enc -aes-128-cbc -e -in f3.txt -out f3_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+
+
+Unfortunately, decryption by default will automatically remove the padding, making it impossible for us to see the padding.
 However, the command does have an option called "-nopad", which disables the padding, i.e.,
 during the decryption, the command will not remove the padded data. Therefore, by looking at the
 decrypted data, we can see what data are used in the padding. Please use this technique to figure out
 what paddings are added to the three files.
+
+```
+openssl enc -aes-128-cbc -d -in f1_encrypted.txt -out f1_decrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10 -nopad
+```
+
 It should be noted that padding data may not be printable, so you need to use a hex tool to display the
 content. The following example shows how to display a file in the hex format:
 ```
