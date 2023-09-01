@@ -41,11 +41,26 @@ do not need to start the container for other tasks.
 ![01](media/01.png)
 
 ```
+sudo su seed
+```
+
+```
+cd
+```
+
+```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/Secret-Key%20Encryption/Lab%20files/Labsetup.zip
 ```
+
+[04](media/04.png)
+
 ```
 sudo unzip Labsetup.zip
 ```
+
+[05](media/05.png)
+
+
 Enter the Lab setup folder, and use the docker-compose.yml file to set up the lab
 environment. Detailed explanation of the content in this file and all the involved Dockerfile can be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
@@ -55,14 +70,6 @@ we are going to use these commands very frequently, we have created aliases for 
 (in our provided SEEDUbuntu 20.04 VM).
 
 - Run the following commands in the terminal.
-```
-sudo su seed
-```
-
-```
-cd
-```
-
 
 ```
 cd Labsetup
@@ -80,10 +87,16 @@ All the containers will be running in the background. To run commands on a conta
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
 them in the .bashrc file.
-Open the new terminal window and run the following commands:
+
+- Open the new terminal window and run the following commands:
 ```
-sudo su
+sudo su seed
 ```
+
+```
+cd
+```
+
 
 ```
 docker ps --format "{{.ID}} {{.Names}}"
@@ -109,7 +122,7 @@ root@9652715c8e0a:/#
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
-## 3 Task 1: Frequency Analysis
+## 3 Task 1: Frequency Analysis (Ready only)
 
 It is well-known that monoalphabetic substitution cipher (also known as monoalphabetic cipher) is not
 secure, because it can be subjected to frequency analysis. In this lab, you are given a cipher-text that is
@@ -154,6 +167,31 @@ analysis to figure out the encryption key and the original plaintext.
 We have also provided a Python program (freq.py) inside theLabsetup/Filesfolder. It reads
 the ciphertext.txt file, and produces the statistics for n-grams, including the single-letter frequencies,
 bigram frequencies (2-letter sequence), and trigram frequencies (3-letter sequence), etc.
+
+- Open a new terminal window and run the following commands to perform frequency analysis.
+
+```
+sudo su seed
+```
+
+```
+cd
+```
+
+```
+cd Labsetup
+```
+
+```
+cd Files
+```
+
+```
+./freq.py
+```
+
+- Output of the freq.py will look like the following:
+
 ```
 $ ./freq.py
 -------------------------------------
@@ -177,13 +215,19 @@ mur: 20
 ```
 **Guidelines.** Using the frequency analysis, you can find out the plaintext for some of the characters quite
 easily. For those characters, you may want to change them back to its plain text, as you may be able to get
-more clues. It is better to use capital letters for plain text, so for the same letter, we know which is plain text
+more clues. It is better to use capital letters for plain text, so for the same letter, we know which is plain text and which is cipher text. You can use the tr command to do this. For example, in the following, we replace
+letters a,e, and t in in.txt with letters X, G, E, respectively; the results are saved in out.txt.
 
+```
+echo "aet" > in.txt
+```
 
-and which is cipher text. You can use the tr command to do this. For example, in the following, we replace
-letters a,e, and t in in.txt with letters X, G, E, respectively; the results are saved inout.txt.
 ```
 $ tr ’aet’ ’XGE’ < in.txt > out.txt
+```
+
+```
+cat out.txt
 ```
 There are many online resources that you can use. We list some useful links in the following:
 
@@ -197,8 +241,28 @@ There are many online resources that you can use. We list some useful links in t
 In this task, we will play with various encryption algorithms and modes. You can use the following
 openssl enccommand to encrypt/decrypt a file. To see the manuals, you can type man openssl
 and man enc.
+
 ```
-$ openssl enc -ciphertype -e -in plain.txt -out cipher.bin \
+echo "This is the content of my article 6721." > plain.txt
+```
+
+- Using the AES-128-CBC cipher
+```
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher.bin \
+-K 00112233445566778889aabbccddeeff \
+-iv 0102030405060708
+```
+
+-  Using the BF-CBC cipher
+```
+openssl enc -bf-cbc -e -in plain.txt -out cipher.bin \
+-K 00112233445566778889aabbccddeeff \
+-iv 0102030405060708
+```
+
+- Using the AES-128-CFB cipher
+```
+openssl enc -aes-128-cfb -e -in plain.txt -out cipher.bin \
 -K 00112233445566778889aabbccddeeff \
 -iv 0102030405060708
 ```
@@ -230,15 +294,46 @@ and then do the following:
     commands to get the header from p1.bmp, the data from p2.bmp (from offset 55 to the end of the
     file), and then combine the header and data together into a new file.
 
+-  Run the following commands:
 
 ```
-$ head -c 54 p1.bmp > header
-$ tail -c +55 p2.bmp > body
-$ cat header body > new.bmp
+cd Labsetup
+```
+
+```
+cd Files
+```
+
+- Encrypting file using ECB (Electronic Code Book)
+
+```
+openssl enc -aes-128-ecb -e -in pic_original.bmp -out p1.bmp \
+-K 1001011 -iv 0010011
+```
+
+- Encrypting file using CBC (Cipher Block Chaining)
+
+```
+openssl enc -bf-cbc -e -in pic_original.bmp -out p2.bmp \
+-K 00112233445566778889aabbccddeeff \
+-iv 0102030405060708
+```
+
+
+```
+head -c 54 p1.bmp > header
+tail -c +55 p2.bmp > body
+cat header body > new.bmp
 ```
 2. Display the encrypted picture using a picture viewing program (we have installed an image viewer
     program called eog on our VM). Can you derive any useful information about the original picture
     from the encrypted picture? Please explain your observations.
+
+- Navigate to Labsetup folder and open Files, and open new.bmp
+
+[02](media/02.png)
+
+[03](media/03.png)
 
 ```
 Select a picture of your choice, repeat the experiment above, and report your observations.
