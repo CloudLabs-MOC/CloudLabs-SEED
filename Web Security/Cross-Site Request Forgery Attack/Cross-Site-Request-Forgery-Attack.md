@@ -122,9 +122,10 @@ mapped to their corresponding IP addresses. You need to use the root privilege t
 _sudo_). It should be noted that these names might have already been added to the file due to some other
 labs. If they are mapped to different IP addresses, the old entries must be removed.
 ```
-10.9.0.5 [http://www.seed-server.com](http://www.seed-server.com)
-10.9.0.5 [http://www.example32.com](http://www.example32.com)
-10.9.0.105 [http://www.attacker32.com](http://www.attacker32.com)
+10.9.0.5 www.seed-server.com
+10.9.0.5 www.example32.com
+10.9.0.105 www.attacker32.com
+
 ```
 **MySQL database.** Containers are usually disposable, so once it is destroyed, all the data inside the containers are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose our work when we shutdown our container. To achieve this, we have mounted the _mysqldata_folder_ on the host machine (inside _Labsetup_, it will be created after the MySQL container runs once) to the _/var/lib/mysqlfolder_ inside the MySQL container. This folder is where MySQL stores its database.
 Therefore, even if the container is destroyed, data in the database are still kept. If you do want to start from a clean database, you can remove this folder:
