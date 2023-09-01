@@ -253,12 +253,12 @@ openssl enc -aes-128-cbc -e -in plain.txt -out cipher.bin -K 0011223344556677888
 
 -  Using the BF-CBC cipher
 ```
-openssl enc -bf-cbc -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708
+openssl enc -bf-cbc -e -in plain.txt -out cipher1.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708
 ```
 
 - Using the AES-128-CFB cipher
 ```
-openssl enc -aes-128-cfb -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+openssl enc -aes-128-cfb -e -in plain.txt -out cipher2.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
 ```
 Please replace the cipher type with a specific cipher type, such as-aes-128-cbc,-bf-cbc,
 -aes-128-cfb, etc. In this task, you should try at least 3 different ciphers. You can find the meaning
