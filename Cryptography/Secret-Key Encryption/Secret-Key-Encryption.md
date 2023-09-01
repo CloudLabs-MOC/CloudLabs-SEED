@@ -56,8 +56,13 @@ we are going to use these commands very frequently, we have created aliases for 
 
 - Run the following commands in the terminal.
 ```
-sudo su
+sudo su seed
 ```
+
+```
+cd
+```
+
 
 ```
 cd Labsetup
