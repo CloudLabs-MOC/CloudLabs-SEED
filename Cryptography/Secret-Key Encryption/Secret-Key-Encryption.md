@@ -301,16 +301,15 @@ cd Files
 - Encrypting file using ECB (Electronic Code Book)
 
 ```
-openssl enc -aes-128-ecb -e -in pic_original.bmp -out p1.bmp \
--K 1001011 -iv 0010011
+openssl enc -aes-128-ecb -e -in pic_original.bmp -out p1.bmp -K 00110011001100110011001100110011
+
 ```
 
 - Encrypting file using CBC (Cipher Block Chaining)
 
 ```
-openssl enc -bf-cbc -e -in pic_original.bmp -out p2.bmp \
--K 00112233445566778889aabbccddeeff \
--iv 0102030405060708
+openssl enc -bf-cbc -e -in pic_original.bmp -out p2.bmp -K 00112233445566778889aabbccddeeff -iv 0102030405060708
+
 ```
 
 
