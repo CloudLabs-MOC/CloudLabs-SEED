@@ -52,13 +52,13 @@ cd
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/Secret-Key%20Encryption/Lab%20files/Labsetup.zip
 ```
 
-[04](media/04.png)
+![04](media/04.png)
 
 ```
 sudo unzip Labsetup.zip
 ```
 
-[05](media/05.png)
+![05](media/05.png)
 
 
 Enter the Lab setup folder, and use the docker-compose.yml file to set up the lab
