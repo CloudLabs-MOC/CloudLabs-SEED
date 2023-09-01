@@ -37,10 +37,13 @@ In this lab, we will use three websites. The first website is the vulnerable Elg
 Files needed for this lab are included in _Labsetup.zip_, which can be fetched by running the following commands.
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files/Labsetup.zip
+sudo su seed
 ```
 ```
-sudo unzip Labsetup.zip
+wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files/Labsetup.zip
+```
+```
+unzip Labsetup.zip
 ```
 
 Then use the _docker-compose.yml_ file to set up the lab environment. Detailed explanation of the content in this file and all the involved Docker file can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual. 
@@ -49,7 +52,7 @@ In the following, we list some of the commonly used commands related to Docker a
 
 ```
 $ docker-compose build # Build the container images
-$ docker-compose up # Start the containers
+$ docker-compose up -d # Start the containers
 $ docker-compose down # Shut down the containers
 
 // Aliases for the Compose commands above
@@ -117,15 +120,22 @@ Therefore, the web pages we put inside the _attacker_ folder on the VM will be h
 website. We have already placed some code skeletons inside this folder.
 
 **DNS configuration.** We access the Elgg website, the attacker website, and the defense site using their
-respective URLs. We need to add the following entries to the _/etc/hosts_ file, so these hostnames are
+respective URLs. We need to add the following entries to the _/etc/hosts_ file on the host machine on which the docker images running, so these hostnames are
 mapped to their corresponding IP addresses. You need to use the root privilege to change this file (using
 _sudo_). It should be noted that these names might have already been added to the file due to some other
 labs. If they are mapped to different IP addresses, the old entries must be removed.
+
 ```
-10.9.0.5 [http://www.seed-server.com](http://www.seed-server.com)
-10.9.0.5 [http://www.example32.com](http://www.example32.com)
-10.9.0.105 [http://www.attacker32.com](http://www.attacker32.com)
+nano etc/hosts
 ```
+```
+10.9.0.5 www.seed-server.com
+10.9.0.5 www.example32.com
+10.9.0.105 www.attacker32.com
+```
+
+!(images/DNS_Update_HostMachine.png)
+
 **MySQL database.** Containers are usually disposable, so once it is destroyed, all the data inside the containers are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose our work when we shutdown our container. To achieve this, we have mounted the _mysqldata_folder_ on the host machine (inside _Labsetup_, it will be created after the MySQL container runs once) to the _/var/lib/mysqlfolder_ inside the MySQL container. This folder is where MySQL stores its database.
 Therefore, even if the container is destroyed, data in the database are still kept. If you do want to start from a clean database, you can remove this folder:
 ```
@@ -152,6 +162,11 @@ a legitimate HTTP request looks like and what parameters it uses, etc. We can us
 on how to use this tool is given in the Guideline section (§ 5.1). Please use this tool to capture an HTTP
 GET request and an HTTP POST request in Elgg. In your report, please identify the parameters used in this
 these requests, if any.
+
+![alt text](images/Task_3.1httplive_observer.png)
+
+![alt text](images/Http_header_postobserver.png)
+
 
 ### 3.2 Task 2: CSRF Attack using GET Request
 
@@ -182,6 +197,30 @@ is to use the same approach as the one used in forging the POST request, i.e., u
 a GET request. If you are using SEEDUbuntu 20.04 VM, the image tag approach still works, unless you
 upgrade the Firefox to the more recent version.
 
+To get the **Alice GUID** in this lab which is:**56**, note it down for future reference and copy the URL
+
+![alt text](images/Task_3.2_get_alicerankurl.png)
+
+To get the **Samy GUID** in this lab which is:**59**, you can get the GUID using the source code of web page and search for GUID. please note it down GUID for future reference
+
+![alt text](images/Task_3.2_samy_guid.png)
+
+To add Samy alice friend you need to update the codebase of attacker docker image, for that we have mounted the folder to docker image of attacker you need to make the changes to
+the host machine **/Labguide/attacker/** provide the **ls** command you will find the codebase files in which you need to update the **addfriend.html** file and provide the URL and GUID of Samy which is **59**
+
+![alt text](images/task_3.2_addsamytoalicefriend.png)
+
+Add the updated **addfriend.html** file to docker attacker image
+
+![alt text](images/Task_3.2_addfiletodocker.png)
+
+Now goto the website **www.attacker32.com** and click on **Add-Friend_Attack**
+
+![alt text](images/Task_3.2_clickaddfriend_tosee_samyadded.png)
+
+Sign in using the Alice credentials and click on friends tab Samy added in the alice friend's list
+
+![alt text](images/task_3.2_samyaddeddimage.png)
 
 ### 3.3 Task 3: CSRF Attack using POST Request
 
@@ -281,6 +320,29 @@ questions in your report:
     how Boby can solve this problem.
 - **Question 2:** If Boby would like to launch the attack to anybody who visits his malicious web page.
     In this case, he does not know who is visiting the web page beforehand. Can he still launch the CSRF attack to modify the victim’s Elgg profile? Please explain.
+  
+
+Get the profile edit URL using the http header live extension tool and note it down for future reference
+
+![alt text](images/Task3.3_httpheader_edit_samy_page.png)
+
+Now we need to add the URL and its depending properties in the **editprofile.html** file
+
+![alt text](images/Edit_profile_page_samy.png)
+
+![alt text](images/task3.3_httpnanoedit_editfile.png)
+
+Add the **editfile.html** in the docker machine
+
+![alt text](images/task3.3_addeditprofileto_docker.png)
+
+
+Go to the **www.attacker32.com** website again in the hostmachine and click on **Edit-Profile_Attack**
+
+![alt text](images/task3.3_edit_profile_alice.png)
+
+
+Sign in using the Alice credentials and click on profile section you will see the updated changes
 
 ## 4 Lab Tasks: Defense
 
@@ -289,6 +351,7 @@ checking whether the token is present in the request or not, they can tell wheth
 request or a cross-site request. This is called _secret token_ approach. More recently, most browsers have
 implemented a mechanism called _SameSite cookie_, which is intended to simplify the implementation of
 CSRF countermeasures. We will conduct experiments on both methods.
+
 
 ### 4.1 Task 4: Enabling Elgg’s Countermeasure
 
@@ -367,7 +430,18 @@ Please point out the secret tokens in the captured HTTP requests. Please explain
 **It should be noted (important)** that when we launch the edit-profile attack while the countermeasure is 
 enabled, the failed attempt will cause the attacker’s page to be reloaded, which will trigger the forged POST request again. This will lead to another failed attempt, so the page will be reloaded again and another forged POST request will be sent out. This endless loop will slow down your computer. Therefore, after verifying that the attack failed, kill the tab to stop the endless loop. 
 
-### 4.2 Task 5: Experimenting with the SameSite Cookie Method
+To mitigate the attack you need to update the codebase in the mentioned location below 
+
+![alt text](images/task4.1_updateCsrfattack.png)
+
+![alt text](images/task4.1_comment_return_Csrf.png)
+
+After that please sign in again using the Alice credentials and try to click on Edit-Profile_Attack in www.attacker32.com website you will see the token error on the Alice page
+
+![alt text](images/task4.1_trying_toaddsamy_again_errorr_token.png)
+
+
+### 4.2 Task 5: Experimenting with the SameSite Cookie Method **(Read_Only)**
 
 Most browsers have now implemented a mechanism called SameSite cookie, which is a property associated
 with cookies. When sending out requests, browsers will check this property, and decide whether to attach
