@@ -26,35 +26,53 @@ Lab environment. You can perform the lab exercise on the SEED VM provided by the
 
 ## 2 Lab Tasks
 
+First we need to make sure that we are logged in to **seed** user. Type the below commmands to log in as seed user and change directory.
+
+```bash
+sudo su seed
+cd
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6252c5b5-7bd6-4fd7-b995-4dc0d7cbd62c)
+
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
+```bash
+wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Set-UID%20Programs/Lab%20files/Labsetup.zip
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Set-UID%20Programs/Lab%20files/Labsetup.zip
+```bash
+unzip Labsetup.zip
 ```
-
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6804a106-e9d4-457d-95fe-fab6479a799d)
+```bash
+unzip Labsetup.zip
 ```
-sudo unzip Labsetup.zip
-```
-```
-sudo chmod 777 Labsetup
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/327b3197-8930-4363-aca4-56b8a05d0ed6)
 
 ### 2.1 Task 1: Manipulating Environment Variables
 
 In this task, we study the commands that can be used to set and unset environment variables. We are using Bash in the seed account. The default shell that a user uses is set in the `/etc/passwdfile` (the last field of each entry). You can change this to another shell program using the command `chsh` (please do not do it for this lab). Please do the following tasks:
 
 - Use `printenv` or `env` command to print out the environment variables. If you are interested in some particular environment variables, such asPWD, you can use "printenv PWD" or "env | grep PWD".
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/384c0e5e-dc3b-4497-9363-b15595e1fc83)
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/005a245d-de26-494d-b591-a24afa9a4c30)
 - Use `export` and `unset` to set or unset environment variables. It should be noted that these two commands are not separate programs; they are two of the Bash’s internal commands (you will not be able to find them outside of Bash).
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a52f358c-2b17-419c-bbb3-50b9d4007f24)
 
 ### 2.2 Task 2: Passing Environment Variables from Parent Process to Child Process
 
 In this task, we study how a child process gets its environment variables from its parent. In Unix, `fork()` creates a new process by duplicating the calling process. The new process, referred to as the child, is an exact duplicate of the calling process, referred to as the parent; however, several things are not inherited by the child (please see the manual of `fork()` by typing the following command:man fork). In this task, we would like to know whether the parent’s environment variables are inherited by the child process or not.
 
-**Step 1**. Please compile and run the following program, and describe your observation. The program can be found in the **Labsetup** folder, run `cd Labsetup` to change the folder; it can be compiled using "gcc myprintenv.c", which will generate a binary called a.out. Let’s run it and save the output into a file using "./a.out > file".
+Re-direct to `Labsetup/myprintenv.c` and view the file.
 
-Listing 1:myprintenv.c
+```bash
+cd Labsetup/
+cat myprintenv.c
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/c7dc031c-792d-411d-bfd9-6885bd65e22f)
 
-```    
+Listing 1: **myprintenv.c**
+
+```c
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -82,6 +100,16 @@ void main()
     }
 }
 ```
+
+**Step 1**. Please compile and run the following program, and describe your observation. The program can be found in the **Labsetup** folder, run `cd Labsetup` to change the folder; it can be compiled using "gcc myprintenv.c", which will generate a binary called a.out. Let’s run it and save the output into a file using "./a.out > file".
+
+```bash
+gcc myprintenv.c
+./a.out > file.txt
+cat file.txt
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/f190e50a-c607-48c3-85c8-2c5b9a07b94f)
+
 
 **Step 2**. Now comment out the `printenv()` statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
 
