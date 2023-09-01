@@ -248,23 +248,17 @@ echo "This is the content of my article 6721." > plain.txt
 
 - Using the AES-128-CBC cipher
 ```
-openssl enc -aes-128-cbc -e -in plain.txt -out cipher.bin \
--K 00112233445566778889aabbccddeeff \
--iv 0102030405060708
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
 ```
 
 -  Using the BF-CBC cipher
 ```
-openssl enc -bf-cbc -e -in plain.txt -out cipher.bin \
--K 00112233445566778889aabbccddeeff \
--iv 0102030405060708
+openssl enc -bf-cbc -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708
 ```
 
 - Using the AES-128-CFB cipher
 ```
-openssl enc -aes-128-cfb -e -in plain.txt -out cipher.bin \
--K 00112233445566778889aabbccddeeff \
--iv 0102030405060708
+openssl enc -aes-128-cfb -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
 ```
 Please replace the cipher type with a specific cipher type, such as-aes-128-cbc,-bf-cbc,
 -aes-128-cfb, etc. In this task, you should try at least 3 different ciphers. You can find the meaning
@@ -329,11 +323,6 @@ cat header body > new.bmp
     program called eog on our VM). Can you derive any useful information about the original picture
     from the encrypted picture? Please explain your observations.
 
-- Navigate to Labsetup folder and open Files, and open new.bmp
-
-[02](media/02.png)
-
-[03](media/03.png)
 
 ```
 Select a picture of your choice, repeat the experiment above, and report your observations.
