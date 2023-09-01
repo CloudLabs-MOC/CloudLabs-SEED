@@ -389,6 +389,8 @@ $ hexdump -C p1.txt
 $ xxd p1.txt
 00000000: 3132 3334 3536 3738 3949 4a4b 4c0a 123456789IJKL.
 ```
+# Challenge Labs
+
 ## 7 Task 5: Error Propagation – Corrupted Cipher Text
 
 To understand the error propagation property of various encryption modes, we would like to do the following
