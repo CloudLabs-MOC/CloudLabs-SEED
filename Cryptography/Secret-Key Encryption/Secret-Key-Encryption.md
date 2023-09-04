@@ -41,14 +41,6 @@ do not need to start the container for other tasks.
 ![01](media/01.png)
 
 ```
-sudo su seed
-```
-
-```
-cd
-```
-
-```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/Secret-Key%20Encryption/Lab%20files/Labsetup.zip
 ```
 
@@ -106,14 +98,6 @@ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 ```
 
 - Open the new terminal window and run the following commands:
-```
-sudo su seed
-```
-
-```
-cd
-```
-
 
 ```
 docker ps --format "{{.ID}} {{.Names}}"
@@ -186,14 +170,6 @@ the ciphertext.txt file, and produces the statistics for n-grams, including the 
 bigram frequencies (2-letter sequence), and trigram frequencies (3-letter sequence), etc.
 
 - Open a new terminal window and run the following commands to perform frequency analysis.
-
-```
-sudo su seed
-```
-
-```
-cd
-```
 
 ```
 cd Labsetup
