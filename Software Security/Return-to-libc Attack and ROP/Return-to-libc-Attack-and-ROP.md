@@ -247,6 +247,7 @@ void main(){
         printf("%x\n", (unsigned int)shell);
 }
 ```
+
 ![](image/return%20to%20libc8.png)
 
 >**Note**: Please note down the `$prtenv` value, i.e., ffffd5e2 (This value might change over time).
