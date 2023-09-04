@@ -76,13 +76,8 @@ cd Labsetup
 sudo mv md5collgen /usr/local/bin/
 ```
 
-
 ```
-sudo su
-```
-
-```
-touch prefix.txt
+sudo touch prefix.txt
 ```
 
 ```
