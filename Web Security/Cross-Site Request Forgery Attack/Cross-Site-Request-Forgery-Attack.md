@@ -37,9 +37,6 @@ In this lab, we will use three websites. The first website is the vulnerable Elg
 Files needed for this lab are included in _Labsetup.zip_, which can be fetched by running the following commands.
 
 ```
-sudo su seed
-```
-```
 wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Cross-Site%20Request%20Forgery%20Attack/Lab%20files/Labsetup.zip
 ```
 ```
@@ -52,7 +49,7 @@ In the following, we list some of the commonly used commands related to Docker a
 
 ```
 $ docker-compose build # Build the container images
-$ docker-compose up -d # Start the containers
+$ docker-compose up # Start the containers
 $ docker-compose down # Shut down the containers
 
 // Aliases for the Compose commands above
