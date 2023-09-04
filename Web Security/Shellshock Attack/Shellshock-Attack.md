@@ -33,14 +33,6 @@ following topics:
 
 **Lab environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
 
-First we need to make sure that we are logged in to **seed** user. Type the below commmands to log in as seed user and change directory.
-```
-sudo su seed
-cd
-```
-
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/b0f06a26-34ef-42f2-9a67-f83fd91cda88)
-
 ## 2 Environment Setup
 
 ### 2.1 DNS Setting
