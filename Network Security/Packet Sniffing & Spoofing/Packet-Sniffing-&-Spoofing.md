@@ -67,8 +67,10 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Sec
 sudo unzip Labsetup.zip
 ```
 
-Enter theLabsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved Dockerfile can be found from the user manual, which is linked
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/c509bca0-5875-4f1d-99e7-00869c031a20)
+
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved Docker-file can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 
@@ -87,6 +89,29 @@ $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
 ```
+
+Change the directory to Labsetup directory using:
+```
+cd Labsetup/
+```
+To know the docker containers use:
+```
+docker container ls
+```
+
+To build the container image and start the container use the following commands:
+```
+dcbuild
+```
+```
+dcup
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3f4e9b49-a039-4374-856a-2856f75c81b5)
+
+Open a new tab (Do not close the tab in which you started the docker image)
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/05112cb1-cddb-434c-bb96-c7ba8c96d266)
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps "command to find out the ID of
@@ -112,6 +137,24 @@ root@9652715c8e0a:/#
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
 ```
+
+We first need to use the "docker ps" command to find out the ID of the container and get a shell inside the container.
+
+```
+dockps
+```
+```
+docksh seed-attacker
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/d961bfaa-a577-494d-8ecb-733d0e6765df)
+
+Similarly, we will follow the same steps to get a shell in hostA:
+```
+docksh hostA-10.9.0.5
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/106cc402-d1f5-4ca3-8300-677758890919)
 
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
@@ -152,34 +195,20 @@ However, the container is still a separate machine, because its other namespaces
 from the host.
 
 Getting the network interface name. When we use the provided Compose file to create containers for
-this lab, a new network is created to connect the VM and the containers. The IP prefix for this network is
-
-
-10.9.0.0/24, which is specified in the docker-compose.yml file. The IP address assigned to our
+this lab, a new network is created to connect the VM and the containers. The IP prefix for this network 
+is 10.9.0.0/24, which is specified in the docker-compose.yml file. The IP address assigned to our
 VM is 10.9.0.1. We need to find the name of the corresponding network interface on our VM, because
-we need to use it in our programs. The interface name is the concatenation ofbr-and the ID of the network
-created by Docker. When we use ifconfig to list network interfaces, we will see quite a few. Look for
-the IP address 10.9.0.1.
+we need to use it in our programs. 
+
+The interface name is the concatenation of br-and the ID of the network created by Docker. When we use `ifconfig`
+to list network interfaces, we will see quite a few. Look for the IP address 10.9.0.1.
 
 ```
-$ ifconfig
-**br-c93733e9f913** : flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
-inet **10.9.0.1** netmask 255.255.255.0 broadcast 10.9.0.
-...
+ifconfig
 ```
 
-Another way to get the interface name is to use the "docker network" command to find out the
-network ID ourselves (the name of the network is seed-net:
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/13fce0ed-b500-4189-8a8d-1570d1108b14)
 
-```
-$ docker network ls
-
-NETWORK ID NAME DRIVER SCOPE
-a82477ae4e6b bridge bridge local
-e99b370eb525 host host local
-df62c6635eae none null local
-**c93733e9f913** seed-net bridge local
-```
 
 ## 3 Lab Task Set 1: Using Scapy to Sniff and Spoof Packets
 
