@@ -39,28 +39,35 @@ Setting up the hostname. We use the domainwww.seedlablenext.comto host the serve
 Since we only use one VM for this lab, we map this hostname tolocalhost(127.0.0.1). This can be
 achieved by adding the following entry to the/etc/hostsfile.
 
+```
 127.0.0.1 [http://www.seedlablenext.com](http://www.seedlablenext.com)
-
+```
 
 The server program. The server program (server.zip) can be found on the lab’s webpage. After
 downloading this zip file, uncompress it and check its contents:
 
+```
 $ unzip server.zip
 $ cd Server
 $ ls
 LabHome run_server.sh www
+```
 
 Thewwwdirectory contains the server code, and theLabHomedirectory contains a secret file and the
 key used for computing the MAC. We can run the following command to start the server program.
 
+```
 $ chmod +x run_server.sh
 $ ./run_server.sh
+```
 
 The server uses a Python module namedFlask. By the time this lab is officially released, the VM
 should have this module installed. If you see an error message that says “Flask not found”, you can use the
 command below to install Flask.
 
+```
 $ sudo pip3 install Flask==1.1.
+```
 
 Sending requests. The server program accepts the following commands:
 
@@ -74,8 +81,10 @@ below islstcmd, and its value is set to 1. It requests the server to list all th
 MAC computed based on the secret key (shared by the client and the server) and the command arguments.
 Before executing the command, the server will verify the MAC to ensure the command’s integrity.
 
+```
 [http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
 &mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
+````
 
 Students should replace the valueJohnDoein themynamefield with their actual names (no space is
 allowed). This parameter is to make sure that different students’ results are different, so students cannot
@@ -87,10 +96,11 @@ The following shows another example. The request includes two commands: list all
 load the filesecret.txt. Similarly, a valid MAC needs to be attached, or the server will not execute
 these commands.
 
+```
 [http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
 &download=secret.txt
 &mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
-
+```
 
 ## 3 Tasks
 
@@ -112,17 +122,21 @@ example:
 
 Key:R = 123456:myname=JohnDoe&uid=1001&lstcmd=
 
-```
+
 The MAC will be calculated using the following command:
 ```
 $ echo -n "123456:myname=JohnDoe&uid=1001&lstcmd=1" | sha256sum
+```
+The output would look something like this:
 7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce3 -
 
-```
+
 We can then construct the complete request and send it to the server program using the browser:
+
 ```
 [http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
 &mac=7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce
+```
 
 Task. Please send a download command to the server, and show that you can get the results back.
 
@@ -137,6 +151,8 @@ Assume that the original message isM = "This is a test message". The length ofMi
 bytes, so the padding is64 - 22 = 42bytes, including 8 bytes of the length field. The length ofMin
 
 term of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following padded message:
+
+```
 "This is a test message"
 "\x80"
 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -144,23 +160,28 @@ term of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the followin
 "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 "\x00\x00\x00"
 "\x00\x00\x00\x00\x00\x00\x00\xB0"
-
+```
 
 It should be noted that the length field uses the Big-Endian byte order, i.e., if the length of the message
 is0x012345, the length field in the padding should be:
 
+```
 "\x00\x00\x00\x00\x00\x01\x23\x45"
+```
 
 Task. Students need to construct the padding for the following message (the actual value of the<key>
 and<uid>should be obtained from theLabHome/key.txtfile.
 
+```
 <key>:myname=<name>&uid=<uid>&lstcmd=
+```
 
 ### 3.3 Task 3: Compute MAC using Secret Key
 
 In this task, we will add an extra messageN = "Extra message"to the padded original messageM =
 "This is a test message", and compute its hash value. The program is listed below.
 
+```
 /* calculate_mac.c */
 #include <stdio.h>
 #include <openssl/sha.h>
@@ -171,7 +192,6 @@ SHA256_CTX c;
 unsigned char buffer[SHA256_DIGEST_LENGTH];
 int i;
 
-```
 SHA256_Init(&c);
 SHA256_Update(&c,
 "This is a test message"
@@ -184,27 +204,29 @@ SHA256_Update(&c,
 "Extra message",
 64+13);
 SHA256_Final(buffer, &c);
-```
+
 for(i = 0; i < 32; i++) {
 printf("%02x", buffer[i]);
 }
 printf("\n");
 return 0;
 }
-
 ```
+
 Students can compile and run the above program as follows:
 ```
 $ gcc calculate_mac.c -o calculate_mac -lcrypto
 $ ./calculate_mac
-
+```
 
 Task. Students should change the code in the listing above and compute the MAC for the following request
 (assume that we know the secret MAC key):
 
+```
 [http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
 &lstcmd=1<padding>&download=secret.txt
 &mac=<hash-value>
+```
 
 Just like the previous task, the value of<name>should be your actual name. The value of the<uid>
 and the MAC key should be obtained from theLabHome/key.txtfile. Please send this request to the
@@ -223,10 +245,11 @@ Given the original messageM="This is a test message"and its MAC value, we will s
 how to add a message"Extra message"to the end of the paddedM, and then compute its MAC, without
 knowing the secret MAC key.
 
+```
 $ echo -n "This is a test message" | sha256sum
 6f3438001129a90c5b1637928bf38bf26e39e57c6e9511005682048bedbef
-
 ```
+
 The program below can be used to compute the MAC for the new message:
 ```
 /* length_ext.c */
@@ -240,12 +263,10 @@ int i;
 unsigned char buffer[SHA256_DIGEST_LENGTH];
 SHA256_CTX c;
 
-```
 SHA256_Init(&c);
 for(i=0; i<64; i++)
 SHA256_Update(&c, "*", 1);
-```
-```
+
 // MAC of the original message M (padded)
 c.h[0] = htole32(0x6f343800);
 c.h[1] = htole32(0x1129a90c);
@@ -255,36 +276,40 @@ c.h[4] = htole32(0x6e39e57c);
 c.h[5] = htole32(0x6e951100);
 c.h[6] = htole32(0x5682048b);
 c.h[7] = htole32(0xedbef906);
-```
 
-```
 // Append additional message
 SHA256_Update(&c, "Extra message", 13);
 SHA256_Final(buffer, &c);
-```
+
 for(i = 0; i < 32; i++) {
 printf("%02x", buffer[i]);
 }
 printf("\n");
 return 0;
 }
+```
+
+Students can compile the program as follows:
 
 ```
-Students can compile the program as follows:
-```
 $ gcc length_ext.c -o length_ext -lcrypto
+```
 
 Task. Students should first generate a valid MAC for the following request (where<uid>and the MAC
 key should be obtained from theLabHome/key.txtfile):
 
+```
 [http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
 &lstcmd=1&mac=<mac>
+```
 
 Based on the<mac>value calculated above, please construct a new request that includes thedownload
 command. You are not allowed to use the secret key this time. The URL looks like below.
 
+```
 [http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
 &lstcmd=1<padding>&download=secret.txt&mac=<new-mac>
+```
 
 Please send the constructed request to the server, and show that you can successfully get the content of
 thesecret.txtfile.
@@ -297,12 +322,15 @@ oper. The standard way to calculate MACs is to use HMAC. Students should modify 
 verifymac()function and use Python’shmacmodule to calculate the MAC. The function resides in
 lab.py. Given a key and message (both of type string), the HMAC can be computed as shown below:
 
+```
 mac = hmac.new(bytearray(key.encode(’utf-8’)), msg=message.encode(’utf-8’,
 ’surrogateescape’), digestmod=hashlib.sha256).hexdigest()
+```
 
 Students should repeat Task 1 to send a request to list files while using HMAC for the MAC calculation.
 Assuming that the chosen key is 123456, the HMAC can be computed in the following:
 
+```
 $ python
 Python 3.5.
 [GCC 5.4.0 20160609] on linux
@@ -311,10 +339,9 @@ Type "help", "copyright", "credits" or "license" for more information
 >>> import hashlib
 >>> key=’123456’
 >>> message=’lstcmd=1’
-
-
 >>> hmac.new(bytearray(key.encode(’utf-8’)), msg=message.encode(’utf-8’,
 ’surrogateescape’), digestmod=hashlib.sha256).hexdigest()
+```
 
 Students should describe why a malicious request using length extension and extra commands will fail
 MAC verification when the client and server use HMAC.
