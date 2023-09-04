@@ -325,6 +325,99 @@ If you use bless to copy-and-paste a block of data from one binary file to anoth
 "Edit -> Select Range" is quite handy, because you can select a block of data using a starting point
 and a range, instead of manually counting how many bytes are selected.
 
+- To perform this task you can follow the instructions given below.
+
+Create a C program by running the following commands:
+
+```
+nano task3.c
+```
+
+Copy and paste the following content into the file:
+```
+#include <stdio.h>
+unsigned char xyz[200] = {
+    "ssssssssssssssssssssssssssssssssssssssssssssssssss"
+    "ssssssssssssssssssssssssssssssssssssssssssssssssss"
+    "ssssssssssssssssssssssssssssssssssssssssssssssssss"
+    "ssssssssssssssssssssssssssssssssssssssssssssssssss"};
+int main()
+{
+    int i;
+    for (i = 0; i < 200; i++)
+    {
+        printf("%x", xyz[i]);
+    }
+    printf("\n");
+}
+```
+
+Compile the C program:
+```
+gcc task3.c
+
+```
+
+```
+gcc task3.c -o task3out
+```
+Run the 'task3out' program:
+
+```
+./task3out
+```
+
+```
+bless task3out
+```
+
+Use a hex editor like 'bless' to find the offset value in 'task3out' and replace <VALUE> with the appropriate numeric value:
+```
+head -c <VALUE> task3out > prefix11
+```
+
+![g](images/g.png)
+
+Add 128 to update the value for the 'tail' command:
+```
+tail -c <VALUE+128> task3out > suffix11
+```
+
+Generate MD5 collision files 'out31' and 'out32':
+```
+md5collgen -p prefix11 -o out31 out32
+```
+
+Concatenate 'out31' and 'suffix11' to create 'task3outnew':
+```
+cat out31 suffix11 > task3outnew
+```
+
+Concatenate 'out32' and 'suffix11' to create 'task3outnew2':
+```
+cat out32 suffix11 > task3outnew2
+```
+
+Check the MD5 sums of 'task3out,' 'task3outnew,' and 'task3outnew2':
+```
+md5sum task3out task3outnew task3outnew2
+```
+
+Make 'task3outnew' and 'task3outnew2' executable:
+```
+chmod +x task3outnew task3outnew2
+```
+
+Test 'task3out,' 'task3outnew,' and 'task3outnew2' to print hexadecimal values:
+```
+./task3out
+./task3outnew
+./task3outnew2
+```
+
+
+
+
 ### 2.4 Task 4: Making the Two Programs Behave Differently
 
 In the previous task, we have successfully created two programs that have the same MD5 hash, but their
