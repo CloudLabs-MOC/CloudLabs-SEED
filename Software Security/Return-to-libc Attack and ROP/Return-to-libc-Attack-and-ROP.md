@@ -29,13 +29,13 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Return-to-libc%20Attack%20and%20ROP/Lab%20files/Labsetup.zip
 
 ```
-![](image/return to libc1.png)
+![](image/return%20to%20libc1.png)
 
 ```
 sudo unzip Labsetup.zip
 
 ```
-
+![](image/return%20to%20libc2.png)
 
 **Note for instructors**: Instructors can customize this lab by choosing a value for the buffer size in the vulnerable program. See Section 2.3 for details.
 
@@ -57,7 +57,7 @@ ls
 
 > Here Labsetup is the folder name that you downloaded and unzipped in the previous steps.
 
-![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/d1425f16-6a4d-4672-8620-60aba8b6ad4b)
+![](image/return%20to%20libc3.png)
 
 You can execute the lab tasks using our pre-built Ubuntu virtual machines. Ubuntu and other Linux distributions have implemented several security mechanisms to make the buffer-overflow attack difficult. To simplify our attacks, we need to disable them first.
 
@@ -106,6 +106,8 @@ It should be noted that the countermeasure implemented in the dash can be circum
 ### 2.3 The Vulnerable Program
 
 Listing 1: You can view the vulnerable program by typing `nano retlib.c` into the terminal.
+
+![](image/return%20to%20libc4.png)
 
 ```
 #include <stdlib.h>
@@ -163,8 +165,9 @@ This program is a root-owned _Set-UID_ program, so if a normal user can exploit 
 
 ```
 sudo make
+ll
 ```
-
+![](image/return%20to%20libc5.png)
 
 **For instructors**. To prevent students from using the solutions from the past (or from those posted on the Internet), instructors can change the value for _BUF_SIZE_ by requiring students to compile the code using a different _BUF_SIZE_ value. Without the _-DBUF_SIZE_ option, _BUF_SIZ_E is set to the default value 12 (defined in the program). When this value changes, the layout of the stack will change, and the solution will be different. Students should ask their instructors for the value of N. The value of N can be set in the provided _Makefile_ and N can be from 10 to 800. 
 
@@ -190,10 +193,11 @@ gdb-peda$ p exit
 $2 = {<text variable, no debug info>} **0xf7e04f80** <exit>
 gdb-peda$ quit
 ```
+![](image/return%20to%20libc6.png)
 
-It should be noted that even for the same program, if we change it from a _Set-UID_ program to a non-Set-UID program, the _libc_ library may not be loaded into the same location. Therefore, when we debug the program, we need to debug the target _Set-UID_ program; otherwise, the address we get may be incorrect. 
+It should be noted that even for the same program if we change it from a _Set-UID_ program to a non-Set-UID program, the _libc_ library may not be loaded into the same location. Therefore, when we debug the program, we need to debug the target _Set-UID_ program; otherwise, the address we get may be incorrect. 
 
-**Running gdb in batch mode**. If you prefer to run gdb in a batch mode, you can put the _gdb_ commands in a file, and then ask gdb to execute the commands from this file: 
+**Running gdb in batch mode**. If you prefer to run gdb in batch mode, you can put the _gdb_ commands in a file, and then ask gdb to execute the commands from this file: 
 
 ```
 $ cat gdb_command.txt
