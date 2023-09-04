@@ -1,87 +1,111 @@
 # Return-to-libc Attack Lab
 
-```
 Copyright © 2006 - 2020 by Wenliang Du.
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
-```
+reproduced in a way that is reasonable for the medium in which the work is being republished.
+
 ## 1 Overview
 
-The learning objective of this lab is for students to gain the first-hand experience on an interesting variant of buffer-overflow attack; this attack can bypass an existing protection scheme currently implemented in major Linux operating systems. A common way to exploit a buffer-overflow vulnerability is to overflow the buffer with a malicious shellcode, and then cause the vulnerable program to jump to the shellcode stored in the stack. To prevent these types of attacks, some operating systems allow programs to make their stacks non-executable; therefore, jumping to the shellcode causes the program to fail.
+The learning objective of this lab is for students to gain first-hand experience with an interesting variant of buffer-overflow attack that can bypass an existing protection scheme currently implemented in major Linux operating systems. A common way to exploit a buffer-overflow vulnerability is to overflow the buffer with a malicious shellcode, and then cause the vulnerable program to jump to the shellcode stored in the stack. To prevent these types of attacks, some operating systems allow programs to make their stacks non-executable; therefore, jumping to the shellcode causes the program to fail.
 
-Unfortunately, the above protection scheme is not fool-proof. There exists a variant of buffer-overflow attacks called Return-to-libc, which does not need an executable stack; it does not even use shellcode. Instead, it causes the vulnerable program to jump to some existing code, such as the _system()_ function in the _libc_ library, which is already loaded into a process’s memory space. 
+Unfortunately, the above protection scheme is not foolproof. There exists a variant of buffer-overflow attacks called Return-to-libc, which does not need an executable stack; it does not even use shellcode. Instead, it causes the vulnerable program to jump to some existing code, such as the _system()_ function in the _libc_ library, which is already loaded into a process’s memory space. 
 
-In this lab, students are given a program with a buffer-overflow vulnerability; their task is to develop a Return-to-libc attack to exploit the vulnerability and finally to gain the root privilege. In addition to the attacks, students will be guided to walk through some protection schemes implemented in Ubuntu to counter buffer-overflow attacks. This lab covers the following topics: 
+In this lab, students are given a program with a buffer-overflow vulnerability; their task is to develop a Return-to-libc attack to exploit the vulnerability and finally gain root privilege. In addition to the attacks, students will be guided through some protection schemes implemented in Ubuntu to counter buffer-overflow attacks. This lab covers the following topics: 
 
 - Buffer overflow vulnerability
 - Stack layout in a function invocation and Non-executable stack
 - Return-to-libc attack and Return-Oriented Programming (ROP)
 
-**Readings and videos**. Detailed coverage of the return-to-libc attack can be found in the following:
+**Readings and videos**: Detailed coverage of the return-to-libc attack can be found in the following:
 
-- Chapter 5 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
-- Section 5 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang Du. See details at https://www.handsonsecurity.net/video.html.
+- Chapter 5 of the SEED Book, Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
+- Section 5 of the SEED Lecture at Udemy, Computer Security: A Hands-on Approach, by Wenliang Du. See details at https://www.handsonsecurity.net/video.html.
 
-**Lab environment**. You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+**Lab environment**: You can perform the lab exercise on the SEED VM provided by Cloudlabs.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Software%20Security/Return-to-libc%20Attack%20and%20ROP/Lab%20files/Labsetup.zip
+
 ```
+![](image/return to libc1.png)
+
 ```
 sudo unzip Labsetup.zip
+
 ```
 
-**Note for instructors**. Instructors can customize this lab by choosing a value for the buffer size in the vulnerable program. See Section 2.3 for details.
+
+**Note for instructors**: Instructors can customize this lab by choosing a value for the buffer size in the vulnerable program. See Section 2.3 for details.
 
 ## 2 Environment Setup
 
 ### 2.1 Note on x86 and x64 Architectures
 
-The return-to-libc attack on the x64 machines (64-bit) is much more difficult than that on the x86 machines (32-bit). Although the SEED Ubuntu 20.04 VM is a 64-bit machine, we decide to keep using the 32-bit programs (x64 is compatible with x86, so 32-bit programs can still run on x64 machines). In the future, we may introduce a 64-bit version for this lab. Therefore, in this lab, when we compile programs using gcc, we always use the -m32 flag, which means compiling the program into 32-bit binary. 
+The return-to-libc attack on the x64 machines (64-bit) is much more difficult than that on the x86 machines (32-bit). Although the SEED Ubuntu 20.04 VM is a 64-bit machine, we decided to keep using 32-bit programs (x64 is compatible with x86, so 32-bit programs can still run on x64 machines). In the future, we may introduce a 64-bit version for this lab. Therefore, in this lab, when we compile programs using gcc, we always use the -m32 flag, which means compiling the program into 32-bit binary. 
 
 ### 2.2 Turning off countermeasures
 
-You can execute the lab tasks using our pre-built Ubuntu virtual machines. Ubuntu and other Linux distributions have implemented several security mechanisms to make the buffer-overflow attack difficult. To simplify our attacks, we need to disable them first 
+First, we redirect to the lab files with the help of the following commands:
 
-**Address Space Randomization**. Ubuntu and several other Linux-based systems use address space randomization to randomize the starting address of heap and stack, making guessing the exact addresses difficult. Guessing addresses is one of the critical steps of buffer-overflow attacks. In this lab, we disable this feature using the following command: 
-
-```
-$ sudo sysctl -w kernel.randomize_va_space=0
-```
-
-**The StackGuard Protection Scheme**. The _gcc_ compiler implements a security mechanism called StockGuard to prevent buffer overflows. In the presence of this protection, buffer overflow attacks do not work. We can disable this protection during the compilation using the _-fno-stack-protector_ option. For example, to compile a program _example.c_ with StackGuard disabled, we can do the following 
-
-```
-$ gcc -m32 -fno-stack-protector example.c
+```bash
+ls
+cd Labsetup/
+ls
 ```
 
-**Non-Executable Stack**. Ubuntu used to allow executable stacks, but this has now changed. The binary images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the recent versions of _gcc_, and by default, stacks are set to be non-executable. To change that, use the following option when compiling programs: 
+> Here Labsetup is the folder name that you downloaded and unzipped in the previous steps.
+
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/d1425f16-6a4d-4672-8620-60aba8b6ad4b)
+
+You can execute the lab tasks using our pre-built Ubuntu virtual machines. Ubuntu and other Linux distributions have implemented several security mechanisms to make the buffer-overflow attack difficult. To simplify our attacks, we need to disable them first.
+
+**Address Space Randomization**: Ubuntu and several other Linux-based systems use address space randomization to randomize the starting address of the heap and stack, making guessing the exact addresses difficult. Guessing addresses is one of the critical steps of buffer-overflow attacks. In this lab, we disable this feature using the following command:
+
+```
+sudo sysctl -w kernel.randomize_va_space=0
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/facfa7fd-4d17-421f-8bc3-10bbb903b263)
+
+
+**The StackGuard Protection Scheme**: The _gcc_ compiler implements a security mechanism called StockGuard to prevent buffer overflows. In the presence of this protection, buffer overflow attacks do not work. We can disable this protection during the compilation using the _-fno-stack-protector_ option. For example, to compile a program _example.c_ with StackGuard disabled, we can do the following:
+
+```
+sudo gcc -m32 -fno-stack-protector retlib.c
+```
+
+**Non-Executable Stack**: Ubuntu used to allow executable stacks, but this has now changed. The binary images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. The kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the recent versions of _gcc_, and by default, stacks are set to be non-executable. To change that, use the following option when compiling programs: 
 
 ```
 For executable stack:
-$ gcc -m32 -z execstack -o test test.c
+sudo gcc -m32 -z execstack -o test retlib.c
 
 For non-executable stack:
-$ gcc -m32 -z noexecstack -o test test.c
+sudo gcc -m32 -z noexecstack -o test retlib.c
 ```
 
-Because the objective of this lab is to show that the non-executable stack protection does not work, you should always compile your program using the "-z noexecstack" option in this lab. 
+Because the objective of this lab is to show that the non-executable stack protection does not work, you should always compile your program using the "-z noexecstack" option in this lab.
 
-**Configuring /bin/sh**. In Ubuntu 20.04, the _/bin/sh_ symbolic link points to the _/bin/dash_ shell. The _dash_ shell has a countermeasure that prevents itself from being executed in a _Set-UID_ process. If dash is executed in a _Set-UID_ process, it immediately changes the effective user ID to the process’s real user ID, essentially dropping its privilege. 
+**Configuring /bin/sh**. In Ubuntu 20.04, the _/bin/sh_ symbolic link points to the _/bin/dash_ shell. The _dash_ shell has a countermeasure that prevents itself from being executed in a _Set-UID_ process. If dash is executed in a _Set-UID_ process, it immediately changes the effective user ID to the process’s real user ID, essentially dropping its privilege.
 
-Since our victim program is a Set-UID program, and our attack uses the _system()_ function to run a command of our choice. This function does not run our command directly; it invokes _/bin/sh_ to run our command. Therefore, the countermeasure in _/bin/dash_ immediately drops the Set-UID privilege before executing our command, making our attack more difficult. To disable this protection, we link _/bin/sh_ to another shell that does not have such a countermeasure. We have installed a shell program called zsh in our Ubuntu 16.04 VM. We use the following commands to link _/bin/sh_ to _zsh_: 
+Since our victim program is a Set-UID program, our attack uses the _system()_ function to run a command of our choice. This function does not run our command directly; it invokes _/bin/sh_ to run our command. Therefore, the countermeasure in _/bin/dash_ immediately drops the Set-UID privilege before executing our command, making our attack more difficult. To disable this protection, we link _/bin/sh_ to another shell that does not have such a countermeasure. We have installed a shell program called zsh in our Ubuntu 16.04 VM. We use the following commands to link _/bin/sh_ to _zsh_: 
 
+```bash
+sudo ln -sf /bin/zsh /bin/sh
 ```
-$ sudo ln -sf /bin/zsh /bin/sh
+or we can type `-v` to see what is happening behind.
+```bash
+sudo ln -sf /bin/zsh /bin/sh -v
 ```
 
-It should be noted that the countermeasure implemented indashcan be circumvented. We will do that in a later task.
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/9f20070f-2150-42bd-ab90-b9f54e18d374)
+
+It should be noted that the countermeasure implemented in the dash can be circumvented. We will do that in a later task.
 
 ### 2.3 The Vulnerable Program
 
-Listing 1: The vulnerable program (retlib.c)
+Listing 1: You can view the vulnerable program by typing `nano retlib.c` into the terminal.
 
 ```
 #include <stdlib.h>
@@ -131,18 +155,16 @@ void foo(){
 }
 ```
 
-The above program has a buffer overflow vulnerability. It first reads an input up to _1000_ bytes from a file called _badfile_. It then passes the input data to the _bof()_ function, which copies the input to its internal buffer using _strcpy()_. However, the internal buffer’s size is less than _1000_, so here is potential buffer-overflow vulnerability. 
+The above program has a buffer overflow vulnerability. It first reads an input of up to _1000_ bytes from a file called _badfile_. It then passes the input data to the _bof()_ function, which copies the input to its internal buffer using _strcpy()_. However, the internal buffer’s size is less than _1000_, so here is a potential buffer-overflow vulnerability.
 
-This program is a root-owned _Set-UID_ program, so if a normal user can exploit this buffer overflow vulnerability, the user might be able to get a root shell. It should be noted that the program gets its input from a file called _badfile_, which is provided by users. Therefore, we can construct the file in a way such that when the vulnerable program copies the file contents into its buffer, a root shell can be spawned. 
+This program is a root-owned _Set-UID_ program, so if a normal user can exploit this buffer overflow vulnerability, the user might be able to get a root shell. It should be noted that the program gets its input from a file called _badfile_, which is provided by users. Therefore, we can construct the file in such a way that when the vulnerable program copies the file contents into its buffer, a root shell can be spawned.
 
-**Compilation**. Let us first compile the code and turn it into a root-owned _Set-UID_ program. Do not forget to include the _-fno-stack-protector_ option (for turning off the StackGuard protection) and the "_-z noexecstack_" option (for turning on the non-executable stack protection). It should also be noted that changing ownership must be done before turning on the Set-UID bit, because ownership changes cause the Set-UID bit to be turned off. All these commands are included in the provided Makefile. 
+**Compilation**. Let us first compile the code and turn it into a root-owned _Set-UID_ program. Do not forget to include the _-fno-stack-protector_ option (for turning off the StackGuard protection) and the "_-z noexecstack_" option (for turning on the non-executable stack protection). It should also be noted that changing ownership must be done before turning on the Set-UID bit because ownership changes cause the Set-UID bit to be turned off. All these commands are included in the provided Makefile.
 
 ```
-// Note: N should be replaced by the value set by the instructor
-$ gcc -m32 -DBUF_SIZE=N -fno-stack-protector -z noexecstack -o retlib retlib.c
-$ sudo chown root retlib
-$ sudo chmod 4755 retlib
+sudo make
 ```
+
 
 **For instructors**. To prevent students from using the solutions from the past (or from those posted on the Internet), instructors can change the value for _BUF_SIZE_ by requiring students to compile the code using a different _BUF_SIZE_ value. Without the _-DBUF_SIZE_ option, _BUF_SIZ_E is set to the default value 12 (defined in the program). When this value changes, the layout of the stack will change, and the solution will be different. Students should ask their instructors for the value of N. The value of N can be set in the provided _Makefile_ and N can be from 10 to 800. 
 
