@@ -186,8 +186,8 @@ $ sudo chmod 4755 retlib
 In _Linux_, when a program runs, the _libc_ library will be loaded into memory. When the memory address randomization is turned off, for the same program, the library is always loaded in the same memory address (for different programs, the memory addresses of the libc library may be different). Therefore, we can easily find out the address of _system()_ using a debugging tool such as _gdb_. Namely, we can debug the target program retlib. Even though the program is a root-owned _Set-UID_ program, we can still debug it, except that the privilege will be dropped (i.e., the effective user ID will be the same as the real user ID). Inside gdb, we need to type the run command to execute the target program once, otherwise, the library code will not be loaded. We use the p command (or print) to print out the address of the _system()_ and _exit()_ functions (we will need exit() later on). 
 
 ```
-$ touch badfile
-$ gdb -q retlib ŸUse "Quiet" mode
+touch badfile
+gdb -q retlib ŸUse "Quiet" mode
 Reading symbols from ./retlib...
 (No debugging symbols found in ./retlib)
 gdb-peda$ break main
@@ -210,7 +210,7 @@ It should be noted that even for the same program if we change it from a _Set-UI
 **Running gdb in batch mode**. If you prefer to run gdb in batch mode, you can put the _gdb_ commands in a file, and then ask gdb to execute the commands from this file: 
 
 ```
-$ cat gdb_command.txt
+cat gdb_command.txt
 break main
 run
 p system
@@ -230,8 +230,8 @@ Our attack strategy is to jump to the _system()_ function and get it to execute 
 When we execute a program from a shell prompt, the shell actually spawns a child process to execute the program, and all the exported shell variables become the environment variables of the child process. This creates an easy way for us to put some arbitrary string in the child process’s memory. Let us define a new shell variable _MYSHELL_, and let it contain the string "_/bin/sh_". From the following commands, we can verify that the string gets into the child process, and it is printed out by the env command running inside the child process. 
 
 ```
-$ export MYSHELL=/bin/sh
-$ env | grep MYSHELL
+export MYSHELL=/bin/sh
+env | grep MYSHELL
 MYSHELL=/bin/sh
 ```
 ![](image/return%20to%20libc7.png)
@@ -315,7 +315,7 @@ You need to figure out the three addresses and the values for _X, Y, and Z_. If 
 The purpose of this task is to launch the return-to-libc attack after the shell’s countermeasure is enabled. Before doing Tasks 1 to 3, we relinked _/bin/sh_ to _/bin/zsh_, instead of to _/bin/dash_ (the original setting). This is because some shell programs, such as dash and bash, have a countermeasure that automatically drops privileges when they are executed in a _Set-UID_ process. In this task, we would like to defeat such a countermeasure, i.e., we would like to get a root shell even though the _/bin/sh_ still points to _/bin/dash_. Let us first change the symbolic link back: 
 
 ```
-$ sudo ln -sf /bin/dash /bin/sh
+sudo ln -sf /bin/dash /bin/sh
 ```
 
 Although dash and bash both drop the Set-UID privilege, they will not do that if they are invoked with the -p option. When we return to the system function, this function invokes _/bin/sh_, but it does not use the -p option. Therefore, the Set-UID privilege of the target program will be dropped. If there is a function that allows us to directly execute "/bin/bash -p", without going through the system function, we can still get the root privilege. 
