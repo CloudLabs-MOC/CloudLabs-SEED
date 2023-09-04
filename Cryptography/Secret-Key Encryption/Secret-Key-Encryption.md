@@ -69,6 +69,18 @@ In the following, we list some of the commonly used commands related to Docker a
 we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
 
+```
+docker-compose build # Build the container image
+docker-compose up # Start the container
+docker-compose down # Shut down the container
+
+// Aliases for the Compose commands above
+
+dcbuild # Alias for: docker-compose build
+dcup # Alias for: docker-compose up
+dcdown # Alias for: docker-compose down
+````
+
 - Run the following commands in the terminal.
 
 ```
@@ -87,6 +99,11 @@ All the containers will be running in the background. To run commands on a conta
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
 them in the .bashrc file.
+
+```
+dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
+docksh <id> // Alias for: docker exec -it <id> /bin/bash
+```
 
 - Open the new terminal window and run the following commands:
 ```
@@ -223,7 +240,7 @@ echo "aet" > in.txt
 ```
 
 ```
-$ tr ’aet’ ’XGE’ < in.txt > out.txt
+tr ’aet’ ’XGE’ < in.txt > out.txt
 ```
 
 ```
@@ -339,7 +356,7 @@ for details). We will conduct the following experiments to understand how this t
     with length 5 (without the-n option, the length will be 6, because a newline character will be added
     by echo):
 ```    
-     echo -n "12345" > f1.txt
+echo -n "12345" > f1.txt
 
 ```
 
