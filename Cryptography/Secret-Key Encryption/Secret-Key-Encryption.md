@@ -123,7 +123,7 @@ root@9652715c8e0a:/#
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
-## 3 Task 1: Frequency Analysis (Ready only)
+## 3 Task 1: Frequency Analysis (Read only)
 
 It is well-known that monoalphabetic substitution cipher (also known as monoalphabetic cipher) is not
 secure, because it can be subjected to frequency analysis. In this lab, you are given a cipher-text that is
