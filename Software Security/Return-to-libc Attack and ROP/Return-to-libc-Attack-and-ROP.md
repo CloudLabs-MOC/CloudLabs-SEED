@@ -163,6 +163,8 @@ This program is a root-owned _Set-UID_ program, so if a normal user can exploit 
 
 **Compilation**. Let us first compile the code and turn it into a root-owned _Set-UID_ program. Do not forget to include the _-fno-stack-protector_ option (for turning off the StackGuard protection) and the "_-z noexecstack_" option (for turning on the non-executable stack protection). It should also be noted that changing ownership must be done before turning on the Set-UID bit because ownership changes cause the Set-UID bit to be turned off. All these commands are included in the provided Makefile.
 
+To run the Makefile, simply type:
+
 ```
 sudo make
 ll
