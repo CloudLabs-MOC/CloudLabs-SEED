@@ -283,7 +283,8 @@ content[Z:Z+4] = (exit_addr).to_bytes(4,byteorder=’little’)
 with open("badfile", "wb") as f:
 f.write(content)
 ```
-
+![](image/return%20to%20libc10.png)
+![](image/return%20to%20libc9.png)
 You need to figure out the three addresses and the values for _X, Y, and Z_. If your values are incorrect, your attack might not work. In your report, you need to describe how you decide the values for _X, Y and Z_. Either show us your reasoning or, if you use a trial-and-error approach, show your trials. 
 
 **A note regarding gdb**. If you use gdb to figure out the values for _X, Y, and Z_, it should be noted that the gdb behavior in Ubuntu 20.04 is slightly different from that in Ubuntu 16.04. In particular, after we set a break point at function bof, when _gdb_ stops inside the _bof()_ function, it stops before the ebp register is set to point to the current stack frame, so if we print out the value of _ebp_ here, we will get the caller’s _ebp_ value, not bof’s ebp. We need to type next to execute a few instructions and stop after the ebp register is modified to point to the stack frame of the _bof()_ function. The SEED book (2nd edition) is based on Ubuntu 16.04, so it does not have this next step 
