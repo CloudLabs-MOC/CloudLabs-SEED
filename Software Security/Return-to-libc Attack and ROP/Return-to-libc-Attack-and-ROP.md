@@ -169,6 +169,12 @@ To run the Makefile, simply type:
 sudo make
 ll
 ```
+```
+// Note: N should be replaced by the value set by the instructor
+$ gcc -m32 -DBUF_SIZE=N -fno-stack-protector -z noexecstack -o retlib retlib.c
+$ sudo chown root retlib
+$ sudo chmod 4755 retlib
+```
 ![](image/return%20to%20libc5.png)
 
 **For instructors**. To prevent students from using the solutions from the past (or from those posted on the Internet), instructors can change the value for _BUF_SIZE_ by requiring students to compile the code using a different _BUF_SIZE_ value. Without the _-DBUF_SIZE_ option, _BUF_SIZ_E is set to the default value 12 (defined in the program). When this value changes, the layout of the stack will change, and the solution will be different. Students should ask their instructors for the value of N. The value of N can be set in the provided _Makefile_ and N can be from 10 to 800. 
@@ -196,6 +202,8 @@ $2 = {<text variable, no debug info>} **0xf7e04f80** <exit>
 gdb-peda$ quit
 ```
 ![](image/return%20to%20libc6.png)
+
+>**Note**: Please note down the `$1/system` and `$2/exit` address, i.e., 0xf7e0c360 and 0xf7dfeec0 (This value might change over time).
 
 It should be noted that even for the same program if we change it from a _Set-UID_ program to a non-Set-UID program, the _libc_ library may not be loaded into the same location. Therefore, when we debug the program, we need to debug the target _Set-UID_ program; otherwise, the address we get may be incorrect. 
 
@@ -226,20 +234,26 @@ $ export MYSHELL=/bin/sh
 $ env | grep MYSHELL
 MYSHELL=/bin/sh
 ```
+![](image/return%20to%20libc7.png)
 
 We will use the address of this variable as an argument to _system()_ call. The location of this variable in the memory can be found out easily using the following program: 
 
 ```
+#include <stdio.h>
+#include <stdlib.h>
 void main(){
     char* shell = getenv("MYSHELL");
     if (shell)
         printf("%x\n", (unsigned int)shell);
 }
 ```
+![](image/return%20to%20libc8.png)
+
+>**Note**: Please note down the `$prtenv` value, i.e., ffffd5e2 (This value might change over time).
 
 Compile the code above into a binary called **prtenv**. If the address randomization is turned off, you will find out that the same address is printed out. When you run the vulnerable program **retlib** inside the same terminal, the address of the environment variable will be the same (see the special note below). You can verify that by putting the code above inside **retlib.c**. However, the length of the program name does make a difference. That’s why we choose 6 characters for the program name **prtenv** to match the length of **retlib**. 
 
-**Note**. You should use the **-m32** flag when compiling the above program, so the binary code prtenv will be for **32-bit** machines, instead of for 64-bit ones. The vulnerable program retlib is a **32-bit** binary, so if prtenv is **64-bit**, the address of the environment variable will be different. 
+**Note**. You should use the **-m32** flag when compiling the above program, so the binary code prtenv will be for **32-bit** machines, instead of 64-bit ones. The vulnerable program retlib is a **32-bit** binary, so if prtenv is **64-bit**, the address of the environment variable will be different.
 
 ### 3.3 Task 3: Launching the Attack
 
