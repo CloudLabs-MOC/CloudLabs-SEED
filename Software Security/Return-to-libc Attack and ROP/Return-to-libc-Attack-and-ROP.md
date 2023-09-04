@@ -186,8 +186,8 @@ $ sudo chmod 4755 retlib
 In _Linux_, when a program runs, the _libc_ library will be loaded into memory. When the memory address randomization is turned off, for the same program, the library is always loaded in the same memory address (for different programs, the memory addresses of the libc library may be different). Therefore, we can easily find out the address of _system()_ using a debugging tool such as _gdb_. Namely, we can debug the target program retlib. Even though the program is a root-owned _Set-UID_ program, we can still debug it, except that the privilege will be dropped (i.e., the effective user ID will be the same as the real user ID). Inside gdb, we need to type the run command to execute the target program once, otherwise, the library code will not be loaded. We use the p command (or print) to print out the address of the _system()_ and _exit()_ functions (we will need exit() later on). 
 
 ```
-touch badfile
-gdb -q retlib ŸUse "Quiet" mode
+sudo touch badfile
+gdb -q retlib         ## Use "Quiet" mode
 Reading symbols from ./retlib...
 (No debugging symbols found in ./retlib)
 gdb-peda$ break main
