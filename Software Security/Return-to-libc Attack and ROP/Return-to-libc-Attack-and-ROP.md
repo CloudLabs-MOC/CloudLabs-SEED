@@ -283,18 +283,32 @@ content[Z:Z+4] = (exit_addr).to_bytes(4,byteorder=’little’)
 with open("badfile", "wb") as f:
 f.write(content)
 ```
+
+First Open the file using `sudo nano exploit.py`.
+
 ![](image/return%20to%20libc11.png)
+
+Change the value address of all the 3 params.
+
+| Param | Value 
+| ----------- | ----------- |
+| bin/sh | paste the address that you copied in 3.2 task 2 |
+| system | Paste the address that you copied in 3.1 task 1 |
+| exit   | Paste the address that you copied in 3.1 task 1 |
 
 ![](image/return%20to%20libc9.png)
 
+To view the file data program enter `cat exploit.py` and to view the address enter `./retlib`.
+
 ![](image/return%20to%20libc12.png)
+
 You need to figure out the three addresses and the values for _X, Y, and Z_. If your values are incorrect, your attack might not work. In your report, you need to describe how you decide the values for _X, Y and Z_. Either show us your reasoning or, if you use a trial-and-error approach, show your trials. 
 
 **A note regarding gdb**. If you use gdb to figure out the values for _X, Y, and Z_, it should be noted that the gdb behavior in Ubuntu 20.04 is slightly different from that in Ubuntu 16.04. In particular, after we set a break point at function bof, when _gdb_ stops inside the _bof()_ function, it stops before the ebp register is set to point to the current stack frame, so if we print out the value of _ebp_ here, we will get the caller’s _ebp_ value, not bof’s ebp. We need to type next to execute a few instructions and stop after the ebp register is modified to point to the stack frame of the _bof()_ function. The SEED book (2nd edition) is based on Ubuntu 16.04, so it does not have this next step 
 
 **Attack variation 1:** Is the _exit()_ function really necessary? Please try your attack without including the address of this function in _badfil_e. Run your attack again, report and explain your observations. 
 
-**Attack variation 2:** After your attack is successful, change the file name of **retlib** to a different name, making sure that the length of the new file name is different. For example, you can change it to **newretlib**. Repeat the attack (without changing the content of badfile). Will your attack succeed or not? If it does not succeed, explain why. 
+**Attack variation 2:** After your attack is successful, change the file name of **retlib** to a different name, making sure that the length of the new file name is different. For example, you can change it to **newretlib**. Repeat the attack (without changing the content of badfile). Will your attack succeed or not? If it does not succeed, explain why.
 
 ### 3.4 Task 4: Defeat Shell’s countermeasure
 
@@ -329,7 +343,7 @@ Just like in Task 3, you need to construct your input, so when the bof() functio
 
 ### 3.5 Task 5 (Optional): Return-Oriented Programming
 
-There are many ways to solve the problem in Task 4. Another way is to invoke _setuid(0)_ before invoking _system()_. The _setuid(0)_ call sets both real user ID and effective user ID to 0, turning the process into a non_-Set-UID_ one (it still has the root privilege). This approach requires us to chain two functions together. The approach was generalized to chaining multiple functions together, and was further generalized to chain multiple pieces of code together. This led to the Return-Oriented Programming (ROP). 
+There are many ways to solve the problem in Task 4. Another way is to invoke _setuid(0)_ before invoking _system()_. The _setuid(0)_ call sets both real user ID and effective user ID to 0, turning the process into a non_-Set-UID_ one (it still has the root privilege). This approach requires us to chain two functions together. The approach was generalized to chaining multiple functions together and was further generalized to chain multiple pieces of code together. This led to the Return-Oriented Programming (ROP). 
 
 Using ROP to solve the problem in Task 4 is quite sophisticated, and it is beyond the scope of this lab. However, we do want to give students a taste of ROP, asking them to work on a special case of ROP. In the _retlib.c_ program, there is a function called _foo()_, which is never called in the program. That function is intended for this task. Your job is to exploit the buffer-overflow problem in the program, so when the program returns from the _bof()_ function, it invokes _foo()_ 10 times, before giving you the root shell. In your lab report, you need to describe how your input is constructed. Here is what the results will look like. 
 
