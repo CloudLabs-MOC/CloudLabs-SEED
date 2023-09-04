@@ -217,63 +217,95 @@ Scapy is different: it can be used not only as a tool, but also as a building bl
 and spoofing tools, i.e., we can integrate the Scapy functionalities into our own program. In this set of tasks,
 we will use Scapy for each task.
 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/624a8541-9716-47bc-8280-31f06c23bd79)
+
 To use Scapy, we can write a Python program, and then execute this program using Python. See the
 following example. We should run Python using the root privilege because the privilege is required for
-spoofing packets. At the beginning of the program (Line¿), we should import all Scapy’s modules.
+spoofing packets. At the beginning of the program (Line), we should import all Scapy’s modules.
 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/6aa365a3-9d60-4989-9367-f8f58342ceca)
+
+Paste the following in the editor :
 ```
 # view mycode.py
 #!/usr/bin/env python
 
-from scapy.all import * ¿
+from scapy.all import * 
 
 a = IP()
 a.show()
-
-# python3 mycode.py
-###[ IP ]###
-version = 4
-ihl = None
-...
-
-// Make mycode.py executable (another way to run python programs)
-# chmod a+x mycode.py
-# mycode.py
-
 ```
 
-We can also get into the interactive mode of Python and then run our program one line at a time at the
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/79de8e80-dee2-4574-892a-99984d0d6cc0)
 
+Run these commands to make mycode.py executable 
+```
+sudo chmod a+x mycode.py
+```
+```
+python3 mycode.py
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/8fd8a9db-c56f-422e-98bc-55189613f4c9)
+
+
+We can also get into the interactive mode of Python and then run our program one line at a time at the
 Python prompt. This is more convenient if we need to change our code frequently in an experiment.
 
 ```
-# python3
->>> from scapy.all import *
->>> a = IP()
->>> a.show()
-###[ IP ]###
-version = 4
-ihl = None
-...
+python3
 ```
+```
+from scapy.all import *
+```
+```
+a = IP()
+```
+```
+a.show()
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/c94d37c6-8306-4f74-968d-d0adb6ea8eb2)
+
+Click `ctrl+d` to exit interactive mode.
 
 ### 3.1 Task 1.1: Sniffing Packets
 
 Wireshark is the most popular sniffing tool, and it is easy to use. We will use it throughout the entire lab.
 However, it is difficult to use Wireshark as a building block to construct other tools. We will use Scapy
 for that purpose. The objective of this task is to learn how to use Scapy to do packet sniffing in Python
-programs. A sample code is provided in the following:
+programs. 
 
 ```
+sudo vi mycode1.1.py
+```
+A sample code should be provided :
+
+```
+#view mycode1.1.py
 #!/usr/bin/env python
+
 from scapy.all import *
 
 def print_pkt(pkt):
-pkt.show()
+    pkt.show()
 
-pkt = sniff(iface=’br-c93733e9f913’, filter=’icmp’, prn=print_pkt)
+#The interface can be found with 
+# 'docker network ls' in the VM
+# or 'ifconfig' in the container
+pkt = sniff(iface='br-c93733e9f913', filter='icmp', prn=print_pkt)
 ```
 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/2c8d9de1-b17b-4e16-a887-319153b2da50)
+
+```
+sudo chmod a+x mycode1.1.py
+```
+```
+sudo python3 mycode1.1.py
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/75d2a973-2cee-4bc8-a70a-06914403134e)
+ 
 The code above will sniff the packets on the br-c93733e9f913 interface. Please read the instruction
 in the lab setup section regarding how to get the interface name. If we want to sniff on multiple interfaces,
 we can put all the interfaces in a list, and assign it to iface. See the following example:
