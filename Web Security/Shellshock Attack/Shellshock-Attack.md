@@ -40,19 +40,32 @@ following topics:
 In our setup, the web server container’s IP address is 10.9.0.80. The hostname of the server is called
 http://www.seedlab-shellshock.com. We need to map this name to the IP address. Please add the following
 to /etc/hosts. You need to use the root privilege to modify this file:
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/85d29212-c419-44c7-a562-702d7a136b53)
+
+Inside the vi editor, press G to move to the end of the file. Then press o to open a new line below the current line and enter the following: 
 ```
 10.9.0.80 http://www.seedlab-shellshock.com
+
 ```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3e1db565-107a-46c1-9aa1-e46369de0cfd)
+
+After adding name and IP address save and exit the current file using `esc` and `:wq`.
 
 ### 2.2 Container Setup and Commands
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/Shellshock%20Attack/Lab%20files/Labsetup.zip
 ```
 ```
 sudo unzip Labsetup.zip
 ```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/7c373bcf-1c0b-41c0-a8f2-9169f0ab57fa)
+
 
 Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
 content in this file and all the involved Dockerfile can be found from the user manual, which is linked
@@ -71,6 +84,16 @@ $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
 ```
+
+Run these commands to build docker start the containers. 
+```
+docker-compose up -d
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/fa896713-b028-4bb9-9c01-74d73f0845e2)
+
+The `-d` flag runs the containers in detached mode, meaning they will run in the background.
+
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
@@ -92,6 +115,20 @@ root@9652715c8e0a:/#
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
 ```
+Use the `docker exec` command to start a shell session within that container.
+```
+docker-compose ps
+```
+```
+dockps
+```
+```
+docker exec -it <container_id> /bin/bash
+```
+ 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/8884a179-6379-42d0-a29b-991e41ca9a23)
+
+
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
@@ -106,7 +143,13 @@ In our web server container, we have already set up a very simple CGI program (c
 simply prints out "Hello World" using a shell script. The CGI program is put inside Apache’s default
 CGI folder /usr/lib/cgi-bin, and it must be executable.
 
-                                               Listing 1:vul.cgi
+ ```
+ls /usr/lib/cgi-bin/vul.cgi 
+ ```
+ ```
+cat /usr/lib/cgi-bin/vul.cgi 
+ ```
+The following code is present in vul.cgi
  ```
 **#!/bin/bashshellshock**
 
@@ -115,6 +158,8 @@ echo
 echo
 echo "Hello World"
 ```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/86f2d37b-2642-46b4-b96d-cb279b44e280)
+
 The CGI program uses /bin/bashshellshock (the first line), instead of using /bin/bash. This
 line specifies what shell program should be invoked to run the script. We do need to use the vulnerable bash
 in this lab.
@@ -139,6 +184,15 @@ container or directly on your computer. The container manual is linked to the la
 Please design an experiment to verify whether this bash is vulnerable to the Shellshock attack or not.
 Conduct the same experiment on the patched version /bin/bash and report your observations.
 
+```
+ls
+```
+```
+ls image_www
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/0e358359-d882-4410-b7ff-c27a5cfe6e42)
+
 ### 3.2 Task 2: Passing Data to Bash via Environment Variable
 
 To exploit a Shellshock vulnerability in a bash-based CGI program, attackers need to pass their data to the
@@ -147,7 +201,14 @@ to see how we can achieve this goal. We have provided another CGI program (geten
 to help you identify what user data can get into the environment variables of a CGI program. This CGI
 program prints out all its environment variables.
 
-                                          Listing 2:getenv.cgi
+ ```
+ls /usr/lib/cgi-bin/getenv.cgi
+ ```
+ ```
+cat /usr/lib/cgi-bin/getenv.cgi 
+ ```
+
+The following code is present in getenv.cgi                                      
 ```  
 #!/bin/bash_shellshock
 
@@ -156,6 +217,9 @@ echo
 echo "****** Environment Variables******"
 strings /proc/$$/environ (1)
 ```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/12225d29-afe0-4a55-9fbf-4a192f62e409)
+
   
 **Task 2.A: Using brower.** In the code above, Line(1) prints out the contents of all the environment variables
 in the current process. Normally, you would see something like the following if you use a browser to access
