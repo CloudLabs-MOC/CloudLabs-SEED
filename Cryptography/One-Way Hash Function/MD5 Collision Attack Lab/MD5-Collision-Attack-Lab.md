@@ -487,6 +487,124 @@ Q are generated accordingly. In the first version, we make the contents of array
 in the second version, we make their contents different. Therefore, the only thing we need to change is the
 contents of these two arrays, and there is no need to change the logic of the programs.
 
+- To perform this task you can follow the instructions given below.
+
+Create a directory and open task4.c for editing:
+
+```
+mkdir task4
+nano task4.c
+```
+
+Copy and paste the following in the editor:
+```
+#include <stdio.h>
+#define LEN 300
+
+unsigned char X[LEN] = {
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+
+unsigned char Y[LEN] = {
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+
+int main()
+{
+    for (int i = 0; i < LEN; i++)
+    {
+        if (X[i] != Y[i])
+        {
+            printf("i = %d, X[i] = %.2x, Y[i] = %.2x\n", i, X[i], Y[i]);
+            printf("Malicious\n");
+            return 0;
+        }
+    }
+    printf("Benign\n");
+    return 0;
+}
+```
+
+Compile task4.c into an executable named task4out:
+
+```
+gcc task4.c -o task4out
+```
+
+Open task4out in a hexadecimal editor like bless and find the offset values for the 'X' and 'Y' arrays. we are creating a Prefix file from where the X array is starting(ex.4160) then we are leaving 128 bytes and remaining all bytes we are saving in suffix(ex.4288).
+
+```
+bless task4out
+```
+
+![h](images/h.png)
+
+Replace the value with the X array offset value.
+
+```
+head -c <VALUE> task4out > prefix
+```
+Add 128 to the 'X' array offset value and replace the value below:
+```
+tail -c <+VALUE> task4out > suffix
+```
+
+Generate two files out1 and out2 using md5collgen, using the prefix as specified:
+```
+md5collgen -p prefix -o out1 out2
+```
+
+Extract the last 128 bytes from out1 and out2 into P and Q respectively:
+```
+tail -c 128 out1 > P
+tail -c 128 out2 > Q
+```
+
+Check the MD5 checksum for out1 and out2:
+```
+md5sum out1 out2
+```
+Open the suffix in a hexadecimal editor like bless again and find the 'Y' array offset hexadecimal value.
+```
+bless suffix
+```
+Replace the value with Y array offset hexadecimal value.
+```
+head -c <VALUE> suffix > pre-suffix
+```
+Add 128 to the 'Y' array offset value and replace the value below:
+```
+tail -c <+VALUE> suffix > post-suffix
+```
+Combine the generated files and create benign and malicious.
+```
+cat out1 pre-suffix P post-suffix > task4benign
+cat out2 pre-suffix Q post-suffix > task4malicious
+```
+
+Check MD5 values 
+```
+md5sum task4benign task4malicious
+```
+
+Compare task4benign and task4malicious to see if they are different:
+
+```
+diff task4benign task4malicious
+```
+
+
+
+
+
 ## 3 Submission
 
 You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
