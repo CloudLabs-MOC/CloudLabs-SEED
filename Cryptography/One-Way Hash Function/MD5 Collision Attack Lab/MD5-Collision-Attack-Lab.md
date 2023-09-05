@@ -170,7 +170,7 @@ In addition, you should answer the following questions:
     ```
 
     ```
-    diff h1 h2
+    diff h12 h22
     ```
 
   We have highlighted a few differences in the screenshot below, and you can identify the rest likewise.
@@ -204,11 +204,11 @@ $ cat file1 file2 > file3
 From the previous task, you should already have three files. Let's start by checking the MD5 values of out1.bin and out2.bin. Run the following commands:
 
 ```
-md5sum out1.bin
+md5sum out12.bin
 ```
 
 ```
-md5sum out2.bin
+md5sum out22.bin
 ```
 
 The MD5 values are the same for these files. We will consider the first file as "M" and the second file as "N".Now, let's add out22.bin file and check its MD5 value, which will differ from out1.bin and out2.bin: 
@@ -220,11 +220,11 @@ md5sum out22.bin
 Next, we will concatenate files using the cat command:
 
 ```
-cat out1.bin out22.bin > comp1
+cat out12.bin out22.bin > comp1
 ```
 
 ```
-cat out2.bin out22.bin > comp2
+cat out22.bin out22.bin > comp2
 ```
 
 Now, let's compare the contents of comp1 and comp2:
