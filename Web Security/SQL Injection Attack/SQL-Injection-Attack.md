@@ -329,8 +329,7 @@ Password=’$hashed_pwd’,
 PhoneNumber=’$input_phonenumber’
 WHERE ID=$id;";
 $conn->query($sql);
-``` 
-
+```
 
 ![alt text](images/figure2.PNG)
 
@@ -383,35 +382,35 @@ If you need to check Boby's password, log into the 'boby' profile with username 
 
 ![](images/sqlinjection23.png)
 
-#### 3.4 Task 4: Countermeasure — Prepared Statement
+#### 3.4 Task 4: Countermeasure — Prepared Statement - Practice Test
 
 The fundamental problem of the SQL injection vulnerability is the failure to separate code from data. When
 constructing a SQL statement, the program (e.g. PHP program) knows which part is data and which part
 is code. Unfortunately, when the SQL statement is sent to the database, the boundary has disappeared; the
-boundaries that the SQL interpreter sees may be different from the original boundaries that was set by the
-developers. To solve this problem, it is important to ensure that the view of the boundaries are consistent in
-the server-side code and in the database. The most secure way is to useprepared statement.
-To understand how prepared statement prevents SQL injection, we need to understand what happens
-when SQL server receives a query. The high-level workflow of how queries are executed is shown in
+boundaries that the SQL interpreter sees may be different from the original boundaries that were set by the
+developers. To solve this problem, it is important to ensure that the view of the boundaries is consistent in
+the server-side code and in the database. The most secure way is to use a prepared statement.
+To understand how a prepared statement prevents SQL injection, we need to understand what happens
+when an SQL server receives a query. The high-level workflow of how queries are executed is shown in
 Figure 3. In the compilation step, queries first go through the parsing and normalization phase, where a query
 is checked against the syntax and semantics. The next phase is the compilation phase where keywords (e.g.
 SELECT, FROM, UPDATE, etc.) are converted into a format understandable to machines. Basically, in this
-phase, query is interpreted. In the query optimization phase, the number of different plans are considered to
-execute the query, out of which the best optimized plan is chosen. The chosen plan is store in the cache, so
+phase, the query is interpreted. In the query optimization phase, a number of different plans are considered to
+execute the query, out of which the best-optimized plan is chosen. The chosen plan is stored in the cache, so
 whenever the next query comes in, it will be checked against the content in the cache; if it’s already present
 
 
 in the cache, the parsing, compilation and query optimization phases will be skipped. The compiled query
 is then passed to the execution phase where it is actually executed.
-Prepared statement comes into the picture after the compilation but before the execution step. A prepared
+The prepared statement comes into the picture after the compilation but before the execution step. A prepared
 statement will go through the compilation step, and be turned into a pre-compiled query with empty
 placeholders for data. To run this pre-compiled query, data need to be provided, but these data will not go
-through the compilation step; instead, they are plugged directly into the pre-compiled query, and are sent
+through the compilation step; instead, they are plugged directly into the pre-compiled query and are sent
 to the execution engine. Therefore, even if there is SQL code inside the data, without going through the
-compilation step, the code will be simply treated as part of data, without any special meaning. This is how
-prepared statement prevents SQL injection attacks.
+compilation step, the code will be simply treated as part of the data, without any special meaning. This is how
+a prepared statement prevents SQL injection attacks.
 Here is an example of how to write a prepared statement in PHP. We use a SELECT statement in the
-following example. We show how to use prepared statement to rewrite the code that is vulnerable to SQL
+following example. We show how to use a prepared statement to rewrite the code that is vulnerable to SQL
 injection attacks.
 ```
 $sql = "SELECT name, local, gender
@@ -430,9 +429,9 @@ $stmt->execute();
 $stmt->bind_result($bind_name, $bind_local, $bind_gender);
 $stmt->fetch();
 ```
-Using the prepared statement mechanism, we divide the process of sending a SQL statement to the
+Using the prepared statement mechanism, we divide the process of sending an SQL statement to the
 database into two steps. The first step is to only send the code part, i.e., a SQL statement without the actual
-the data. This is the prepare step. As we can see from the above code snippet, the actual data are replaced
+data. This is the preparation step. As we can see from the above code snippet, the actual data are replaced
 by question marks (?). After this step, we then send the data to the database using bindparam(). The
 database will treat everything sent in this step only as data, not as code anymore. It binds the data to the
 corresponding question marks of the prepared statement. In the bindparam() method, the first argument
@@ -443,13 +442,13 @@ means that the data in $pwd has the string type.
 For the sake of simplicity, we created a simplified program inside the defense folder. We will make
 changes to the files in this folder. If you point your browser to the following URL, you will see a page
 similar to the login page of the web application. This page allows you to query an employee’s information,
-but you need to provide the correct user name and password.
+but you need to provide the correct username and password.
 ```
 URL: http://www.seed-server.com/defense/
 ```
-The data typed in this page will be sent to the server program getinfo.php, which invokes a program
+The data type on this page will be sent to the server program getinfo.php, which invokes a program
 called unsafe.php. The SQL query inside this PHP program is vulnerable to SQL injection attacks. Your
-job is modify the SQL query in unsafe.phpusing the prepared statement, so the program can defeat SQL
+job is to modify the SQL query in unsafe.phpusing the prepared statement, so the program can defeat SQL
 injection attacks. Inside the lab setup folder, the unsafe.php program is in the image_www/Code/defense 
 folder. You can directly modify the program there. After you are done, you need to rebuild and
 restart the container, or the changes will not take effect.
@@ -458,32 +457,32 @@ You can also modify the file while the container is running. On the running cont
 program is inside /var/www/SQL_Injection/defense. The downside of this approach is that in
 order to keep the docker image small, we have only installed a very simple text editor called nano inside
 the container. It should be sufficient for simple editing. If you do not like this editor, you can always use
- "apt install" to install your favoriate command-line editor inside the container. For example, for
+ "apt install" to install your favourite command-line editor inside the container. For example, for
 people who like vim, you can do the following:
 ```
 # apt install -y vim
 ```
-This installation will be discarded after the container is shutdown and destroyed. If you want to make it
+This installation will be discarded after the container is shut down and destroyed. If you want to make it
 permanent, add the installation command to the Dockerfile inside the image_www folder.
 
 ## 4 Guidelines
 
 Test SQL Injection String. In real-world applications, it may be hard to check whether your SQL injection
-attack contains any syntax error, because usually servers do not return this kind of error messages. To
-conduct your investigation, you can copy the SQL statement from php source code to the MySQL console.
+attack contains any syntax error, because usually servers do not return this kind of error message. To
+conduct your investigation, you can copy the SQL statement from the php source code to the MySQL console.
 Assume you have the following SQL statement, and the injection string is ’ or 1=1; #.
 ```
 SELECT * from credential
 WHERE name=’$name’ and password=’$pwd’;
 ```
 You can replace the value of $name with the injection string and test it using the MySQL console. This
-approach can help you construct a syntax-error free injection string before launching the real attack.
+approach can help you construct a syntax-error-free injection string before launching the real attack.
 
 ## 5 Submission
 
 You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
+have observed. You also need to provide an explanation of the observations that are interesting or surprising.
+Please also list the important code snippets followed by an explanation. Simply attaching a code without any
 explanation will not receive credits.
 
 
