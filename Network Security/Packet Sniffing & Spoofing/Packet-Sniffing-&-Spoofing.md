@@ -471,15 +471,15 @@ container. You can use the "docker cp" command to copy a file from the host VM t
 the following example (there is no need to type the docker ID in full):
 
 ```
-$ dockps
-
-f4501a488a69 hostA-10.9.0.
-85058cbdee62 hostB-10.9.0.
-24cbc879e371 seed-attacker
-
-// Copy a.out to the seed-attacker container’s /tmp folder
-$ docker cp a.out 24cbc879e371:/tmp
+dockps
 ```
+Copy a.out to the seed-attacker container’s /tmp folder
+```
+docker cp a.out <container-id>:/tmp
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/ff514e9b-79db-4eea-a2b8-3c738860199d)
+
 
 ### 4.1 Task 2.1: Writing Packet Sniffing Program
 
@@ -488,7 +488,10 @@ invoking a simple sequence of procedures in the pcap library. At the end of the 
 be put in buffer for further processing as soon as they are captured. All the details of packet capturing are
 handled by the pcap library. The SEED book provides a sample code, showing how to write a simple sniffer
 program using pcap. We include the sample code in the following (see the book for detailed explanation).
-
+```
+nano sniff.c
+```
+Paste the following:
 ```
 #include <pcap.h>
 #include <stdio.h>
@@ -531,10 +534,16 @@ pcap_loop(handle, -1, got_packet, NULL);
 pcap_close(handle); //Close the handle
 return 0;
 }
-
-// Note: don’t forget to add "-lpcap" to the compilation command.
-// For example: gcc -o sniff sniff.c -lpcap
 ```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/c8407c1d-82cf-479b-ad19-c323b9808a65)
+
+- Note: don’t forget to add `-lpcap` to the compilation command.
+```
+gcc -o sniff sniff.c -lpcap
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/09f0b14c-9060-4eb1-9aff-85db43e188aa)
+
 
 Tim Carstens has also written a tutorial on how to use pcap library to write a sniffer program. The
 tutorial is available at http://www.tcpdump.org/pcap.htm.
@@ -560,11 +569,11 @@ questions:
     mode is on or off (look at thepromiscuity’s value).
     
 ``` 
-    # ip -d link show dev br-f2478ef
-    
-    1249: br-f2478ef59744: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 ...
-       link/ether 02:42:ac:99:d1:88 brd ff:ff:ff:ff:ff:ff **promiscuity 1** ...
+    ip -d link show dev br-<id>
 ```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/7d5b8bca-56eb-4065-8bbd-ec5a214587c4)
+
 
 Task 2.1B: Writing Filters. Please write filter expressions for your sniffer program to capture each of
 the followings. You can find online manuals for pcap filters. In your lab reports, you need to include
@@ -574,8 +583,8 @@ screenshots to show the results after applying each of these filters.
 - Capture the TCP packets with a destination port number in the range from 10 to 100.
 
 
-Task 2.1C: Sniffing Passwords. Please show how you can use your sniffer program to capture the pass-
-word when somebody is using telnet on the network that you are monitoring. You may need to modify
+Task 2.1C: Sniffing Passwords. Please show how you can use your sniffer program to capture the pass-word
+when somebody is using telnet on the network that you are monitoring. You may need to modify
 your sniffer code to print out the data part of a captured TCP packet (telnet uses TCP). It is acceptable if
 you print out the entire data part, and then manually mark where the password (or part of it) is.
 
