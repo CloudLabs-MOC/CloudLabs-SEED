@@ -31,7 +31,7 @@ from the SEED website.
 
 ## 2 Lab Setup
 
-Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+Files needed for this lab are included in server.zip, which can be fetched by running the following commands.
 
 ```bash
 wget https://seedsecuritylabs.org/Labs_16.04/Crypto/Crypto_Hash_Length_Ext/files/server.zip
