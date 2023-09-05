@@ -1,0 +1,13 @@
+[
+  {
+    "Name": "SEED Security",
+    "Language": "English",
+    "BaseURL": "https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main",
+    "Files": [
+      {
+        "RawFilePath": "https://raw.githubusercontent.com/AdarshRazor/User_Friendly_ARM_Temlates/main/Seed-labs/Packet-Sniffing-and-Spoofing.md",
+        "Order": 1
+      }
+    ]
+  }
+]
