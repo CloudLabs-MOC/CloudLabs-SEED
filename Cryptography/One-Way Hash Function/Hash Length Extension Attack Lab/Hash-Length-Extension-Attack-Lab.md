@@ -1,10 +1,9 @@
 # Hash Length Extension Attack Lab
 
 ```
-Copyright © 2019 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+Copyright © 2019 Wenliang Du, All rights reserved.
+Free to use for non-commercial educational purposes. Commercial uses of the materials are prohibited.
+The SEED project was funded by multiple grants from the US National Science Foundation.
 ```
 ## 1 Introduction
 
@@ -22,155 +21,168 @@ The objective of this lab is to help students understand how the length extensio
 will launch the attack against a server program; they will forge a valid command and get the server to execute
 the command.
 
-**Readings.** Detailed coverage of the one way hash function can be found in the following:
+Readings. Detailed coverage of the one way hash function can be fond in the following:
 
-- Chapter 22 of the SEED Book,_Computer & Internet Security: A Hands-on Approach_, 2nd Edition,
-    by Wenliang Du. See details at https://www.handsonsecurity.net.
+- Chapter 22 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
+    by Wenliang Du. See details athttps://www.handsonsecurity.net.
 
-**Lab environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+Lab environment. This lab has been tested on our pre-built Ubuntu 16.04 VM, which can be downloaded
+from the SEED website.
 
-## 2 Lab Environment
+## 2 Lab Setup
 
-We have set up a web server for this lab. A client can send a list of commands to this server. Each request
-must attach a MAC computed based on a secret key and the list of commands. The server will only execute
-the commands in the request if the MAC is verified successfully. We will use the host VM as the client and
-use a container for the web server.
+Files needed for this lab are included in server.zip, which can be fetched by running the following commands.
 
-Container Setup and Commands. Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+```bash
+wget https://seedsecuritylabs.org/Labs_16.04/Crypto/Crypto_Hash_Length_Ext/files/server.zip
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/09a38fa5-a177-49ae-8d58-32568b6c3fac)
+
+```bash
+unzip server.zip
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/6f903727-4468-4280-8ac9-dcfad314cb03)
+
+
+We have set up a server for this lab. A client can send a list of commands to this server. Each request must
+attach a MAC computed based on a secret key and the list of commands. The server will only execute the
+commands in the request if the MAC is verified successfully.
+
+Setting up the hostname. We use the domainwww.seedlablenext.comto host the server program.
+Since we only use one VM for this lab, we map this hostname tolocalhost(127.0.0.1). This can be
+achieved by adding the following entry to the/etc/hostsfile.
+
+Run the following commands to add the entry:-
 
 ```
-sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/One-Way%20Hash%20Function/Hash%20Length%20Extension%20Attack%20Lab/Lab%20files/Labsetup.zip
+cd /etc
 ```
-```
-sudo unzip Labsetup.zip
-```
-Enter the Labsetup folder, and use the deocker-compose.yml file to set up the lab
-environment. Detailed explanation of the content in this file and all the involved Docker file can be
-found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
-SEED lab environment using containers, it is very important that you read the user manual.
 
-
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the .bashrc file
-(in our provided SEEDUbuntu 20.04 VM).
 ```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
-
-// Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
+sudo nano hosts
 ```
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
-the container, and then use "docker exec" to start a shell on that container. We have created aliases for
-them in the .bashrc file.
-```
-$ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
-// The following example shows how to get a shell inside hostC
-$ dockps
-b1004832e275 hostA-10.9.0.
-0af4ea7a3e2e hostB-10.9.0.
-9652715c8e0a hostC-10.9.0.
-
-$ docksh 96
-root@9652715c8e0a:/#
-
-// Note: If a docker command requires a container ID, you do not need to
-// type the entire ID string. Typing the first few characters will
-// be sufficient, as long as they are unique among all the containers.
+Then paste the following entry:
 ```
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+127.0.0.1 http://www.seedlablenext.com
+```
 
-About the web server. We use the domain www.seedlab-hashlen.com to host the server program.
-In our VM, we map this hostname to the web server container (10.9.0.80). This can be achieved by
-adding the following entry to the /etc/hosts file (please add it if the entry is not in the VM).
+After entering the following entry click **Ctrl+X** then enter **Y** and press **Enter**. 
+
+After uncompressing the server.zip, to check its contents:
+
 ```
-10.9.0.80 http://www.seedlab-hashlen.com
+$ cd Server
+$ ls
+LabHome run_server.sh www
 ```
-The server code is in the Labsetup/image_flask/app folder. It has two directories. The www
-directory contains the server code, and the LabHome directory contains a secret file and the key used for
-computing the MAC.
+
+Thewwwdirectory contains the server code, and theLabHomedirectory contains a secret file and the
+key used for computing the MAC. We can run the following command to start the server program.
+
+```
+$ chmod +x run_server.sh
+$ ./run_server.sh
+```
+
+The server uses a Python module namedFlask. By the time this lab is officially released, the VM
+should have this module installed. If you see an error message that says “Flask not found”, you can use the
+command below to install Flask.
+
+```
+$ sudo pip3 install Flask
+```
 
 Sending requests. The server program accepts the following commands:
-```
-- The lstcmd command: the server will list all the files in the LabHome folder.
-- Thed download command: the server will return the contents of the specified file from the LabHome
+
+- Thelstcmdcommand: the server will list all the files in theLabHomefolder.
+- Thedownloadcommand: the server will return the contents of the specified file from theLabHome
     directory.
-```
 
 A typical request sent by the client to the server is shown below. The server requires auidargument
-to be passed. It usesuidto get the MAC key from LabHome/key.txt. The command in the example
-below is lstcmd, and its value is set to 1. It requests the server to list all the files. The last argument is the
+to be passed. It usesuidto get the MAC key fromLabHome/key.txt. The command in the example
+below islstcmd, and its value is set to 1. It requests the server to list all the files. The last argument is the
 MAC computed based on the secret key (shared by the client and the server) and the command arguments.
 Before executing the command, the server will verify the MAC to ensure the command’s integrity.
+
 ```
-http://www.seedlab-hashlen.com/?myname=JohnDoe&uid=1001&lstcmd=
-&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
-```
-Students should replace the value JohnDoe in the myname field with their actual names (no space is
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
+&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f11
+````
+
+Students should replace the valueJohnDoein themynamefield with their actual names (no space is
 allowed). This parameter is to make sure that different students’ results are different, so students cannot
 copy from one another. The server does not use this argument, but it checks whether the argument is present
 or not. Requests will be rejected if this field is not included. Instructors can use this argument to check
 whether students have done the work by themselves. No point will be given if students do not use their real
 names in this task.
-The following shows another example. The request includes two commands: list all the files and download
-the file secret.txt. Similarly, a valid MAC needs to be attached, or the server will not execute
+The following shows another example. The request includes two commands: list all the files and down-
+load the filesecret.txt. Similarly, a valid MAC needs to be attached, or the server will not execute
 these commands.
+
 ```
-http://www.seedlab-hashlen.com/?myname=JohnDoe&uid=1001&lstcmd=
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
 &download=secret.txt
-&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
+&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f11
 ```
+
 ## 3 Tasks
 
 ### 3.1 Task 1: Send Request to List Files
 
 In this task, we will send a benign request to the server so we can see how the server responds to the request.
 The request we want to send is as follows:
+
 ```
-http://www.seedlab-hashlen.com/?myname=<name>&uid=<need-to-fill>
+http://www.seedlabhashlengthext.com:5000/?myname=<name>&uid=<need-to-fill>
 &lstcmd=1&mac=<need-to-calculate>
 ```
+
 To send such a request, other than using our real names, we need to fill in the two missing arguments.
-Students need to pick a uid number from the key.txt in the LabHome directory. This file contains a list
-of colon-separated uid and key values. Students can use any uid and its associated key value. For example,
-students can use uid 1001 and its key 123456.
+Students need to pick a uid number from the key.txt in the LabHome directory and that can be acheieved by running the following command.
+
+```
+cat key.txt
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/b6f16035-e377-4473-ac61-d2294c925fd1)
+
+This file contains a list of colon-separated uid and key values. Students can use any uid and its associated key value. For example, students can use uid 1001 and its key 123456.
 The second missing argument is the MAC, which can be calculated by concatenating the key with the
-contents of the requests R (the argument part only), with a colon added in between. See the following
+contents of the requestsR(the argument part only), with a colon added in between. See the following
 example:
-```
+
 Key:R = 123456:myname=JohnDoe&uid=1001&lstcmd=
-```
+
+
 The MAC will be calculated using the following command:
 ```
 $ echo -n "123456:myname=JohnDoe&uid=1001&lstcmd=1" | sha256sum
+```
+The output would look something like this:
 7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce3 -
 
-```
+
 We can then construct the complete request and send it to the server program using the browser:
+
 ```
-http://www.seedlab-hashlen.com/?myname=JohnDoe&uid=1001&lstcmd=
-&mac=7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
+&mac=7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce3
 ```
 
-**Task.** Please send a download command to the server, and show that you can get the results back.
+Task. Please send a download command to the server, and show that you can get the results back.
 
 ### 3.2 Task 2: Create Padding
 
 To conduct the hash length extension attack, we need to understand how padding is calculated for one-way
-hash. The block size of SHA-256 is 64 bytes, so a message M will be padded to the multiple of 64 bytes
-during the hash calculation. According to RFC 6234, paddings for SHA256 consist of one byte of \x80,
-followed by a many 0’s, followed by a 64-bit (8 bytes) length field (the length is the number of bits in the
+hash. The block size of SHA-256 is 64 bytes, so a messageMwill be padded to the multiple of 64 bytes
+during the hash calculation. According to RFC 6234, paddings for SHA256 consist of one byte of\x80,
+followed by a many 0’s, followed by a 64-bit (8 bytes) length field (the length is the number ofbitsin the
 M).
-Assume that the original message is M = "This is a test message". The length of Mis 22
-bytes, so the padding is 64 - 22 = 42bytes, including 8 bytes of the length field. The length ofM interm
-of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following padded message:
+Assume that the original message isM = "This is a test message". The length ofMis 22
+bytes, so the padding is64 - 22 = 42bytes, including 8 bytes of the length field. The length ofMin
+
+term of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following padded message:
+
 ```
 "This is a test message"
 "\x80"
@@ -180,35 +192,97 @@ of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following pad
 "\x00\x00\x00"
 "\x00\x00\x00\x00\x00\x00\x00\xB0"
 ```
+
 It should be noted that the length field uses the Big-Endian byte order, i.e., if the length of the message
 is0x012345, the length field in the padding should be:
-"\x00\x00\x00\x00\x00\x01\x23\x45"
 
-**Task.** Students need to construct the padding for the following message (the actual value of the<key>
-and<uid>should be obtained from the  LabHome/key.txt file.
+```
+"\x00\x00\x00\x00\x00\x01\x23\x45"
+```
+
+Task. Students need to construct the padding for the following message (the actual value of the<key>
+and<uid>should be obtained from theLabHome/key.txtfile.
+
 ```
 <key>:myname=<name>&uid=<uid>&lstcmd=
 ```
-It should be noted that in the URL, all the hexadecimal numbers in the padding need to be encoded by
-changing \x to %. For example,\x80in the padding should be replaced with %80 in the URL above. On
-the server side, encoded data in the URL will be changed back to the binary numbers. See the following
-example:
+
+### 3.3 Task 3: Compute MAC using Secret Key
+
+In this task, we will add an extra messageN = "Extra message"to the padded original messageM =
+"This is a test message", and compute its hash value. The program is listed below.
+
 ```
-"\x80\x00\x00\x99" should be encoded as "%80%00%00%99"
-```    
+/* calculate_mac.c */
+#include <stdio.h>
+#include <openssl/sha.h>
 
-### 3.3 Task 3: The Length Extension Attack
+int main(int argc, const char *argv[])
+{
+SHA256_CTX c;
+unsigned char buffer[SHA256_DIGEST_LENGTH];
+int i;
 
-In this task, we will generate a valid MAC for a URL without knowing the MAC key. Assume that we know
-the MAC of a valid requestR, and we also know the size of the MAC key. Our job is to forge a new request
-based onR, while still being able to compute the valid MAC.
-Given the original message M="This is a test message"and its MAC value, we will show
-how to add a message "Extra message" to the end of the padded M, and then compute its MAC, without
+SHA256_Init(&c);
+SHA256_Update(&c,
+"This is a test message"
+"\x80"
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+"\x00\x00\x00"
+"\x00\x00\x00\x00\x00\x00\x00\xB0"
+"Extra message",
+64+13);
+SHA256_Final(buffer, &c);
+
+for(i = 0; i < 32; i++) {
+printf("%02x", buffer[i]);
+}
+printf("\n");
+return 0;
+}
+```
+
+Students can compile and run the above program as follows:
+```
+$ sudo apt-get install libssl-dev
+$ gcc calculate_mac.c -o calculate_mac -lcrypto
+$ ./calculate_mac
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/67becc1a-300d-498e-bc8d-6c218d53dd1c)
+
+Task. Students should change the code in the listing above and compute the MAC for the following request
+(assume that we know the secret MAC key):
+
+```
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
+&lstcmd=1<padding>&download=secret.txt
+&mac=<hash-value>
+```
+
+Just like the previous task, the value of<name>should be your actual name. The value of the<uid>
+and the MAC key should be obtained from theLabHome/key.txtfile. Please send this request to the
+server, and see whether you can successfully download thesecret.txtfile.
+It should be noted that in the URL, all the hexadecimal numbers in the padding need to be encoded by
+changing\xto%. For example,\x80in the padding should be replaced with%80in the URL above. On
+the server side, encoded data in the URL will be changed back to the hexadecimal numbers.
+
+### 3.4 Task 4: The Length Extension Attack
+
+In the previous task, we show how a legitimate user calculates the MAC (with the knowledge of the MAC
+key). In this task, we will do it as an attacker, i.e., we do not know the MAC key. However, we do know the
+MAC of a valid requestR. Our job is to forge a new request based onR, while still being able to compute
+the valid MAC.
+Given the original messageM="This is a test message"and its MAC value, we will show
+how to add a message"Extra message"to the end of the paddedM, and then compute its MAC, without
 knowing the secret MAC key.
+
 ```
 $ echo -n "This is a test message" | sha256sum
 6f3438001129a90c5b1637928bf38bf26e39e57c6e9511005682048bedbef
 ```
+
 The program below can be used to compute the MAC for the new message:
 ```
 /* length_ext.c */
@@ -221,7 +295,6 @@ int main(int argc, const char *argv[])
 int i;
 unsigned char buffer[SHA256_DIGEST_LENGTH];
 SHA256_CTX c;
-
 
 SHA256_Init(&c);
 for(i=0; i<64; i++)
@@ -248,56 +321,61 @@ printf("\n");
 return 0;
 }
 ```
+
 Students can compile the program as follows:
+
 ```
 $ gcc length_ext.c -o length_ext -lcrypto
 ```
-**Task.** Students should first generate a valid MAC for the following request (where <uid>and the MAC
-key should be obtained from the LabHome/key.txt file):
+
+Task. Students should first generate a valid MAC for the following request (where<uid>and the MAC
+key should be obtained from theLabHome/key.txtfile):
+
 ```
-http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
 &lstcmd=1&mac=<mac>
 ```
-Based on the <mac> value calculated above, please construct a new request that includes thedownload
+
+Based on the<mac>value calculated above, please construct a new request that includes thedownload
 command. You are not allowed to use the secret key this time. The URL looks like below.
+
 ```
-http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
 &lstcmd=1<padding>&download=secret.txt&mac=<new-mac>
 ```
-Please send the constructed request to the server, and show that you can successfully get the content of
-the secret.txt file.
 
-### 3.4 Task 4: Attack Mitigation using HMAC
+Please send the constructed request to the server, and show that you can successfully get the content of
+thesecret.txtfile.
+
+### 3.5 Task 5: Attack Mitigation using HMAC
 
 In the tasks so far, we have observed the damage caused when a developer computes a MAC in an insecure
 way by concatenating the key and the message. In this task, we will fix the mistake made by the devel-
 oper. The standard way to calculate MACs is to use HMAC. Students should modify the server program’s
-verifymac() function and use Python’s hmacmodule to calculate the MAC. The function resides in
-lab.py. Given a key and message (both of type string), the HMAC can be computed as shown below (if
-you copy and paste the code from this PDF file, the’characters might not be copied correctly on some
-platforms).
-```
-real_mac = hmac.new(bytearray(key.encode(’utf-8’)),
-msg=message.encode(’utf-8’, ’surrogateescape’),
-digestmod=hashlib.sha256).hexdigest()
-```
-After making the changes, stop all the containers, rebuild them, and start all the containers again. The
-change will then take effect. Students should repeat Task 1 to send a request to list files while using HMAC
-for the MAC calculation. Assuming that the chosen key is 123456, the HMAC can be computed in the
-following program.
-```
-#!/bin/env python
+verifymac()function and use Python’shmacmodule to calculate the MAC. The function resides in
+lab.py. Given a key and message (both of type string), the HMAC can be computed as shown below:
 
-import hmac
-import hashlib
-
-key=’123456’
-message=’lstcmd=1’
-mac = hmac.new(bytearray(key.encode(’utf-8’)),
-msg=message.encode(’utf-8’, ’surrogateescape’),
-digestmod=hashlib.sha256).hexdigest()
-print(mac)
 ```
+mac = hmac.new(bytearray(key.encode(’utf-8’)), msg=message.encode(’utf-8’,
+’surrogateescape’), digestmod=hashlib.sha256).hexdigest()
+```
+
+Students should repeat Task 1 to send a request to list files while using HMAC for the MAC calculation.
+Assuming that the chosen key is 123456, the HMAC can be computed in the following:
+
+```
+$ python
+Python 3.5.
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information
+>>> import hmac
+>>> import hashlib
+>>> key=’123456’
+>>> message=’lstcmd=1’
+>>> hmac.new(bytearray(key.encode(’utf-8’)), msg=message.encode(’utf-8’,
+’surrogateescape’), digestmod=hashlib.sha256).hexdigest()
+```
+
 Students should describe why a malicious request using length extension and extra commands will fail
 MAC verification when the client and server use HMAC.
 
