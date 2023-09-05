@@ -139,9 +139,14 @@ http://www.seedlabhashlengthext.com:5000/?myname=<name>&uid=<need-to-fill>
 ```
 
 To send such a request, other than using our real names, we need to fill in the two missing arguments.
-Students need to pick a uid number from thekey.txtin theLabHomedirectory. This file contains a list
-of colon-separated uid and key values. Students can use any uid and its associated key value. For example,
-students can use uid 1001 and its key 123456.
+Students need to pick a uid number from the key.txt in the LabHome directory and that can be acheieved by running the following command.
+
+```
+cat key.txt
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/b6f16035-e377-4473-ac61-d2294c925fd1)
+
+This file contains a list of colon-separated uid and key values. Students can use any uid and its associated key value. For example, students can use uid 1001 and its key 123456.
 The second missing argument is the MAC, which can be calculated by concatenating the key with the
 contents of the requestsR(the argument part only), with a colon added in between. See the following
 example:
