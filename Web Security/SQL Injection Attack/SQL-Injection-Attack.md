@@ -9,7 +9,7 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ## 1 Overview
 
 SQL injection is a code injection technique that exploits the vulnerabilities in the interface between web
-applications and database servers. The vulnerability is present when user’s inputs are not correctly checked
+applications and database servers. The vulnerability is present when the user’s inputs are not correctly checked
 within the web applications before being sent to the back-end database servers.
 Many web applications take inputs from users, and then use these inputs to construct SQL queries, so
 they can get information from the database. Web applications also use SQL queries to store information in
@@ -17,9 +17,9 @@ the database. These are common practices in the development of web applications.
 not carefully constructed, SQL injection vulnerabilities can occur. SQL injection is one of the most common
 attacks on web applications.
 In this lab, we have created a web application that is vulnerable to the SQL injection attack. Our web
-application includes the common mistakes made by many web developers. Students’ goal is to find ways to
+application includes the common mistakes made by many web developers. The student’s goal is to find ways to
 exploit the SQL injection vulnerabilities, demonstrate the damage that can be achieved by the attack, and
-master the techniques that can help defend against such type of attacks. This lab covers the following topics:
+master the techniques that can help defend against such types of attacks. This lab covers the following topics:
 
 - SQL statements: SELECT and UPDATE statements
 - SQL injection
@@ -30,7 +30,7 @@ master the techniques that can help defend against such type of attacks. This la
 - Chapter 12 of the SEED Book,_Computer & Internet Security: A Hands-on Approach_, 2nd Edition,
     by Wenliang Du. See details at https://www.handsonsecurity.net.
 
-**Lab Environment.** You can perform the lab exercise on the SEED VM provided by the Cloudlabs.
+**Lab Environment.** You can perform the lab exercise on the SEED VM provided by Cloudlabs.
 
 ## 2 Lab Environment
 
@@ -48,6 +48,10 @@ IP address, the old entry must be removed.
 ```
 10.9.0.5     http://www.seed-server.com
 ```
+
+![](images/sqlinjection1.png)
+
+![](images/sqlinjection2.png)
 #### 2.1 Container Setup and Commands
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands. 
@@ -55,11 +59,16 @@ Files needed for this lab are included in Labsetup.zip, which can be fetched by 
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Security/SQL%20Injection%20Attack/Lab%20files/Labsetup.zip
 ```
+
+![](images/sqlinjection3.png)
 ```
 sudo unzip Labsetup.zip
 ```
-Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved Dockerfile can be found from the user manual, which is linked
+
+![](images/sqlinjection4.png)
+
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. A detailed explanation of the
+content in this file and all the involved Dockerfile can be found in the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
@@ -75,6 +84,30 @@ $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
 ```
+
+Change the directory to the Labsetup directory using:
+```
+cd Labsetup
+```
+
+![](images/sqlinjection5.png)
+
+To build the container image and start the container use the following commands:
+```
+dcbuild
+```
+![](images/sqlinjection6.png)
+
+```
+dcup
+```
+![](images/sqlinjection7.png)
+
+Open a new tab (Do not close the tab in which you started the docker image)
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/05112cb1-cddb-434c-bb96-c7ba8c96d266)
+
+
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
@@ -96,8 +129,16 @@ root@9652715c8e0a:/#
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
 ```
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+
+We first need to use the "docker ps" command to find out the ID of the container and get a shell inside the container.
+
+```
+dockps
+```
+```
+docksh <id>   ## where id is the first two digits or alphabets of the mysql container.
+```
+![](images/sqlinjection8.png)
 
 **MySQL database.** Containers are usually disposable, so once it is destroyed, all the data inside the containers
 are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose
@@ -114,8 +155,8 @@ $ sudo rm -rf mysql_data
 
 We have created a web application, which is a simple employee management application. Employees can
 view and update their personal information in the database through this web application. There are mainly
-two roles in this web application: Administrator is a privilege role and can manage each individual
-employees’ profile information; Employee is a normal role and can view or update his/her own profile
+two roles in this web application: Administrator is a privileged role and can manage each individual
+employee’s profile information; Employee is a normal role and can view or update his/her own profile
 information. All employee information is described in Table 1.
 
 ![alt text](images/table.PNG)
@@ -125,20 +166,23 @@ information. All employee information is described in Table 1.
 #### 3.1 Task 1: Get Familiar with SQL Statements
 
 The objective of this task is to get familiar with SQL commands by playing with the provided database. The
-data used by our web application is stored in a MySQL database, which is hosted on our MySQL container.
+Data used by our web application is stored in a MySQL database, which is hosted on our MySQL container.
 We have created a database called sqllab_users, which contains a table called credential. The table
 stores the personal information (e.g. eid, password, salary, ssn, etc.) of every employee. In this task, you
 need to play with the database to get familiar with SQL queries.
-Please get a shell on the MySQL container (see the container manual for instruction; the manual is linked
-to the lab’s website). Then use the mysql client program to interact with the database. The user name is
-root and password is dees.
+Please get a shell on the MySQL container (see the container manual for instructions; the manual is linked
+to the lab’s website). Then use the MySQL client program to interact with the database. The username is
+root and the password is dees.
 ```
 // Inside the MySQL container
 # mysql -u root -pdees
 ```
-After login, you can create new database or load an existing one. As we have already created the
+
+![](images/sqlinjection9.png)
+
+After login, you can create a new database or load an existing one. As we have already created the
 sqllab_usersdatabase for you, you just need to load this existing database using the use command. To
-show what tables are there in the sqllab_users database, you can use theshow tables command to
+show what tables are there in the sqllab_users database, you can use the show tables command to
 print out all the tables of the selected database.
 ```
 mysql> use sqllab_users;
@@ -152,28 +196,31 @@ mysql> show tables;
 | credential |
 +------------------------+
 ```
-After running the commands above, you need to use a SQL command to print all the profile information
-of the employee Alice. Please provide the screenshot of your results.
+![](images/sqlinjection10.png)
 
+After running the commands above, you need to use an SQL command to print all the profile information
+of the employee Alice. Please provide a screenshot of your results.
+
+![](images/sqlinjection11.png)
 #### 3.2 Task 2: SQL Injection Attack on SELECT Statement
 
 SQL injection is basically a technique through which attackers can execute their own malicious SQL statements
-generally referred as malicious payload. Through the malicious SQL statements, attackers can steal
+generally referred to as malicious payload. Through malicious SQL statements, attackers can steal
 information from the victim database; even worse, they may be able to make changes to the database. Our
 employee management web application has SQL injection vulnerabilities, which mimic the mistakes frequently
 made by developers.
 We will use the login page from www.seed-server.com for this task. The login page is shown in
-Figure 1. It asks users to provide a user name and a password. The web application authenticate users based
+Figure 1. It asks users to provide a username and a password. The web application authenticates users based
 on these two pieces of data, so only employees who know their passwords are allowed to log in. Your job,
-as an attacker, is to log into the web application without knowing any employee’s credential.
+as an attacker, is to log into the web application without knowing any employee’s credentials.
 
 ![alt text](images/figure1.PNG)
 
 Figure 1: The Login page
 
-To help you started with this task, we explain how authentication is implemented in the web application.
+To help you start with this task, we explain how authentication is implemented in the web application.
 The PHP code unsafe_home.php, located in the /var/www/SQL_Injection directory, is used to
-conduct user authentication. The following code snippet show how users are authenticated.
+conduct user authentication. The following code snippet shows how users are authenticated.
 ```
 $input_uname = $_GET[’username’];
 $input_pwd = $_GET[’Password’];
@@ -196,19 +243,25 @@ return employee information;
 Authentication Fails;
 }
 ```
-The above SQL statement selects personal employee information such as id, name, salary, ssn etc from
+The above SQL statement selects personal employee information such as ID, name, salary, ssn etc. from
 the credential table. The SQL statement uses two variables input_uname and hashed_pwd, where
 input_uname holds the string typed by users in the username field of the login page, while hashed_pwd
 holds the sha1 hash of the password typed by the user. The program checks whether any record matches
-with the provided username and password; if there is a match, the user is successfully authenticated, and is
+the provided username and password; if there is a match, the user is successfully authenticated and is
 given the corresponding employee information. If there is no match, the authentication fails.
+
+![](images/sqlinjection12.png)
 
 **Task 2.1: SQL Injection Attack from webpage.** Your task is to log into the web application as the
 administrator from the login page, so you can see the information of all the employees. We assume that
 you do know the administrator’s account name which is admin, but you do not the password. You need to
 decide what to type in the Username and Password fields to succeed in the attack.
 
-**Task 2.2: SQL Injection Attack from command line.** Your task is to repeat Task 2.1, but you need to
+**Solution**: <administrator's name>' #
+
+![](images/sqlinjection15.png)
+
+**Task 2.2: SQL Injection Attack from the command line.** Your task is to repeat Task 2.1, but you need to
 do it without using the webpage. You can use command line tools, such as curl, which can send HTTP
 requests. One thing that is worth mentioning is that if you want to include multiple parameters in HTTP
 requests, you need to put the URL and the parameters between a pair of single quotes; otherwise, the special
@@ -219,18 +272,42 @@ application, with two parameters (username and Password) attached:
 $ curl ’www.seed-server.com/unsafe_home.php?username=alice&Password=11’
 ```
 If you need to include special characters in the username or Password fields, you need to encode
-them properly, or they can change the meaning of your requests. If you want to include single quote in those
+them properly, or they can change the meaning of your requests. If you want to include a single quote in those
 fields, you should use %27 instead; if you want to include white space, you should use %20. In this task,
 you do need to handle HTTP encoding while sending requests using curl.
 
+**Solution**:
+- Syntax for hash is **%23**
+- Syntax for white space is **%20**
+- Syntax for the single quote is **%27**
+  
+So we will modify the link by adding the following injection. Below is the image for the reference:
+
+```
+curl 'www.seed-server.com/unsafe_home.php?username=alice%27%20%23&Password=11'
+```
+
+![](images/sqlinjection14.png)
+
 Task 2.3: Append a new SQL statement. In the above two attacks, we can only steal information from
-the database; it will be better if we can modify the database using the same vulnerability in the login page.
+the database; it will be better if we modify the database using the same vulnerability on the login page.
 An idea is to use the SQL injection attack to turn one SQL statement into two, with the second one being
-the update or delete statement. In SQL, semicolon (;) is used to separate two SQL statements. Please try to
+the update or delete statement. In SQL, a semicolon (;) is used to separate two SQL statements. Please try to
 run two SQL statements via the login page.
 There is a countermeasure preventing you from running two SQL statements in this attack. Please use
 the SEED book or resources from the Internet to figure out what this countermeasure is, and describe your
 discovery in the lab report.
+
+**Solution**:
+We will try to append two SQL statements.
+
+admin';UPDATE credential SET Name = 'Wahab' WHERE Name = 'Alice';#
+
+![](images/sqlinjection16.png)
+
+The command will not execute because by default mysql does not allow multiple statements to execute at the same time only one statement to execute at a time it is disabled in mysql by default.
+
+![](images/sqlinjection17.png)
 
 
 #### 3.3 Task 3: SQL Injection Attack on UPDATE Statement
