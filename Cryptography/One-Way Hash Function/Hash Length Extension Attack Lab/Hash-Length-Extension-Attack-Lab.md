@@ -31,6 +31,19 @@ from the SEED website.
 
 ## 2 Lab Setup
 
+Files needed for this lab are included in server.zip, which can be fetched by running the following commands.
+
+```bash
+wget https://seedsecuritylabs.org/Labs_16.04/Crypto/Crypto_Hash_Length_Ext/files/server.zip
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/09a38fa5-a177-49ae-8d58-32568b6c3fac)
+
+```bash
+unzip server.zip
+```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/6f903727-4468-4280-8ac9-dcfad314cb03)
+
+
 We have set up a server for this lab. A client can send a list of commands to this server. Each request must
 attach a MAC computed based on a secret key and the list of commands. The server will only execute the
 commands in the request if the MAC is verified successfully.
@@ -39,15 +52,26 @@ Setting up the hostname. We use the domainwww.seedlablenext.comto host the serve
 Since we only use one VM for this lab, we map this hostname tolocalhost(127.0.0.1). This can be
 achieved by adding the following entry to the/etc/hostsfile.
 
+Run the following commands to add the entry:-
+
+```
+cd /etc
+```
+
+```
+sudo nano hosts
+```
+
+Then paste the following entry:
 ```
 127.0.0.1 [http://www.seedlablenext.com](http://www.seedlablenext.com)
 ```
 
-The server program. The server program (server.zip) can be found on the lab’s webpage. After
-downloading this zip file, uncompress it and check its contents:
+After entering the following entry click **Ctrl+X** then enter **Y** and press **Enter**. 
+
+After uncompressing the server.zip, to check its contents:
 
 ```
-$ unzip server.zip
 $ cd Server
 $ ls
 LabHome run_server.sh www
@@ -66,7 +90,7 @@ should have this module installed. If you see an error message that says “Flas
 command below to install Flask.
 
 ```
-$ sudo pip3 install Flask==1.1.
+$ sudo pip3 install Flask
 ```
 
 Sending requests. The server program accepts the following commands:
@@ -82,8 +106,8 @@ MAC computed based on the secret key (shared by the client and the server) and t
 Before executing the command, the server will verify the MAC to ensure the command’s integrity.
 
 ```
-[http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
-&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
+&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f11
 ````
 
 Students should replace the valueJohnDoein themynamefield with their actual names (no space is
@@ -97,9 +121,9 @@ load the filesecret.txt. Similarly, a valid MAC needs to be attached, or the ser
 these commands.
 
 ```
-[http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
 &download=secret.txt
-&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f
+&mac=dc8788905dbcbceffcdd5578887717c12691b3cf1dac6b2f2bcfabc14a6a7f11
 ```
 
 ## 3 Tasks
@@ -109,8 +133,10 @@ these commands.
 In this task, we will send a benign request to the server so we can see how the server responds to the request.
 The request we want to send is as follows:
 
-[http://www.seedlabhashlengthext.com:5000/?myname=<name>&uid=<need-to-fill>](http://www.seedlabhashlengthext.com:5000/?myname=<name>&uid=<need-to-fill>)
+```
+http://www.seedlabhashlengthext.com:5000/?myname=<name>&uid=<need-to-fill>
 &lstcmd=1&mac=<need-to-calculate>
+```
 
 To send such a request, other than using our real names, we need to fill in the two missing arguments.
 Students need to pick a uid number from thekey.txtin theLabHomedirectory. This file contains a list
@@ -134,8 +160,8 @@ The output would look something like this:
 We can then construct the complete request and send it to the server program using the browser:
 
 ```
-[http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=](http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=)
-&mac=7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce
+http://www.seedlablenext.com:5000/?myname=JohnDoe&uid=1001&lstcmd=1
+&mac=7d5f750f8b3203bd963d75217c980d139df5d0e50d19d6dfdb8a7de1f8520ce3
 ```
 
 Task. Please send a download command to the server, and show that you can get the results back.
