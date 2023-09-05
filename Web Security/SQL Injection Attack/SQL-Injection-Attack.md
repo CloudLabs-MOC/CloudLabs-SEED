@@ -61,6 +61,7 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Web%20Securit
 ```
 
 ![](images/sqlinjection3.png)
+
 ```
 sudo unzip Labsetup.zip
 ```
@@ -101,6 +102,7 @@ dcbuild
 ```
 dcup
 ```
+
 ![](images/sqlinjection7.png)
 
 Open a new tab (Do not close the tab in which you started the docker image)
@@ -178,7 +180,7 @@ root and the password is dees.
 # mysql -u root -pdees
 ```
 
-![](images/sqlinjection9.png)
+ ![](images/sqlinjection9.png)
 
 After login, you can create a new database or load an existing one. As we have already created the
 sqllab_usersdatabase for you, you just need to load this existing database using the use command. To
