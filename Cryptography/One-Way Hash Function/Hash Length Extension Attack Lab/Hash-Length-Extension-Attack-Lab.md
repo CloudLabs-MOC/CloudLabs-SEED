@@ -64,7 +64,7 @@ sudo nano hosts
 
 Then paste the following entry:
 ```
-127.0.0.1 [http://www.seedlablenext.com](http://www.seedlablenext.com)
+127.0.0.1 http://www.seedlablenext.com
 ```
 
 After entering the following entry click **Ctrl+X** then enter **Y** and press **Enter**. 
