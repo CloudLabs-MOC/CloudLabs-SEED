@@ -323,10 +323,13 @@ window.onload = function () {
 </script>
 ```
 
+
 ![alt text](images/Task3.5_samy_code_update_3.png)
 
 
+
 ![alt text](images/Task3.5_samy_edit_code_about_page_4.png)
+
 
 
 The above code should be placed in the "_About Me_" field of Samy’s profile page. This field provides
@@ -343,7 +346,9 @@ done by clicking on "_Edit HTML_", which can be found at the top right of the "_
     you cannot switch to the Text mode, can you still launch a successful attack?
   
 
+
 ![alt text](images/Task3.5_samy_added_to_alice_friends_list_5.png)
+
   
 
 ### 3.6 Task 5: Modifying the Victim’s Profile
@@ -353,12 +358,15 @@ modify the victim’s "_About Me_" field. We will write an XSS worm to complete 
 not self-propagate; in task 6, we will make it self-propagating.
 
 
+
 ![alt text](images/Task3.6_samy_code_added_1.png)
+
 
 
 ![alt text](images/Task3.6_docker_addedd_2.png)
 
-    
+
+
 Similar to the previous task, we need to write a malicious JavaScript program that forges HTTP requests
 directly from the victim’s browser, without the intervention of the attacker. To modify profile, we should
 first find out how a legitimate user edits or modifies his/her profile in _Elgg_. More specifically, we need
@@ -399,10 +407,13 @@ window.onload = function(){
 Similar to Task 4, the above code should be placed in the "_About Me_" field of Samy’s profile page,
 and the Text mode should be enabled before entering the above JavaScript code.
 
+
 ![alt text](images/Task3.6_code_update_browser_3.png)
 
 
+
 ![alt text](images/Task3.6_alice_profile_udpdated_with_samy_content_4.png)
+
 
 
 **Questions.** Please answer the following questions:
@@ -434,9 +445,7 @@ below. The worm can simply copy the following _<script>_ tag to the victim’s p
 the profile with the same worm.
 
 
-
 ![alt text](images/Task3.7_update_xsscode_inmachine_1.png)
-
 
 
 ```
@@ -608,10 +617,13 @@ You need to use the root privilege to change this file (using _sudo_).
 The _example32(a|b|c)_ servers host the same web page _index.html_, which is used to demonstrate how the CSP policies work. In this page, there are six areas, _area1_ to _area6_. Initially, each area displays "_Failed_". The page also includes six pieces of JavaScript code, each trying to write "_OK_" to its corresponding area. If we can see _OK_ in an area, that means, the JavaScript code corresponding to that area has been executed successfully; otherwise, we would see _Failed_. There is also a button on this page. If it is clicked, a message will pop up, if the underlying JavaScript code gets triggered.
 
 
+
 ![alt text](images/Task_final_update_py_code_1.png)
 
 
+
 ![alt text](images/Task_final_code_updated_py_2.png)
+
 
 
 ![alt text](images/Task_final_html_file_update_3.png)
@@ -621,8 +633,8 @@ The _example32(a|b|c)_ servers host the same web page _index.html_, which is use
 Add files to the web container
 
 
-![alt text](images/Task_final_add_files_to_container.png)
 
+![alt text](images/Task_final_add_files_to_container.png)
 
 
 
@@ -660,7 +672,6 @@ document.getElementById(’area3’).innerHTML = "OK";
 ```
 
 
-
 Goto the container and run the **py** file, before that please install the python3 inside the container
 
 
@@ -671,6 +682,7 @@ apt-get install -y python3
 
 
 ![alt text](images/Task_final_pythonapp_runnin_4.png)
+
 
     
 ### 4.3 Setting CSP Policies
@@ -746,10 +758,13 @@ http://www.example32c.com
 5. Please explain why CSP can help prevent Cross-Site Scripting attacks.
 
 
+
 ![alt text](images/Task_final_browser_5.png)
 
 
 ![alt text](images/Task_final_broswer_6.png)
+
+
 
 ## 5 Guidelines  (**Read-Only**)
 
