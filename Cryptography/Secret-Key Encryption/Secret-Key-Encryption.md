@@ -1,11 +1,11 @@
 # Secret-Key Encryption Lab
 
-```
+
 Copyright © 2018 by Wenliang Du.
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
 reproduced in a way that is reasonable to the medium in which the work is being re-published.
-```
+
 ## 1 Overview
 
 The learning objective of this lab is for students to get familiar with the concepts in the secret-key encryption
@@ -36,12 +36,23 @@ In this lab, we use a container to run an encryption oracle. The container is on
 do not need to start the container for other tasks.
 
 **Container Setup and Commands.** Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+- In the SEED VM Open the Terminal and run the following commands.
+  
+![01](media/01.png)
+
 ```
 sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Cryptography/Secret-Key%20Encryption/Lab%20files/Labsetup.zip
 ```
+
+![04](media/04.png)
+
 ```
 sudo unzip Labsetup.zip
 ```
+
+![05](media/05.png)
+
+
 Enter the Lab setup folder, and use the docker-compose.yml file to set up the lab
 environment. Detailed explanation of the content in this file and all the involved Dockerfile can be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
@@ -51,25 +62,53 @@ we are going to use these commands very frequently, we have created aliases for 
 (in our provided SEEDUbuntu 20.04 VM).
 
 ```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
+docker-compose build # Build the container image
+docker-compose up # Start the container
+docker-compose down # Shut down the container
 
 // Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
+
+dcbuild # Alias for: docker-compose build
+dcup # Alias for: docker-compose up
+dcdown # Alias for: docker-compose down
+````
+
+- Run the following commands in the terminal.
+
+```
+cd Labsetup
+```
+
+```
+docker-compose build # Build the container image
+```
+
+```
+docker-compose up # Start the container
 ```
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
 the container, and then use "docker exec" to start a shell on that container. We have created aliases for
 them in the .bashrc file.
-```
-$ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
-// The following example shows how to get a shell inside hostC
+```
+dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
+docksh <id> // Alias for: docker exec -it <id> /bin/bash
+```
+
+- Open the new terminal window and run the following commands:
+
+```
+docker ps --format "{{.ID}} {{.Names}}"
+```
+Replace the docker id with id
+
+```
+docker exec -it <id> /bin/bash
+```
+```
+The following example shows how to get a shell inside hostC
 $ dockps
 b1004832e275 hostA-10.9.0.
 0af4ea7a3e2e hostB-10.9.0.
@@ -77,15 +116,14 @@ b1004832e275 hostA-10.9.0.
 
 $ docksh 96
 root@9652715c8e0a:/#
-
-// Note: If a docker command requires a container ID, you do not need to
-// type the entire ID string. Typing the first few characters will
-// be sufficient, as long as they are unique among all the containers.
 ```
+
+> **Note**: If a docker command requires a container ID, you do not need to type the entire ID string. Typing the first few characters will be sufficient, as long as they are unique among all the containers.
+
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
-## 3 Task 1: Frequency Analysis
+## 3 Task 1: Frequency Analysis (Read only)
 
 It is well-known that monoalphabetic substitution cipher (also known as monoalphabetic cipher) is not
 secure, because it can be subjected to frequency analysis. In this lab, you are given a cipher-text that is
@@ -130,6 +168,23 @@ analysis to figure out the encryption key and the original plaintext.
 We have also provided a Python program (freq.py) inside theLabsetup/Filesfolder. It reads
 the ciphertext.txt file, and produces the statistics for n-grams, including the single-letter frequencies,
 bigram frequencies (2-letter sequence), and trigram frequencies (3-letter sequence), etc.
+
+- Open a new terminal window and run the following commands to perform frequency analysis.
+
+```
+cd Labsetup
+```
+
+```
+cd Files
+```
+
+```
+./freq.py
+```
+
+- Output of the freq.py will look like the following:
+
 ```
 $ ./freq.py
 -------------------------------------
@@ -153,13 +208,19 @@ mur: 20
 ```
 **Guidelines.** Using the frequency analysis, you can find out the plaintext for some of the characters quite
 easily. For those characters, you may want to change them back to its plain text, as you may be able to get
-more clues. It is better to use capital letters for plain text, so for the same letter, we know which is plain text
+more clues. It is better to use capital letters for plain text, so for the same letter, we know which is plain text and which is cipher text. You can use the tr command to do this. For example, in the following, we replace
+letters a,e, and t in in.txt with letters X, G, E, respectively; the results are saved in out.txt.
 
-
-and which is cipher text. You can use the tr command to do this. For example, in the following, we replace
-letters a,e, and t in in.txt with letters X, G, E, respectively; the results are saved inout.txt.
 ```
-$ tr ’aet’ ’XGE’ < in.txt > out.txt
+echo "aet" > in.txt
+```
+
+```
+tr ’aet’ ’XGE’ < in.txt > out.txt
+```
+
+```
+cat out.txt
 ```
 There are many online resources that you can use. We list some useful links in the following:
 
@@ -173,10 +234,24 @@ There are many online resources that you can use. We list some useful links in t
 In this task, we will play with various encryption algorithms and modes. You can use the following
 openssl enccommand to encrypt/decrypt a file. To see the manuals, you can type man openssl
 and man enc.
+
 ```
-$ openssl enc -ciphertype -e -in plain.txt -out cipher.bin \
--K 00112233445566778889aabbccddeeff \
--iv 0102030405060708
+echo "This is the content of my article 6721." > plain.txt
+```
+
+- Using the AES-128-CBC cipher
+```
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+-  Using the BF-CBC cipher
+```
+openssl enc -bf-cbc -e -in plain.txt -out cipher1.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708
+```
+
+- Using the AES-128-CFB cipher
+```
+openssl enc -aes-128-cfb -e -in plain.txt -out cipher2.bin -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
 ```
 Please replace the cipher type with a specific cipher type, such as-aes-128-cbc,-bf-cbc,
 -aes-128-cfb, etc. In this task, you should try at least 3 different ciphers. You can find the meaning
@@ -206,15 +281,40 @@ and then do the following:
     commands to get the header from p1.bmp, the data from p2.bmp (from offset 55 to the end of the
     file), and then combine the header and data together into a new file.
 
+-  Run the following commands:
 
 ```
-$ head -c 54 p1.bmp > header
-$ tail -c +55 p2.bmp > body
-$ cat header body > new.bmp
+cd Labsetup
+```
+
+```
+cd Files
+```
+
+- Encrypting file using ECB (Electronic Code Book)
+
+```
+openssl enc -aes-128-ecb -e -in pic_original.bmp -out p1.bmp -K 00110011001100110011001100110011
+
+```
+
+- Encrypting file using CBC (Cipher Block Chaining)
+
+```
+openssl enc -bf-cbc -e -in pic_original.bmp -out p2.bmp -K 00112233445566778889aabbccddeeff -iv 0102030405060708
+
+```
+
+
+```
+head -c 54 p1.bmp > header
+tail -c +55 p2.bmp > body
+cat header body > new.bmp
 ```
 2. Display the encrypted picture using a picture viewing program (we have installed an image viewer
     program called eog on our VM). Can you derive any useful information about the original picture
     from the encrypted picture? Please explain your observations.
+
 
 ```
 Select a picture of your choice, repeat the experiment above, and report your observations.
@@ -232,18 +332,48 @@ for details). We will conduct the following experiments to understand how this t
     with length 5 (without the-n option, the length will be 6, because a newline character will be added
     by echo):
 ```    
-    $ echo -n "12345" > f1.txt
+echo -n "12345" > f1.txt
 
 ```
+
+```
+echo -n "1234567890" > f2.txt
+```
+
+```
+echo -n "1234567890123456" > f3.txt
+```
+
+
 We then use "openssl enc -aes-128-cbc -e" to encrypt these three files using 128-bit AES
 with CBC mode. Please describe the size of the encrypted files.
 We would like to see what is added to the padding during the encryption. To achieve this goal, we
-will decrypt these files using "openssl enc -aes-128-cbc -d". Unfortunately, decryption
-by default will automatically remove the padding, making it impossible for us to see the padding.
+will decrypt these files using "openssl enc -aes-128-cbc -d".
+
+```
+openssl enc -aes-128-cbc -e -in f1.txt -out f1_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+```
+openssl enc -aes-128-cbc -e -in f2.txt -out f2_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+```
+openssl enc -aes-128-cbc -e -in f3.txt -out f3_encrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10
+```
+
+
+
+Unfortunately, decryption by default will automatically remove the padding, making it impossible for us to see the padding.
 However, the command does have an option called "-nopad", which disables the padding, i.e.,
 during the decryption, the command will not remove the padded data. Therefore, by looking at the
 decrypted data, we can see what data are used in the padding. Please use this technique to figure out
 what paddings are added to the three files.
+
+```
+openssl enc -aes-128-cbc -d -in f1_encrypted.txt -out f1_decrypted.txt -K 00112233445566778889aabbccddeeff -iv 0102030405060708090a0b0c0d0e0f10 -nopad
+```
+
 It should be noted that padding data may not be printable, so you need to use a hex tool to display the
 content. The following example shows how to display a file in the hex format:
 ```
@@ -252,6 +382,8 @@ $ hexdump -C p1.txt
 $ xxd p1.txt
 00000000: 3132 3334 3536 3738 3949 4a4b 4c0a 123456789IJKL.
 ```
+# Challenge Labs
+
 ## 7 Task 5: Error Propagation – Corrupted Cipher Text
 
 To understand the error propagation property of various encryption modes, we would like to do the following
