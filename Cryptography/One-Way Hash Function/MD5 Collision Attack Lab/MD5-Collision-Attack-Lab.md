@@ -170,7 +170,7 @@ In addition, you should answer the following questions:
     ```
 
     ```
-    diff h1 h2
+    diff h12 h22
     ```
 
   We have highlighted a few differences in the screenshot below, and you can identify the rest likewise.
@@ -204,11 +204,11 @@ $ cat file1 file2 > file3
 From the previous task, you should already have three files. Let's start by checking the MD5 values of out1.bin and out2.bin. Run the following commands:
 
 ```
-md5sum out1.bin
+md5sum out12.bin
 ```
 
 ```
-md5sum out2.bin
+md5sum out22.bin
 ```
 
 The MD5 values are the same for these files. We will consider the first file as "M" and the second file as "N".Now, let's add out22.bin file and check its MD5 value, which will differ from out1.bin and out2.bin: 
@@ -220,11 +220,11 @@ md5sum out22.bin
 Next, we will concatenate files using the cat command:
 
 ```
-cat out1.bin out22.bin > comp1
+cat out12.bin out22.bin > comp1
 ```
 
 ```
-cat out2.bin out22.bin > comp2
+cat out22.bin out22.bin > comp2
 ```
 
 Now, let's compare the contents of comp1 and comp2:
@@ -486,6 +486,124 @@ From Figure 4, we know that these two binary files have the same MD5 hash value,
 Q are generated accordingly. In the first version, we make the contents of arrays X and Y the same, while
 in the second version, we make their contents different. Therefore, the only thing we need to change is the
 contents of these two arrays, and there is no need to change the logic of the programs.
+
+- To perform this task you can follow the instructions given below.
+
+Create a directory and open task4.c for editing:
+
+```
+mkdir task4
+nano task4.c
+```
+
+Copy and paste the following in the editor:
+```
+#include <stdio.h>
+#define LEN 300
+
+unsigned char X[LEN] = {
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+
+unsigned char Y[LEN] = {
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+
+int main()
+{
+    for (int i = 0; i < LEN; i++)
+    {
+        if (X[i] != Y[i])
+        {
+            printf("i = %d, X[i] = %.2x, Y[i] = %.2x\n", i, X[i], Y[i]);
+            printf("Malicious\n");
+            return 0;
+        }
+    }
+    printf("Benign\n");
+    return 0;
+}
+```
+
+Compile task4.c into an executable named task4out:
+
+```
+gcc task4.c -o task4out
+```
+
+Open task4out in a hexadecimal editor like bless and find the offset values for the 'X' and 'Y' arrays. we are creating a Prefix file from where the X array is starting(ex.4160) then we are leaving 128 bytes and remaining all bytes we are saving in suffix(ex.4288).
+
+```
+bless task4out
+```
+
+![h](images/h.png)
+
+Replace the value with the X array offset value.
+
+```
+head -c <VALUE> task4out > prefix
+```
+Add 128 to the 'X' array offset value and replace the value below:
+```
+tail -c <+VALUE> task4out > suffix
+```
+
+Generate two files out1 and out2 using md5collgen, using the prefix as specified:
+```
+md5collgen -p prefix -o out1 out2
+```
+
+Extract the last 128 bytes from out1 and out2 into P and Q respectively:
+```
+tail -c 128 out1 > P
+tail -c 128 out2 > Q
+```
+
+Check the MD5 checksum for out1 and out2:
+```
+md5sum out1 out2
+```
+Open the suffix in a hexadecimal editor like bless again and find the 'Y' array offset hexadecimal value.
+```
+bless suffix
+```
+Replace the value with Y array offset hexadecimal value.
+```
+head -c <VALUE> suffix > pre-suffix
+```
+Add 128 to the 'Y' array offset value and replace the value below:
+```
+tail -c <+VALUE> suffix > post-suffix
+```
+Combine the generated files and create benign and malicious.
+```
+cat out1 pre-suffix P post-suffix > task4benign
+cat out2 pre-suffix Q post-suffix > task4malicious
+```
+
+Check MD5 values 
+```
+md5sum task4benign task4malicious
+```
+
+Compare task4benign and task4malicious to see if they are different:
+
+```
+diff task4benign task4malicious
+```
+
+
+
+
 
 ## 3 Submission
 
