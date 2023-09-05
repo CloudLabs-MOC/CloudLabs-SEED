@@ -347,16 +347,41 @@ are stored in a column called salary.
 
 Figure 3: Prepared Statement Workflow
 
+**Solution**:
+You must first log in to www.seed-server.com using the 'Alice' profile. Then, at the top of the page, click **Edit Profile** and enter **abdulwahab',Salary='88880** in the NickName text box and click on the save button.
+
+![](images/sqlinjection18.png)
+
+![](images/sqlinjection19.png)
+
 **Task 3.2: Modify other people’ salary.** After increasing your own salary, you decide to punish your boss
 Boby. You want to reduce his salary to 1 dollar. Please demonstrate how you can achieve that.
+
+**Solution**:
+You must first log in to www.seed-server.com using the 'Alice' profile. Then, at the top of the page, click **Edit Profile** and enter **abdulwahab2' ,Salary = 1 Where name ='boby' #** in the NickName text box and click on the save button. 
+
+![](images/sqlinjection20.png)
+
+If you need to check Boby's salary, log into the 'boby' profile with `boby' #`
+
+![](images/sqlinjection21.png)
 
 **Task 3.3: Modify other people’ password.** After changing Boby’s salary, you are still disgruntled, so
 you want to change Boby’s password to something that you know, and then you can log into his account and
 do further damage. Please demonstrate how you can achieve that. You need to demonstrate that you can
 successfully log into Boby’s account using the new password. One thing worth mentioning here is that the
 database stores the hash value of passwords instead of the plaintext password string. You can again look at
-the unsafe_edit_backend.php code to see how password is being stored. It uses SHA1 hash function
-to generate the hash value of password.
+the unsafe_edit_backend.php code to see how the password is being stored. It uses SHA1 hash function
+to generate the hash value of the password.
+
+**Solution**:
+You must first log in to www.seed-server.com using the 'Alice' profile. Then, at the top of the page, click **Edit Profile** and enter **abdulwahab3' , Password = SHA1('wahabhere') Where name ='boby' #** in the NickName text box and click on the save button.
+
+![](images/sqlinjection22.png)
+
+If you need to check Boby's password, log into the 'boby' profile with username as `boby` and password as `wahabhere`
+
+![](images/sqlinjection23.png)
 
 #### 3.4 Task 4: Countermeasure — Prepared Statement
 
