@@ -222,8 +222,23 @@ we will use Scapy for each task.
 To use Scapy, we can write a Python program, and then execute this program using Python. See the
 following example. We should run Python using the root privilege because the privilege is required for
 spoofing packets. At the beginning of the program (Line), we should import all Scapy’s modules.
+```
+ls
+```
+```
+cd volumes/
+```
+```
+sudo mkdir Test1
+```
+```
+cd Test1
+```
+```
+sudo nano mycode.py
+```
 
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/6aa365a3-9d60-4989-9367-f8f58342ceca)
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/40726d55-9ffd-4ffd-bc39-794d70f09dc6)
 
 Paste the following in the editor :
 ```
@@ -236,7 +251,9 @@ a = IP()
 a.show()
 ```
 
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/79de8e80-dee2-4574-892a-99984d0d6cc0)
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/9ad57025-196b-4c5a-89ef-1141d5690b9a)
+
+Save the file by `ctrl+o`, click enter and exit by `ctrl+x`.
 
 Run these commands to make mycode.py executable 
 ```
@@ -245,8 +262,7 @@ sudo chmod a+x mycode.py
 ```
 python3 mycode.py
 ```
-
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/8fd8a9db-c56f-422e-98bc-55189613f4c9)
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/b2452062-c9a8-47d0-8418-3ba2426869f8)
 
 
 We can also get into the interactive mode of Python and then run our program one line at a time at the
@@ -277,12 +293,14 @@ for that purpose. The objective of this task is to learn how to use Scapy to do 
 programs. 
 
 ```
-sudo vi mycode1.1.py
+sudo nano mycode1.py
 ```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/08dd3d41-bc66-478b-8637-85bcb49273b3)
+
 A sample code should be provided :
 
 ```
-#view mycode1.1.py
+#view mycode1.py
 #!/usr/bin/env python
 
 from scapy.all import *
@@ -293,28 +311,28 @@ def print_pkt(pkt):
 #The interface can be found with 
 # 'docker network ls' in the VM
 # or 'ifconfig' in the container
-pkt = sniff(iface='br-c93733e9f913', filter='icmp', prn=print_pkt)
+pkt = sniff(iface='br-891e90a996df', filter='icmp', prn=print_pkt)
 ```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/9470204a-274e-463b-b50c-9e6f2d105e33)
 
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/2c8d9de1-b17b-4e16-a887-319153b2da50)
+```
+sudo chmod a+x mycode1.py
+```
+```
+sudo python3 mycode1.py
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3b098315-7ba4-4f83-8755-0d23f6be0fb9)
 
-```
-sudo chmod a+x mycode1.1.py
-```
-```
-sudo python3 mycode1.1.py
-```
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/75d2a973-2cee-4bc8-a70a-06914403134e)
  
 The code above will sniff the packets on the br-c93733e9f913 interface. Please read the instruction
 in the lab setup section regarding how to get the interface name. If we want to sniff on multiple interfaces,
 we can put all the interfaces in a list, and assign it to iface. See the following example:
 
 ```
-iface=[’br-c93733e9f913’, ’enp0s3’]
+iface=[’br-891e90a996df’, ’enp0s3’]
 ```
 
-Task 1.1A. In the above program, for each captured packet, the callback function print_pkt()will be
+Task 1.1A. In the above program, for each captured packet, the callback function print_pkt() will be
 invoked; this function will print out some of the information about the packet. Run the program with the
 root privilege and demonstrate that you can indeed capture packets. After that, run the program again, but
 without using the root privilege; describe and explain your observations.
