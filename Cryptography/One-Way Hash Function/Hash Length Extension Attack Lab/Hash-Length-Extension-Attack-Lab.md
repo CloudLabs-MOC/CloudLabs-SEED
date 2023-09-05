@@ -246,15 +246,17 @@ return 0;
 
 Students can compile and run the above program as follows:
 ```
+$ sudo apt-get install libssl-dev
 $ gcc calculate_mac.c -o calculate_mac -lcrypto
 $ ./calculate_mac
 ```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/42836144/67becc1a-300d-498e-bc8d-6c218d53dd1c)
 
 Task. Students should change the code in the listing above and compute the MAC for the following request
 (assume that we know the secret MAC key):
 
 ```
-[http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
 &lstcmd=1<padding>&download=secret.txt
 &mac=<hash-value>
 ```
@@ -330,7 +332,7 @@ Task. Students should first generate a valid MAC for the following request (wher
 key should be obtained from theLabHome/key.txtfile):
 
 ```
-[http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
 &lstcmd=1&mac=<mac>
 ```
 
@@ -338,7 +340,7 @@ Based on the<mac>value calculated above, please construct a new request that inc
 command. You are not allowed to use the secret key this time. The URL looks like below.
 
 ```
-[http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>](http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>)
+http://www.seedlablenext.com:5000/?myname=<name>&uid=<uid>
 &lstcmd=1<padding>&download=secret.txt&mac=<new-mac>
 ```
 
