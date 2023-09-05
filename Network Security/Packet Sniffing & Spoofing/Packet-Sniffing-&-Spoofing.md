@@ -67,8 +67,10 @@ sudo wget https://github.com/CloudLabs-MOC/CloudLabs-SEED/raw/main/Network%20Sec
 sudo unzip Labsetup.zip
 ```
 
-Enter theLabsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved Dockerfile can be found from the user manual, which is linked
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/c509bca0-5875-4f1d-99e7-00869c031a20)
+
+Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved Docker-file can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 
@@ -87,6 +89,29 @@ $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
 ```
+
+Change the directory to Labsetup directory using:
+```
+cd Labsetup/
+```
+To know the docker containers use:
+```
+docker container ls
+```
+
+To build the container image and start the container use the following commands:
+```
+dcbuild
+```
+```
+dcup
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3f4e9b49-a039-4374-856a-2856f75c81b5)
+
+Open a new tab (Do not close the tab in which you started the docker image)
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/05112cb1-cddb-434c-bb96-c7ba8c96d266)
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps "command to find out the ID of
@@ -112,6 +137,24 @@ root@9652715c8e0a:/#
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
 ```
+
+We first need to use the "docker ps" command to find out the ID of the container and get a shell inside the container.
+
+```
+dockps
+```
+```
+docksh seed-attacker
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/d961bfaa-a577-494d-8ecb-733d0e6765df)
+
+Similarly, we will follow the same steps to get a shell in hostA:
+```
+docksh hostA-10.9.0.5
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/106cc402-d1f5-4ca3-8300-677758890919)
 
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
@@ -152,34 +195,20 @@ However, the container is still a separate machine, because its other namespaces
 from the host.
 
 Getting the network interface name. When we use the provided Compose file to create containers for
-this lab, a new network is created to connect the VM and the containers. The IP prefix for this network is
-
-
-10.9.0.0/24, which is specified in the docker-compose.yml file. The IP address assigned to our
+this lab, a new network is created to connect the VM and the containers. The IP prefix for this network 
+is 10.9.0.0/24, which is specified in the docker-compose.yml file. The IP address assigned to our
 VM is 10.9.0.1. We need to find the name of the corresponding network interface on our VM, because
-we need to use it in our programs. The interface name is the concatenation ofbr-and the ID of the network
-created by Docker. When we use ifconfig to list network interfaces, we will see quite a few. Look for
-the IP address 10.9.0.1.
+we need to use it in our programs. 
+
+The interface name is the concatenation of br-and the ID of the network created by Docker. When we use `ifconfig`
+to list network interfaces, we will see quite a few. Look for the IP address 10.9.0.1.
 
 ```
-$ ifconfig
-**br-c93733e9f913** : flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
-inet **10.9.0.1** netmask 255.255.255.0 broadcast 10.9.0.
-...
+ifconfig
 ```
 
-Another way to get the interface name is to use the "docker network" command to find out the
-network ID ourselves (the name of the network is seed-net:
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/13fce0ed-b500-4189-8a8d-1570d1108b14)
 
-```
-$ docker network ls
-
-NETWORK ID NAME DRIVER SCOPE
-a82477ae4e6b bridge bridge local
-e99b370eb525 host host local
-df62c6635eae none null local
-**c93733e9f913** seed-net bridge local
-```
 
 ## 3 Lab Task Set 1: Using Scapy to Sniff and Spoof Packets
 
@@ -188,72 +217,122 @@ Scapy is different: it can be used not only as a tool, but also as a building bl
 and spoofing tools, i.e., we can integrate the Scapy functionalities into our own program. In this set of tasks,
 we will use Scapy for each task.
 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/624a8541-9716-47bc-8280-31f06c23bd79)
+
 To use Scapy, we can write a Python program, and then execute this program using Python. See the
 following example. We should run Python using the root privilege because the privilege is required for
-spoofing packets. At the beginning of the program (Line¿), we should import all Scapy’s modules.
+spoofing packets. At the beginning of the program (Line), we should import all Scapy’s modules.
+```
+ls
+```
+```
+cd volumes/
+```
+```
+sudo mkdir Test1
+```
+```
+cd Test1
+```
+```
+sudo nano mycode.py
+```
 
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/40726d55-9ffd-4ffd-bc39-794d70f09dc6)
+
+Paste the following in the editor :
 ```
 # view mycode.py
 #!/usr/bin/env python
 
-from scapy.all import * ¿
+from scapy.all import * 
 
 a = IP()
 a.show()
-
-# python3 mycode.py
-###[ IP ]###
-version = 4
-ihl = None
-...
-
-// Make mycode.py executable (another way to run python programs)
-# chmod a+x mycode.py
-# mycode.py
-
 ```
 
-We can also get into the interactive mode of Python and then run our program one line at a time at the
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/9ad57025-196b-4c5a-89ef-1141d5690b9a)
 
+Save the file by `ctrl+o`, click enter and exit by `ctrl+x`.
+
+Run these commands to make mycode.py executable 
+```
+sudo chmod a+x mycode.py
+```
+```
+python3 mycode.py
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/b2452062-c9a8-47d0-8418-3ba2426869f8)
+
+
+We can also get into the interactive mode of Python and then run our program one line at a time at the
 Python prompt. This is more convenient if we need to change our code frequently in an experiment.
 
 ```
-# python3
->>> from scapy.all import *
->>> a = IP()
->>> a.show()
-###[ IP ]###
-version = 4
-ihl = None
-...
+python3
 ```
+```
+from scapy.all import *
+```
+```
+a = IP()
+```
+```
+a.show()
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/c94d37c6-8306-4f74-968d-d0adb6ea8eb2)
+
+Click `ctrl+d` to exit interactive mode.
 
 ### 3.1 Task 1.1: Sniffing Packets
 
 Wireshark is the most popular sniffing tool, and it is easy to use. We will use it throughout the entire lab.
 However, it is difficult to use Wireshark as a building block to construct other tools. We will use Scapy
 for that purpose. The objective of this task is to learn how to use Scapy to do packet sniffing in Python
-programs. A sample code is provided in the following:
+programs. 
 
 ```
+sudo nano mycode1.py
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/08dd3d41-bc66-478b-8637-85bcb49273b3)
+
+A sample code should be provided :
+
+```
+#view mycode1.py
 #!/usr/bin/env python
+
 from scapy.all import *
 
 def print_pkt(pkt):
-pkt.show()
+    pkt.show()
 
-pkt = sniff(iface=’br-c93733e9f913’, filter=’icmp’, prn=print_pkt)
+#The interface can be found with 
+# 'docker network ls' in the VM
+# or 'ifconfig' in the container
+pkt = sniff(iface='br-891e90a996df', filter='icmp', prn=print_pkt)
 ```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/9470204a-274e-463b-b50c-9e6f2d105e33)
 
+```
+sudo chmod a+x mycode1.py
+```
+```
+sudo python3 mycode1.py
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3b098315-7ba4-4f83-8755-0d23f6be0fb9)
+
+ 
 The code above will sniff the packets on the br-c93733e9f913 interface. Please read the instruction
 in the lab setup section regarding how to get the interface name. If we want to sniff on multiple interfaces,
 we can put all the interfaces in a list, and assign it to iface. See the following example:
 
 ```
-iface=[’br-c93733e9f913’, ’enp0s3’]
+iface=[’br-891e90a996df’, ’enp0s3’]
 ```
 
-Task 1.1A. In the above program, for each captured packet, the callback function print_pkt()will be
+Task 1.1A. In the above program, for each captured packet, the callback function print_pkt() will be
 invoked; this function will print out some of the information about the packet. Run the program with the
 root privilege and demonstrate that you can indeed capture packets. After that, run the program again, but
 without using the root privilege; describe and explain your observations.

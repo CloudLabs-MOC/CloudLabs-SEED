@@ -167,7 +167,7 @@ To access the CGI program from the Web, we can either use a browser by typing th
 http://www.seedlab-shellshock.com/cgi-bin/vul.cgi, or use the following command
 line program curl to do the same thing. Please make sure that the web server container is running.
 ```
-$ curl http://www.seedlab-shellshock.com/cgi-bin/vul.cgi
+curl http://www.seedlab-shellshock.com/cgi-bin/vul.cgi
 ```
 ## 3 Lab Tasks
 
@@ -246,10 +246,10 @@ options can set some fields in the header request, and you need to figure out wh
 them. Please include your findings in the lab report. Here are the examples on how to use these fields:
 
 ```
-$ curl -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
-$ curl -A "my data" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
-$ curl -e "my data" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
-$ curl -H "AAAAAA: BBBBBB" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
+curl -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
+curl -A "my data" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
+curl -e "my data" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
+curl -H "AAAAAA: BBBBBB" -v [http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi](http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi)
 ```
   
 Based on this experiment, please describe what options ofcurlcan be used to inject data into the
@@ -287,7 +287,7 @@ Questions. Please answer the following questions:
     another approach that we can use to launch the attack. In the following example, we attach some data
     in the URL, and we found that the data are used to set the following environment variable:
   ```
-    $ curl "http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi?AAAAA"
+    curl "http://www.seedlab-shellshock.com/cgi-bin/getenv.cgi?AAAAA"
     ...
     UERY_STRING=AAAAA
     ...
