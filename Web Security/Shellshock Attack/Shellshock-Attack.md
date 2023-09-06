@@ -40,18 +40,20 @@ following topics:
 In our setup, the web server container’s IP address is 10.9.0.80. The hostname of the server is called
 http://www.seedlab-shellshock.com. We need to map this name to the IP address. Please add the following
 to /etc/hosts. You need to use the root privilege to modify this file:
-
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/85d29212-c419-44c7-a562-702d7a136b53)
-
-Inside the vi editor, press G to move to the end of the file. Then press o to open a new line below the current line and enter the following: 
 ```
+sudo nano /etc/hosts
+```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/708da78b-a31b-434c-a86b-7bac4b111b17)
+
+Inside the nano editor, move to the end of the file. Enter the following: 
+```
+# Mapping name to IP address
 10.9.0.80 http://www.seedlab-shellshock.com
 
 ```
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/304153ca-2769-4d80-b113-051d932f704f)
 
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/3e1db565-107a-46c1-9aa1-e46369de0cfd)
-
-After adding name and IP address save and exit the current file using `esc` and `:wq`.
+After adding name and IP address save `ctrl+o`, click enter and exit the current file using `ctrl+x`.
 
 ### 2.2 Container Setup and Commands
 
@@ -65,6 +67,52 @@ sudo unzip Labsetup.zip
 ```
 
 ![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/7c373bcf-1c0b-41c0-a8f2-9169f0ab57fa)
+
+```
+cd Labsetup/
+```
+```
+ls
+```
+```
+cd image_www/
+```
+```
+ls
+```
+```
+cat Dockerfile
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/a7f594f7-3b79-4a23-b607-0c67e4c52644)
+
+Before we proceed further, copy these files: 
+```
+sudo cp bash_shellshock /bin/ -v
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/e463758b-d618-42bd-8248-d2f00fc04e90)
+
+```
+sudo mkdir /usr/lib/cgi-bin/
+```
+```
+sudo cp vul.cgi getenv.cgi /usr/lib/cgi-bin/ -v
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/d6d4290f-0e62-4da7-816d-759302261030)
+
+```
+sudo mkdir -p /etc/apache2/sites-available/ 
+```
+```
+sudo cp server name.conf /etc/apache2/sites-available/ -v
+```
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/8ca81025-2eec-432e-ae50-9f408aa629e4)
+
+
+
 
 
 Enter the Labsetup folder, and use the docker-compose.yml file to set up the lab environment. Detailed explanation of the
@@ -87,12 +135,18 @@ $ dcdown # Alias for: docker-compose down
 
 Run these commands to build docker start the containers. 
 ```
+ls
+```
+```
+cd Labsetup/
+```
+```
 docker-compose up -d
 ```
-
-![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/fa896713-b028-4bb9-9c01-74d73f0845e2)
-
 The `-d` flag runs the containers in detached mode, meaning they will run in the background.
+
+![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/6dfa182d-b5e3-40f6-8b73-3120b8e22568)
+
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
@@ -125,6 +179,7 @@ dockps
 ```
 docker exec -it <container_id> /bin/bash
 ```
+Replace the container id in the above command.
  
 ![image](https://github.com/Priya-Bai-S/CloudLabs-SEED/assets/129950675/8884a179-6379-42d0-a29b-991e41ca9a23)
 
