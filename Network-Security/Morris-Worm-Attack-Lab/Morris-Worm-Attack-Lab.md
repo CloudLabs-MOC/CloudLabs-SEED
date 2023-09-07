@@ -74,6 +74,7 @@ In the following, we list some of the commonly used commands related to Docker a
 we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
 
+```
 $ docker-compose build # Build the container images
 $ docker-compose up # Start the containers
 $ docker-compose down # Shut don the containers
@@ -82,6 +83,7 @@ $ docker-compose down # Shut don the containers
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
