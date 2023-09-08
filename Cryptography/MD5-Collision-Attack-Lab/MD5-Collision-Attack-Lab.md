@@ -62,22 +62,12 @@ program, which allows us to provide a prefix file with any arbitrary content. Th
 is illustrated in Figure 1. The following command generates two output files,out1.binandout2.bin,
 for a given a prefix fileprefix.txt:
 
+```
 $ md5collgen -p prefix.txt -o out1.bin out2.bin
+```
 
-```
-MD5 Collision
-Generation
-Prefix
-```
-```
-Prefix + (Padding) + P
-```
-```
-Prefix + (Padding) + Q
-```
-```
 Figure 1: MD5 collision generation from a prefix
-```
+
 We can check whether the output files are distinct or not using thediffcommand. We can also use the
 md5sumcommand to check the MD5 hash of each output file. See the following commands.
 
