@@ -182,8 +182,7 @@ Task. Please send a download command to the server, and show that you can get th
 To conduct the hash length extension attack, we need to understand how padding is calculated for one-way
 hash. The block size of SHA-256 is 64 bytes, so a message M will be padded to the multiple of 64 bytes
 during the hash calculation. According to RFC 6234, paddings for SHA256 consist of one byte of \x80,
-followed by a many 0’s, followed by a 64-bit (8 bytes) length field (the length is the number ofbitsin the
-M).
+followed by a many 0’s, followed by a 64-bit (8 bytes) length field (the length is the number of bits in the M).
 Assume that the original message is M = "This is a test message". The length of M is 22
 bytes, so the padding is 64 - 22 = 42 bytes, including 8 bytes of the length field. The length of M in terms of bits is (^22) * 8 = 176 = 0xB0. SHA256 will be performed in the following padded message:
 
@@ -286,7 +285,7 @@ http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
 &lstcmd=1&mac=<mac>
 ```
 
-Based on the<mac>value calculated above, please construct a new request that includes the download command. You are not allowed to use the secret key this time. The URL looks like below.
+Based on the <mac> value calculated above, please construct a new request that includes the download command. You are not allowed to use the secret key this time. The URL looks like below.
 
 ```
 http://www.seedlab-hashlen.com/?myname=<name>&uid=<uid>
@@ -297,9 +296,7 @@ Please send the constructed request to the server, and show that you can success
 
 ### 3.4 Task 4: Attack Mitigation using HMAC
 
-In the tasks so far, we have observed the damage caused when a developer computes a MAC in an insecure way by concatenating the key and the message. In this task, we will fix the mistake made by the developer. The standard way to calculate MACs is to use HMAC. Students should modify the server program’s
-verifymac() function and use Python’s hmac module to calculate the MAC. The function resides in
-lab.py. Given a key and message (both of type string), the HMAC can be computed as shown below (if
+In the tasks so far, we have observed the damage caused when a developer computes a MAC in an insecure way by concatenating the key and the message. In this task, we will fix the mistake made by the developer. The standard way to calculate MACs is to use HMAC. Students should modify the server program’s verifymac() function and use Python’s hmac module to calculate the MAC. The function resides in lab.py. Given a key and message (both of type string), the HMAC can be computed as shown below (if
 you copy and paste the code from this PDF file, the characters might not be copied correctly on some
 platforms).
 
