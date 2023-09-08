@@ -385,7 +385,7 @@ configuration file: the ServerName should be www.example.com, but the rest of th
 ![](images/i2.png)
 
 Figure 1: A Man-In-The-Middle (MITM) attack
-```
+
 be the same as that used in Task 4. Obviously, in the real world, you won’t be able to get a valid certificate
 for www.example.com, so we will use the same certificate that we used for our own server.
 Our goal is the following: when a user tries to visit www.example.com, we are going to get the user
