@@ -59,24 +59,27 @@ We have set up several websites for this lab. They are hosted by the container10
 the names of the web server to this IP address. Please add the following entries to/etc/hosts. You need
 to use the root privilege to modify this file:
 
+```
 10.9.0.5 [http://www.seed-server.com](http://www.seed-server.com)
 10.9.0.5 [http://www.example32a.com](http://www.example32a.com)
 10.9.0.5 [http://www.example32b.com](http://www.example32b.com)
 10.9.0.5 [http://www.example32c.com](http://www.example32c.com)
 10.9.0.5 [http://www.example60.com](http://www.example60.com)
 10.9.0.5 [http://www.example70.com](http://www.example70.com)
+```
 
 ### 2.2 Container Setup and Commands
 
-Please download theLabsetup.zipfile to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter theLabsetup
+folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
 we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
 
+```
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
 $ docker-compose down # Shut down the container
@@ -85,12 +88,14 @@ $ docker-compose down # Shut down the container
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
 All the containers will be running in the background. To run commands on a container, we often need
 to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the .bashrc file.
 
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
@@ -102,12 +107,12 @@ b1004832e275 hostA-10.9.0.
 
 $ docksh 96
 root@9652715c8e0a:/#
-
-
+```
+```
 // Note: If a docker command requires a container ID, you do not need to
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
-
+```
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
@@ -115,9 +120,9 @@ section of the manual for potential solutions.
 
 We use an open-source web application calledElggin this lab.Elggis a web-based social-networking ap-
 plication. It is already set up in the provided container images; its URL ishttp://www.seed-server.
-com. We use two containers, one running the web server (10.9.0.5) , and the other running the MySQL
-database (10.9.0.6). The IP addresses for these two containers are hardcoded in various places in the
-configuration, so please do not change them from thedocker-compose.ymlfile.
+com. We use two containers, one running the web server `(10.9.0.5)` , and the other running the MySQL
+database `(10.9.0.6)`. The IP addresses for these two containers are hardcoded in various places in the
+configuration, so please do not change them from the `docker-compose.yml` file.
 
 MySQL database. Containers are usually disposable, so once it is destroyed, all the data inside the con-
 tainers are lost. For this lab, we do want to keep the data in the MySQL database, so we do not lose
