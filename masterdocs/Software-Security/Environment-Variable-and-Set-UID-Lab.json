@@ -1,0 +1,13 @@
+[
+    {
+      "Name": "SEED Security",
+      "Language": "English",
+      "BaseURL": "https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main",
+      "Files": [
+        {
+          "RawFilePath": "https://raw.githubusercontent.com/CloudLabs-MOC/CloudLabs-SEED/main/Software-Security/Environment-Variable-and-Set-UID-Lab/Environment-Variable-and-Set-UID-Program-Lab.md",
+          "Order": 1
+        }
+      ]
+    }
+  ]
