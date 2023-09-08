@@ -1,4 +1,5 @@
 # CloudLabs-SEED
+![SEEDLabs Logo](https://seedsecuritylabs.org/assets/images/seed_labs_b.png)
 
 The SEED labs are divided into 6 categories, and each one has its own folder.
 
