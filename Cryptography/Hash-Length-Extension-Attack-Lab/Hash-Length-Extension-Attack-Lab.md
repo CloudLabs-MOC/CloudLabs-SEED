@@ -45,8 +45,8 @@ must attach a MAC computed based on a secret key and the list of commands. The s
 the commands in the request if the MAC is verified successfully. We will use the host VM as the client and
 use a container for the web server.
 
-Container Setup and Commands. Please download theLabsetup.zipfile to your VM from the lab’s
-website, unzip it, enter the Labsetupfolder, and use the docker-compose.yml file to set up the lab
+Container Setup and Commands. Please download the Labsetup.zip file to your VM from the lab’s
+website, unzip it, enter the Labsetup folder, and use the docker-compose.yml file to set up the lab
 environment. Detailed explanation of the content in this file and all the involved Docker file can be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
 SEED lab environment using containers, it is very important that you read the user manual.
