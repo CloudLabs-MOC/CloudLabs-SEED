@@ -95,7 +95,7 @@ In this task, we will try to understand some of the properties of the MD5 algori
 
 Figure 2: How the MD5 algorithm works
 
-Based on how MD5 works, we can derive the following property of the MD5 algorithm: Given two inputs M and N, ifMD5(M) = MD5(N), i.e., the MD5 hashes ofMandNare the same, then for any input T,MD5(M ‖ T) = MD5(N ‖ T), where‖represents concatenation. That is, if inputsMandNhave the same hash, adding the same suffixTto them will result in two outputs that have the same hash value. This property holds not only for the MD5 hash algorithm, but also for many other hash algorithms. Your job in this taskis to design an experiment to demonstrates that this property holds for MD5. You can use thecatcommand to concatenate two files (binary or text files) into one. The following command concatenates the contents offile2to the contents offile1, and places the result infile3.
+Based on how MD5 works, we can derive the following property of the MD5 algorithm: Given two inputs M and N, ifMD5(M) = MD5(N), i.e., the MD5 hashes ofMandNare the same, then for any input T,MD5(M ‖ T) = MD5(N ‖ T), where ‖ represents concatenation. That is, if inputs M and N have the same hash, adding the same suffix T to them will result in two outputs that have the same hash value. This property holds not only for the MD5 hash algorithm, but also for many other hash algorithms. Your job in this taskis to design an experiment to demonstrates that this property holds for MD5. You can use the cat command to concatenate two files (binary or text files) into one. The following command concatenates the contents of file 2 to the contents of file 1, and places the result in file 3.
 
 ```
 $ cat file1 file2 > file
@@ -103,7 +103,7 @@ $ cat file1 file2 > file
 
 ### 2.3 Task 3: Generating Two Executable Files with the Same MD5 Hash
 
-In this task, you are given the following C program. Your job is to create two different versions of this program, such that the contents of theirxyzarrays are different, but the hash values of the executables are the same.
+In this task, you are given the following C program. Your job is to create two different versions of this program, such that the contents of their xyz arrays are different, but the hash values of the executables are the same.
 
 ```
 #include <stdio.h>
@@ -122,8 +122,8 @@ printf("\n");
 }
 ```
 
-You may choose to work at the source code level, i.e., generating two versions of the above C program, such that after compilation, their corresponding executable files have the same MD5 hash value. However, it may be easier to directly work on the binary level. You can put some arbitrary values in thexyzarray, compile the above code to binary. Then you can use a hex editor tool to modify the content of thexyzarraydirectly in the binary file.
-Finding where the contents of the array are stored in the binary is not easy. However, if we fill the array with some fixed values, we can easily find them in the binary. For example, the following code fills the array with0x41, which is the ASCII value for letterA. It will not be difficult to locate 200A’s in the binary.
+You may choose to work at the source code level, i.e., generating two versions of the above C program, such that after compilation, their corresponding executable files have the same MD5 hash value. However, it may be easier to directly work on the binary level. You can put some arbitrary values in the xyz array, compile the above code to binary. Then you can use a hex editor tool to modify the content of thexyzarraydirectly in the binary file.
+Finding where the contents of the array are stored in the binary is not easy. However, if we fill the array with some fixed values, we can easily find them in the binary. For example, the following code fills the array with 0x41, which is the ASCII value for letter A. It will not be difficult to locate 200 A’s in the binary.
 
 ```
 unsigned char xyz[200] = {
