@@ -205,9 +205,7 @@ void main(){
 
 ### 3.3 Task 3: Launching the Attack
 
-We are ready to create the content of `badfile`. Since the content involves some binary data (e.g., the
-address of the `libc` functions), we can use Python to do the construction. We provide a skeleton of the
-code in the following, with the essential parts left for you to fill out.
+We are ready to create the content of `badfile`. Since the content involves some binary data (e.g., the address of the `libc` functions), we can use Python to do the construction. We provide a skeleton of the code in the following, with the essential parts left for you to fill out.
 ```
 #!/usr/bin/env python
 import sys
@@ -216,65 +214,45 @@ import sys
 content = bytearray(0xaa for i in range(300))
 
 X = 0
-sh_addr = 0x00000000 # The address of "/bin/sh"
+sh_addr = 0x00000000         # The address of "/bin/sh"
 content[X:X+4] = (sh_addr).to_bytes(4,byteorder=’little’)
 
 Y = 0
-system_addr = 0x00000000 # The address of system()
+system_addr = 0x00000000     # The address of system()
 content[Y:Y+4] = (system_addr).to_bytes(4,byteorder=’little’)
 
 Z = 0
-exit_addr = 0x00000000 # The address of exit()
+exit_addr = 0x00000000       # The address of exit()
 content[Z:Z+4] = (exit_addr).to_bytes(4,byteorder=’little’)
 
 
 # Save content to a file
 with open("badfile", "wb") as f:
-f.write(content)
+    f.write(content)
 ```
-You need to figure out the three addresses and the values for `X,Y,Z`. If your values are incorrect,
-your attack might not work. In your report, you need to describe how you decide the values for `X,Y,Z`.
-Either show us your reasoning or, if you use a trial-and-error approach, show your trials.
+&emsp; You need to figure out the three addresses and the values for `X,Y,Z`. If your values are incorrect, your attack might not work. In your report, you need to describe how you decide the values for `X,Y,Z`. Either show us your reasoning or, if you use a trial-and-error approach, show your trials.
 
-**A note regarding gdb**. If you use `gdb` to figure out the values for `X,Y,Z`, it should be noted that the
-gdbbehavior in Ubuntu 20.04 is slightly different from that in Ubuntu 16.04. In particular, after we set a
-break point at function `bof`, when `gdb` stops inside the `bof()`function, it stops before the `ebp` register is
-set to point to the current stack frame, so if we print out the value ofebphere, we will get the caller’s `ebp`
-value, not `bof`’s `ebp`. We need to type `next` to execute a few instructions and stop after the `ebp` register
-is modified to point to the stack frame of the `bof()` function. The SEED book (2nd edition) is based on
+**A note regarding gdb**. If you use `gdb` to figure out the values for `X,Y,Z`, it should be noted that the `gdb` behavior in Ubuntu 20.04 is slightly different from that in Ubuntu 16.04. In particular, after we set a break point at function `bof`, when `gdb` stops inside the `bof()`function, it stops before the `ebp` register is set to point to the current stack frame, so if we print out the value ofebphere, we will get the caller’s `ebp` value, not `bof`’s `ebp`. We need to type `next` to execute a few instructions and stop after the `ebp` register is modified to point to the stack frame of the `bof()` function. The SEED book (2nd edition) is based on
 Ubuntu 16.04, so it does not have this `next` step.
 
-**Attack variation 1**: Is the `exit()` function really necessary? Please try your attack without including
-the address of this function in `badfile`. Run your attack again, report and explain your observations.
+**Attack variation 1**: Is the `exit()` function really necessary? Please try your attack without including the address of this function in `badfile`. Run your attack again, report and explain your observations.
 
-**Attack variation 2**: After your attack is successful, change the file name of `retlib` to a different name,
-making sure that the length of the new file name is different. For example, you can change it to new `retlib`.
-Repeat the attack (without changing the content of `badfile`). Will your attack succeed or not? If it does
+**Attack variation 2**: After your attack is successful, change the file name of `retlib` to a different name, making sure that the length of the new file name is different. For example, you can change it to new `retlib`. Repeat the attack (without changing the content of `badfile`). Will your attack succeed or not? If it does
 not succeed, explain why.
 
 ### 3.4 Task 4: Defeat Shell’s countermeasure
 
-The purpose of this task is to launch the return-to-libc attack after the shell’s countermeasure is enabled.
-Before doing Tasks 1 to 3, we relinked `/bin/sh` to `/bin/zsh`, instead of to `/bin/dash` (the original
-setting). This is because some shell programs, such as `dash` and `bash`, have a countermeasure that auto-
-matically drops privileges when they are executed in a `Set-UID` process. In this task, we would like to
-defeat such a countermeasure, i.e., we would like to get a root shell even though the `/bin/sh` still points
-to `/bin/dash`. Let us first change the symbolic link back:
+The purpose of this task is to launch the return-to-libc attack after the shell’s countermeasure is enabled. Before doing Tasks 1 to 3, we relinked `/bin/sh` to `/bin/zsh`, instead of to `/bin/dash` (the original setting). This is because some shell programs, such as `dash` and `bash`, have a countermeasure that automatically drops privileges when they are executed in a `Set-UID` process. In this task, we would like to defeat such a countermeasure, i.e., we would like to get a root shell even though the `/bin/sh` still points to `/bin/dash`. Let us first change the symbolic link back:
 ```
 $ sudo ln -sf /bin/dash /bin/sh
 ```
-Although `dash` and `bash` both drop the `Set-UID` privilege, they will not do that if they are invoked
-with the-poption. When we return to the `system`function, this function invokes `/bin/sh`, but it does
-not use the-poption. Therefore, the `Set-UID` privilege of the target program will be dropped. If there
-is a function that allows us to directly execute "`/bin/bash -p`", without going through the `system`
-function, we can still get the root privilege.
-There are actually many libc functions that can do that, such as the `exec()` family of functions, includ-
-ing `execl()`, `execle()`, `execv()`, etc. Let’s take a look at the `execv()` function.
+&emsp; Although `dash` and `bash` both drop the `Set-UID` privilege, they will not do that if they are invoked with the-poption. When we return to the `system`function, this function invokes `/bin/sh`, but it does not use the-poption. Therefore, the `Set-UID` privilege of the target program will be dropped. If there is a function that allows us to directly execute "`/bin/bash -p`", without going through the `system` function, we can still get the root privilege.
+<Br>
+&emsp; There are actually many libc functions that can do that, such as the `exec()` family of functions, including `execl()`, `execle()`, `execv()`, etc. Let’s take a look at the `execv()` function.
 ```
 int execv(const char *pathname, char*const argv[]);
 ```
-This function takes two arguments, one is the address to the command, the second is the address to the
-argument array for the command. For example, if we want to invoke "`/bin/bash -p`" using `execv`,
+This function takes two arguments, one is the address to the command, the second is the address to the argument array for the command. For example, if we want to invoke "`/bin/bash -p`" using `execv`,
 we need to set up the following:
 
 ```
@@ -283,19 +261,11 @@ argv[0] = address of "/bin/bash"
 argv[1] = address of "-p"
 argv[2] = NULL (i.e., 4 bytes of zero).
 ```
-From the previous tasks, we can easily get the address of the two involved strings. Therefore, if we can
-construct the `argv[]` array on the stack, get its address, we will have everything that we need to conduct
-the return-to-libc attack. This time, we will return to the `execv()` function.
-There is one catch here. The value of `argv[2]` must be zero (an integer zero, four bytes). If we put
-four zeros in our input, `strcpy()` will terminate at the first zero; whatever is after that will not be copied
-into the `bof()` function’s buffer. This seems to be a problem, but keep in mind, everything in your input is
-already on the stack; they are in the `main()` function’s buffer. It is not hard to get the address of this buffer.
-To simplify the task, we already let the vulnerable program print out that address for you.
-Just like in Task 3, you need to construct your input, so when the `bof()` function returns, it returns
-to `execv()`, which fetches from the stack the address of the "`/bin/bash`" string and the address of
-the `argv[]` array. You need to prepare everything on the stack, so when `execv()` gets executed, it can
-execute "`/bin/bash -p`"and give you the root shell. In your report, please describe how you construct
-your input.
+From the previous tasks, we can easily get the address of the two involved strings. Therefore, if we can construct the `argv[]` array on the stack, get its address, we will have everything that we need to conduct the return-to-libc attack. This time, we will return to the `execv()` function.
+
+&emsp; There is one catch here. The value of `argv[2]` must be zero (an integer zero, four bytes). If we put four zeros in our input, `strcpy()` will terminate at the first zero; whatever is after that will not be copied into the `bof()` function’s buffer. This seems to be a problem, but keep in mind, everything in your input is already on the stack; they are in the `main()` function’s buffer. It is not hard to get the address of this buffer. To simplify the task, we already let the vulnerable program print out that address for you.
+
+&emsp; Just like in Task 3, you need to construct your input, so when the `bof()` function returns, it returns to `execv()`, which fetches from the stack the address of the "`/bin/bash`" string and the address of the `argv[]` array. You need to prepare everything on the stack, so when `execv()` gets executed, it can execute "`/bin/bash -p`"and give you the root shell. In your report, please describe how you construct your input.
 
 ### 3.5 Task 5 (Optional): Return-Oriented Programming
 
