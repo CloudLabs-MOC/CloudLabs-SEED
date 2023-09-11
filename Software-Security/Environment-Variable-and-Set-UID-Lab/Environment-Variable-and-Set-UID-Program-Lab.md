@@ -9,7 +9,7 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ## 1 Overview
 
 The learning objective of this lab is for students to understand how environment variables affect program and system behaviors. Environment variables are a set of dynamic named values that can affect the way running processes will behave on a computer. They are used by most operating systems, since they were introduced to Unix in 1979. Although environment variables affect program behaviors, how they achieve that is not well understood by many programmers. As a result, if a program uses environment variables, but the programmer does not know that they are used, the program may have vulnerabilities.
-In this lab, students will understand how environment variables work, how they are propagated from
+    In this lab, students will understand how environment variables work, how they are propagated from
 parent process to child, and how they affect system/program behaviors. We are particularly interested in how
 environment variables affect the behavior ofSet-UIDprograms, which are usually privileged programs.
 This lab covers the following topics:
