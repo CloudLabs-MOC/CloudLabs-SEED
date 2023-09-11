@@ -1,4 +1,5 @@
 # Return-to-libc Attack Lab
+![Diagram](./Software-Security/media/exe2.2-task2-step1-binaryfile1.png)
 
 ```
 Copyright © 2006 - 2020 by Wenliang Du.
@@ -349,6 +350,7 @@ int main()
 
 Let us concentrate on the stack while calling `foo()`. We can ignore the stack before that. Please note that line numbers instead of instruction addresses are used in this explanation.
 
+![Diagram](./Software-Security/media/exe2.2-task2-step1-binaryfile1.png)
 **Figure 1:** Entering and Leavingfoo()
 
 - **Line 28-29:**: These two statements push the value 1 , i.e. the argument to the `foo()`, into the stack. This operation increments `%esp` by four. The stack after these two statements is depicted in Figure 1(a).
