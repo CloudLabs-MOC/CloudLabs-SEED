@@ -327,6 +327,7 @@ so it equals the effective UID. When a root-owned `Set-UID` program runs, the ef
 <Br>
 The following assembly code shows how to invoke `setuid(0)`. The binary code is already put inside
 `call_shellcode.c. You just need to add it to the beginning of the shellcode.
+
 ```
 ; Invoke setuid(0): 32-bit
 xor ebx, ebx         ; ebx = 0: setuid()’s argument
