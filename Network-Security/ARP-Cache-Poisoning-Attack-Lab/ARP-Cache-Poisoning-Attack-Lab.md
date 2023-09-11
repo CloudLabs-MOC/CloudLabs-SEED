@@ -29,7 +29,7 @@ attack and defense tools. Students will use Scapy to conduct lab tasks. This lab
 Videos. Detailed coverage of the ARP protocol and attacks can be found in the following:
 
 - Section 3 of the SEED Lecture at Udemy,Internet Security: A Hands-on Approach, by Wenliang Du.
-    See details athttps://www.handsonsecurity.net/video.html.
+    See details at [https://www.handsonsecurity.net/video.html(https://www.handsonsecurity.net/video.htm).
 
 Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
 image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
@@ -49,39 +49,20 @@ Figure 1. In this setup, we have an attacker machine (Host M), which is used to 
 other two machines, Host A and Host B. These three machines must be on the same LAN, because the ARP
 cache poisoning attack is limited to LAN. We use containers to set up the lab environment.
 
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/5b5773e3-e6b7-4787-a1e7-8340e86d1c77)
 
-```
-Host A
-10.9.0.
-```
-```
-` `
-```
-```
-Host M (Attacker)
-10.9.0.
-```
-```
-Host B
-10.9.0.
-```
-```
-Network: 10.9.0.0/
-```
-```
-Figure 1: Lab environment setup
-```
 ### 2.1 Container Setup and Commands
 
-Please download theLabsetup.zipfile to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use thedocker-compose.ymlfile to set up the lab environment. Detailed explanation of the
-content in this file and all the involvedDockerfilecan be found from the user manual, which is linked
+Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter theLabsetup
+folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the
+content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
 to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
+we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file
 (in our provided SEEDUbuntu 20.04 VM).
 
+```
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
 $ docker-compose down # Shut down the container
@@ -90,20 +71,21 @@ $ docker-compose down # Shut down the container
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
 All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
+to get a shell on that container. We first need to use the `"docker ps"` command to find out the ID of
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+them in the `.bashrc` file.
 
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
-b1004832e275 hostA-10.9.0.
-0af4ea7a3e2e hostB-10.9.0.
-9652715c8e0a hostC-10.9.0.
+b1004832e275 hostA-10.9.0.5
+0af4ea7a3e2e hostB-10.9.0.6
+9652715c8e0a hostC-10.9.0.7
 
 $ docksh 96
 root@9652715c8e0a:/#
