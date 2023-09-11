@@ -48,17 +48,13 @@ for this lab). Please do the following tasks:
 
 ### 2.2 Task 2: Passing Environment Variables from Parent Process to Child Process
 
-In this task, we study how a child process gets its environment variables from its parent. In Unix,fork()
-creates a new process by duplicating the calling process. The new process, referred to as the child, is an
-exact duplicate of the calling process, referred to as the parent; however, several things are not inherited by
-the child (please see the manual offork()by typing the following command:man fork). In this task,
+In this task, we study how a child process gets its environment variables from its parent. In Unix, `fork()` creates a new process by duplicating the calling process. The new process, referred to as the child, is an exact duplicate of the calling process, referred to as the parent; however, several things are not inherited by the child (please see the manual of `fork()` by typing the following command: `man fork`). In this task,
 we would like to know whether the parent’s environment variables are inherited by the child process or not.
 
-Step 1. Please compile and run the following program, and describe your observation. The program can
-be found in theLabsetupfolder; it can be compiled using"gcc myprintenv.c", which will generate
-a binary calleda.out. Let’s run it and save the output into a file using"a.out > file".
+Step 1. Please compile and run the following program, and describe your observation. The program can be found in the `Labsetup` folder; it can be compiled using "`gcc myprintenv.c`", which will generate a binary called `a.out`. Let’s run it and save the output into a file using "`a.out > file`".
 
-Listing 1:myprintenv.c
+**Listing 1:** myprintenv.c
+```
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,33 +62,30 @@ Listing 1:myprintenv.c
 extern char **environ;
 void printenv()
 {
-int i = 0;
-while (environ[i] != NULL) {
-printf("%s\n", environ[i]);
-i++;
-}
+  int i = 0;
+  while (environ[i] != NULL) {
+  printf("%s\n", environ[i]);
+  i++;
+  }
 }
 
 void main()
 {
-pid_t childPid;
-switch(childPid = fork()) {
-case 0: /* child process*/
-printenv(); ¿
-exit(0);
-default: /* parent process*/
-//printenv(); ¡
-
-
-exit(0);
+  pid_t childPid;
+  switch(childPid = fork()) {
+    case 0: /* child process*/
+    printenv();    ➀
+    exit(0);
+  default: /* parent process*/
+    //printenv();  ➁
+    exit(0);
+  }
 }
-}
+```
 
-Step 2. Now comment out theprintenv()statement in the child process case (Line¿), and uncomment
-theprintenv()statement in the parent process case (Line¡). Compile and run the code again, and
-describe your observation. Save the output in another file.
+Step 2. Now comment out the `printenv()` statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
 
-Step 3. Compare the difference of these two files using thediffcommand. Please draw your conclusion.
+Step 3. Compare the difference of these two files using the `diff` command. Please draw your conclusion.
 
 ### 2.3 Task 3: Environment Variables andexecve()
 
