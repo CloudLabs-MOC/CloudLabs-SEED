@@ -1,5 +1,4 @@
 # Return-to-libc Attack Lab
-![Diagram](./Software-Security/media/return-libc.png)
 
 ```
 Copyright © 2006 - 2020 by Wenliang Du.
@@ -350,8 +349,8 @@ int main()
 
 Let us concentrate on the stack while calling `foo()`. We can ignore the stack before that. Please note that line numbers instead of instruction addresses are used in this explanation.
 
-![Diagram](./Software-Security/media/exe2.2-task2-step1-binaryfile1.png)
-**Figure 1:** Entering and Leavingfoo()
+![Diagram](https://github.com/CloudLabs-MOC/CloudLabs-SEED/blob/main/Software-Security/media/return-libc.png)
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; **Figure 1:** Entering and Leaving `foo()`
 
 - **Line 28-29:**: These two statements push the value 1 , i.e. the argument to the `foo()`, into the stack. This operation increments `%esp` by four. The stack after these two statements is depicted in Figure 1(a).
 - **Line 30: call foo** : The statement pushes the address of the next instruction that immediately
