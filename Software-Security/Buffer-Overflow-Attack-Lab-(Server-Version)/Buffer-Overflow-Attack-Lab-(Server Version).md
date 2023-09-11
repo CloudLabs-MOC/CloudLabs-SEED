@@ -216,21 +216,16 @@ of information to construct your payload.
 
 ### 4.2 Writing Exploit Code and Launching Attack
 
-To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it
-inside a file (we will use `badfile` as the file name in this document). We will use a Python program to do
-that. We provide a skeleton program called `exploit.py`, which is included in the lab setup file. The code
-is incomplete, and students need to replace some of the essential values in the code.
+To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside a file (we will use `badfile` as the file name in this document). We will use a Python program to do that. We provide a skeleton program called `exploit.py`, which is included in the lab setup file. The code is incomplete, and students need to replace some of the essential values in the code.
 
-Listing 2: The skeleton exploit code (`exploit.py`)
+**Listing 2:** The skeleton exploit code (`exploit.py`)
 ```
 #!/usr/bin/python
 import sys
 
 # You can copy and paste the shellcode from Task 1
 shellcode = (
-"" # I Need to changeI
-
-
+""                     # I Need to change ✰
 ).encode(’latin-1’)
 
 # Fill the content with NOP’s
@@ -238,7 +233,7 @@ content = `bytearray`(0x90 for i in range(517))
 
 ##################################################################
 # Put the shellcode somewhere in the payload
-start = 0 # I Need to changeI
+start = 0              # I Need to change ✰
 content[start:start + len(shellcode)] = shellcode
 
 # Decide the return address value
@@ -259,12 +254,7 @@ After you finish the above program, run it. This will generate the contents for 
 $./exploit.py // create the badfile
 $ cat badfile | nc 10.9.0.5 9090
 ```
-**Reverse shell.** We are not interested in running some pre-determined commands. We want to get a root
-shell on the target server, so we can type any command we want. Since we are on a remote machine, if we
-simply get the server to run `/bin/sh`, we won’t be able to control the shell program. Reverse shell is a
-typical technique to solve this problem. Section 10 provides detailed instructions on how to run a reverse
-shell. Please modify the command string in your shellcode, so you can get a reverse shell on the target
-server. Please include screenshots and explanation in your lab report.
+**Reverse shell.** We are not interested in running some pre-determined commands. We want to get a root shell on the target server, so we can type any command we want. Since we are on a remote machine, if we simply get the server to run `/bin/sh`, we won’t be able to control the shell program. Reverse shell is a typical technique to solve this problem. Section 10 provides detailed instructions on how to run a reverse shell. Please modify the command string in your shellcode, so you can get a reverse shell on the target server. Please include screenshots and explanation in your lab report.
 
 ## 5 Task 3: Level-2 Attack
 
