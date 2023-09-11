@@ -252,17 +252,15 @@ gdb-peda$ quit          <--- **exit**
 
 ### 5.2 Launching Attacks
 
-To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save
-it insidebadfile. We will use a Python program to do that. We provide a skeleton program called
-exploit.py, which is included in the lab setup file. The code is incomplete, and students need to replace
-some of the essential values in the code.
+To exploit the buffer-overflow vulnerability in the target program, we need to prepare a payload, and save it inside `badfile`. We will use a Python program to do that. We provide a skeleton program called `exploit.py`, which is included in the lab setup file. The code is incomplete, and students need to replace some of the essential values in the code.
 
-Listing 3:exploit.py
+**Listing 3:** exploit.py
+```
 #!/usr/bin/python
 import sys
 
 shellcode= (
-"" # I Need to changeI
+    ""                 # ✩ Need to change ✩
 ).encode(’latin-1’)
 
 # Fill the content with NOP’s
@@ -270,34 +268,30 @@ content = bytearray(0x90 for i in range(517))
 
 ##################################################################
 # Put the shellcode somewhere in the payload
-start = 0 # I Need to changeI
+start = 0             # ✩ Need to change ✩
 content[start:start + len(shellcode)] = shellcode
 
 # Decide the return address value
 # and put it somewhere in the payload
-ret = 0x00 # I Need to changeI
-offset = 0 # I Need to changeI
+ret = 0x00            # ✩ Need to change ✩
+offset = 0            # ✩ Need to change ✩
 
 L = 4 # Use 4 for 32-bit address and 8 for 64-bit address
 content[offset:offset + L] = (ret).to_bytes(L,byteorder=’little’)
 ##################################################################
 
-
 # Write the content to a file
 with open(’badfile’, ’wb’) as f:
 f.write(content)
+```
 
-After you finish the above program, run it. This will generate the contents forbadfile. Then run the
-vulnerable programstack. If your exploit is implemented correctly, you should be able to get a root shell:
-
-$./exploit.py // create the badfile
-$./stack-L1 // launch the attack by running the vulnerable program
+After you finish the above program, run it. This will generate the contents for `badfile`. Then run the vulnerable program `stack`. If your exploit is implemented correctly, you should be able to get a root shell:
+```
+$./exploit.py     // create the badfile
+$./stack-L1       // launch the attack by running the vulnerable program
 # <---- Bingo! You’ve got a root shell!
-
-In your lab report, in addition to providing screenshots to demonstrate your investigation and attack,
-you also need to explain how the values used in yourexploit.pyare decided. These values are the
-most important part of the attack, so a detailed explanation can help the instructor grade your report. Only
-demonstrating a successful attack without explaining why the attack works will not receive many points.
+```
+In your lab report, in addition to providing screenshots to demonstrate your investigation and attack, you also need to explain how the values used in your `exploit.py` are decided. These values are the most important part of the attack, so a detailed explanation can help the instructor grade your report. Only demonstrating a successful attack without explaining why the attack works will not receive many points.
 
 ## 6 Task 4: Launching Attack without Knowing Buffer Size (Level 2)
 
