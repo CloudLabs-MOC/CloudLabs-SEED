@@ -30,27 +30,21 @@ This lab covers the following topics:
 
 ## 2 Lab Tasks
 
-Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
+Files needed for this lab are included in `Labsetup.zip`, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Environment_Variable_and_SetUID/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Environment_Variable_and_SetUID/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 
 ### 2.1 Task 1: Manipulating Environment Variables
 
-In this task, we study the commands that can be used to set and unset environment variables. We are using
-Bash in the seed account. The default shell that a user uses is set in the/etc/passwdfile (the last field
-of each entry). You can change this to another shell program using the commandchsh(please do not do it
+In this task, we study the commands that can be used to set and unset environment variables. We are using Bash in the seed account. The default shell that a user uses is set in the `/etc/passwd` file (the last field of each entry). You can change this to another shell program using the command `chsh` (please do not do it
 for this lab). Please do the following tasks:
 
-- Useprintenvorenvcommand to print out the environment variables. If you are interested in
-    some particular environment variables, such asPWD, you can use"printenv PWD"or"env |
-    grep PWD".
-- Useexportandunsetto set or unset environment variables. It should be noted that these two
-    commands are not separate programs; they are two of the Bash’s internal commands (you will not be
-    able to find them outside of Bash).
+- Use `printenv` or `env` command to print out the environment variables. If you are interested in some particular environment variables, such as `PWD`, you can use "`printenv PWD`" or "`env | grep PWD`".
+- Use `export` and `unset` to set or unset environment variables. It should be noted that these two commands are not separate programs; they are two of the Bash’s internal commands (you will not be able to find them outside of Bash).
 
 ### 2.2 Task 2: Passing Environment Variables from Parent Process to Child Process
 
