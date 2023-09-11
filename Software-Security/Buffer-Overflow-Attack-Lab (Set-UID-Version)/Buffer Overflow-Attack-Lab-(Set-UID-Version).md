@@ -303,23 +303,13 @@ Please be noted, you are only allowed to construct one payload that works for an
 
 ## 7 Task 5: Launching Attack on 64-bit Program (Level 3)
 
-In this task, we will compile the vulnerable program into a 64-bit binary calledstack-L3. We will launch
-attacks on this program. The compilation and setup commands are already included inMakefile. Similar
-to the previous task, detailed explanation of your attack needs to be provided in the lab report.
-Usinggdbto conduct an investigation on 64-bit programs is the same as that on 32-bit programs. The
-only difference is the name of the register for the frame pointer. In the x86 architecture, the frame pointer is
-ebp, while in the x64 architecture, it isrbp.
+In this task, we will compile the vulnerable program into a 64-bit binary called `stack-L3`. We will launch attacks on this program. The compilation and setup commands are already included in `Makefile`. Similar to the previous task, detailed explanation of your attack needs to be provided in the lab report.
+<Br>
+Using `gdb` to conduct an investigation on 64-bit programs is the same as that on 32-bit programs. The only difference is the name of the register for the frame pointer. In the x86 architecture, the frame pointer is `ebp`, while in the x64 architecture, it is `rbp`.
 
-Challenges. Compared to buffer-overflow attacks on 32-bit machines, attacks on 64-bit machines is more
-difficult. The most difficult part is the address. Although the x64 architecture supports 64-bit address space,
-only the address from0x00through0x00007FFFFFFFFFFFis allowed. That means for every address
-(8 bytes), the highest two bytes are always zeros. This causes a problem.
-In our buffer-overflow attacks, we need to store at least one address in the payload, and the payload will
-be copied into the stack viastrcpy(). We know that thestrcpy()function will stop copying when
-
-
-it sees a zero. Therefore, if zero appears in the middle of the payload, the content after the zero cannot be
-copied into the stack. How to solve this problem is the most difficult challenge in this attack.
+**Challenges.** Compared to buffer-overflow attacks on 32-bit machines, attacks on 64-bit machines is more difficult. The most difficult part is the address. Although the x64 architecture supports 64-bit address space, only the address from `0x00007FFFFFFFFFFF` is allowed. That means for every address (8 bytes), the highest two bytes are always zeros. This causes a problem.
+<Br>
+In our buffer-overflow attacks, we need to store at least one address in the payload, and the payload will be copied into the stack via `strcpy()`. We know that the `strcpy()` function will stop copying when it sees a zero. Therefore, if zero appears in the middle of the payload, the content after the zero cannot be copied into the stack. How to solve this problem is the most difficult challenge in this attack.
 
 ## 8 Task 6: Launching Attack on 64-bit Program (Level 4)
 
