@@ -223,44 +223,32 @@ to execute those commands. The variables `L1, ...,L4` are set inMakefile; they w
 
 ### 5.1 Investigation
 
-To exploit the buffer-overflow vulnerability in the target program, the most important thing to know is the
-distance between the buffer’s starting position and the place where the return-address is stored. We will use
-a debugging method to find it out. Since we have the source code of the target program, we can compile it
-with the debugging flag turned on. That will make it more convenient to debug.
-We will add the-gflag togcccommand, so debugging information is added to the binary. If you run
-make, the debugging version is already created. We will usegdbto debugstack-L1-dbg. We need to
-create a file calledbadfilebefore running the program.
+To exploit the buffer-overflow vulnerability in the target program, the most important thing to know is the distance between the buffer’s starting position and the place where the return-address is stored. We will use a debugging method to find it out. Since we have the source code of the target program, we can compile it with the debugging flag turned on. That will make it more convenient to debug.
+<Br>
+We will add the `-g` flag to `gcc` command, so debugging information is added to the binary. If you run `make`, the debugging version is already created. We will use `gdb` to debug `stack-L1-dbg`. We need to create a file called `badfile` before running the program.
 
-$ touch badfile › **Create an empty badfile**
+```
+$ touch badfile         <--- **Create an empty badfile**
 $ gdb stack-L1-dbg
-gdb-peda$ b bof › **Set a break point at function bof()**
+gdb-peda$ b bof         <--- **Set a break point at function bof()**
 Breakpoint 1 at 0x124d: file stack.c, line 18.
-gdb-peda$ run › **Start executing the program**
+gdb-peda$ run           <--- **Start executing the program**
 ...
-Breakpoint 1, bof (str=0xffffcf57 ...) at stack.c:
+Breakpoint 1, bof (str=0xffffcf57 ...) at stack.c:18
 18 {
-gdb-peda$ next › **See the note below**
+gdb-peda$ next          <--- **See the note below**
 ...
 22 strcpy(buffer, str);
-
-
-gdb-peda$ p $ebp › **Get the ebp value**
-$1 = (void *) 0xffffdfd
-gdb-peda$ p &buffer › **Get the buffer’s address**
+gdb-peda$ p $ebp        <--- **Get the ebp value**
+$1 = (void *) 0xffffdfd8
+gdb-peda$ p &buffer     <--- **Get the buffer’s address**
 $2 = (char (*)[100]) 0xffffdfac
-gdb-peda$ quit › **exit**
+gdb-peda$ quit          <--- **exit**
+```
 
-Note 1. Whengdbstops inside thebof()function, it stops before theebpregister is set to point to the
-current stack frame, so if we print out the value ofebphere, we will get the caller’sebpvalue. We need
-to usenextto execute a few instructions and stop after theebpregister is modified to point to the stack
-frame of thebof()function. The SEED book is based on Ubuntu 16.04, andgdb’s behavior is slightly
-different, so the book does not have thenextstep.
+**Note 1.** When `gdb` stops inside the `bof()` function, it stops before theebpregister is set to point to the current stack frame, so if we print out the value of `ebp` here, we will get the caller’s `ebp` value. We need to use `next` to execute a few instructions and stop after the `ebp` register is modified to point to the stack frame of the `bof()` function. The SEED book is based on Ubuntu 16.04, and `gdb`’s behavior is slightly different, so the book does not have the `next` step.
 
-Note 2. It should be noted that the frame pointer value obtained fromgdbis different from that during
-the actual execution (without usinggdb). This is becausegdbhas pushed some environment data into the
-stack before running the debugged program. When the program runs directly without usinggdb, the stack
-does not have those data, so the actual frame pointer value will be larger. You should keep this in mind when
-constructing your payload.
+**Note 2.** It should be noted that the frame pointer value obtained from `gdb` is different from that during the actual execution (without using `gdb`). This is because `gdb` has pushed some environment data into the stack before running the debugged program. When the program runs directly without using `gdb`, the stack does not have those data, so the actual frame pointer value will be larger. You should keep this in mind when constructing your payload.
 
 ### 5.2 Launching Attacks
 
