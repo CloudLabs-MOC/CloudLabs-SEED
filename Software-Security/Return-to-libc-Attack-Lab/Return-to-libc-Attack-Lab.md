@@ -269,17 +269,9 @@ From the previous tasks, we can easily get the address of the two involved strin
 
 ### 3.5 Task 5 (Optional): Return-Oriented Programming
 
-There are many ways to solve the problem in Task 4. Another way is to invoke `setuid(0)` before invoking
-`system()`. The `setuid(0)` call sets both real user ID and effective user ID to 0, turning the process
-into a non-`Set-UID` one (it still has the root privilege). This approach requires us to chain two functions
-together. The approach was generalized to chaining multiple functions together, and was further generalized
-to chain multiple pieces of code together. This led to the Return-Oriented Programming (ROP).
-Using ROP to solve the problem in Task 4 is quite sophisticated, and it is beyond the scope of this lab.
-However, we do want to give students a taste of ROP, asking them to work on a special case of ROP. In the
-`retlib.c` program, there is a function called `foo()`, which is never called in the program. That function
-is intended for this task. Your job is to exploit the buffer-overflow problem in the program, so when the
-program returns from the `bof()` function, it invokes `foo()` 10 times, before giving you the root shell. In
-your lab report, you need to describe how your input is constructed. Here is what the results will look like.
+There are many ways to solve the problem in Task 4. Another way is to invoke `setuid(0)` before invoking `system()`. The `setuid(0)` call sets both real user ID and effective user ID to 0, turning the process into a non-`Set-UID` one (it still has the root privilege). This approach requires us to chain two functions together. The approach was generalized to chaining multiple functions together, and was further generalized to chain multiple pieces of code together. This led to the Return-Oriented Programming (ROP).
+<Br>
+&emsp; Using ROP to solve the problem in Task 4 is quite sophisticated, and it is beyond the scope of this lab. However, we do want to give students a taste of ROP, asking them to work on a special case of ROP. In the `retlib.c` program, there is a function called `foo()`, which is never called in the program. That function is intended for this task. Your job is to exploit the buffer-overflow problem in the program, so when the program returns from the `bof()` function, it invokes `foo()` 10 times, before giving you the root shell. In your lab report, you need to describe how your input is constructed. Here is what the results will look like.
 ```
 $ ./retlib
 ...
@@ -293,21 +285,11 @@ Function foo() is invoked 7 times
 Function foo() is invoked 8 times
 Function foo() is invoked 9 times
 Function foo() is invoked 10 times
-bash-5.0# fiGot root shell!
+bash-5.0#   <---- Got root shell!
 ```
-**Guidelines**. Let’s review what we did in Task 3. We constructed the data on the stack, such that when
-the program returns from `bof()`, it jumps to the `system() `function, and when `system()` returns, the program jumps to the `exit()` function. We will use a similar strategy here. Instead of jumping to
-`system()` and `exit()`, we will construct the data on the stack, such that when the program returns from
-bof, it returns to `foo`; when `foo` returns, it returns to another `foo`. This is repeated for 10 times. When
-the 10th `foo` returns, it returns to the `execv()` function to give us the root shell.
+**Guidelines**. Let’s review what we did in Task 3. We constructed the data on the stack, such that when the program returns from `bof()`, it jumps to the `system() `function, and when `system()` returns, the program jumps to the `exit()` function. We will use a similar strategy here. Instead of jumping to `system()` and `exit()`, we will construct the data on the stack, such that when the program returns from bof, it returns to `foo`; when `foo` returns, it returns to another `foo`. This is repeated for 10 times. When the 10th `foo` returns, it returns to the `execv()` function to give us the root shell.
 
-**Further readings**. What we did in this task is just a special case of ROP. You may have noticed that the
-`foo()` function does not take any argument. If it does, invoking it 10 times will become signficantly more
-complicated. A generic ROP technique allows you to invoke any number of functions in a sequence, allow-
-ing each function to have multiple arguments. The SEED book (2nd edition) provides detailed instructions
-on how to use the generic ROP technique to solve the problem in Task 4. It involves calling `sprintf()`
-four times, followed by an invocation of `setuid(0)`, before invoking `system` ("`/bin/sh`") to give us
-the root shell. The method is quite complicated and takes 15 pages to explain in the SEED book.
+**Further readings**. What we did in this task is just a special case of ROP. You may have noticed that the `foo()` function does not take any argument. If it does, invoking it 10 times will become signficantly more complicated. A generic ROP technique allows you to invoke any number of functions in a sequence, allowing each function to have multiple arguments. The SEED book (2nd edition) provides detailed instructions on how to use the generic ROP technique to solve the problem in Task 4. It involves calling `sprintf()` four times, followed by an invocation of `setuid(0)`, before invoking `system` ("`/bin/sh`") to give us the root shell. The method is quite complicated and takes 15 pages to explain in the SEED book.
 
 ## 4 Guidelines: Understanding the Function Call Mechanism
 
