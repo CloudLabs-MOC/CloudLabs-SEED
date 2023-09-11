@@ -77,7 +77,7 @@ $ sudo ln -sf /bin/zsh /bin/sh
 
 ### 2.3 The Vulnerable Program
 
-Listing 1: The vulnerable program (`retlib.c`)
+**Listing 1:** The vulnerable program (`retlib.c`)
 ```
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,71 +89,56 @@ Listing 1: The vulnerable program (`retlib.c`)
 
 int bof(char *str)
 {
-char buffer[BUF_SIZE];
-unsigned int *framep;
+    char buffer[BUF_SIZE];
+    unsigned int *framep;
 
-// Copy ebp into framep
-asm("movl %%ebp, %0" : "=r" (framep));
+    // Copy ebp into framep
+    asm("movl %%ebp, %0" : "=r" (framep));
 
-/* print out information for experiment purpose */
-printf("Address of buffer[] inside bof(): 0x%.8x\n", (unsigned)buffer);
-printf("Frame Pointer value inside bof(): 0x%.8x\n", (unsigned)framep);
+    /* print out information for experiment purpose */
+    printf("Address of buffer[] inside bof(): 0x%.8x\n", (unsigned)buffer);
+    printf("Frame Pointer value inside bof(): 0x%.8x\n", (unsigned)framep);
 
-strcpy(buffer, str); fi buffer overflow!
+    strcpy(buffer, str);     <-- buffer overflow!
 
-return 1;
+    return 1;
 }
 
 int main(int argc, char **argv)
 {
-char input[1000];
-FILE *badfile;
+    char input[1000];
+    FILE *badfile;
 
+    badfile = fopen("badfile", "r");
+    int length = fread(input, sizeof(char), 1000, badfile);
+    printf("Address of input[] inside main(): 0x%x\n", (unsigned int) input);
+    printf("Input size: %d\n", length);
 
-badfile = fopen("badfile", "r");
-int length = fread(input, sizeof(char), 1000, badfile);
-printf("Address of input[] inside main(): 0x%x\n", (unsigned int) input);
-printf("Input size: %d\n", length);
+    bof(input);
 
-bof(input);
-
-printf("(ˆ_ˆ)(ˆ_ˆ) Returned Properly (ˆ_ˆ)(ˆ_ˆ)\n");
-return 1;
+    printf("(ˆ_ˆ)(ˆ_ˆ) Returned Properly (ˆ_ˆ)(ˆ_ˆ)\n");
+    return 1;
 }
 
 // This function will be used in the optional task
 void foo(){
-static int i = 1;
-printf("Function foo() is invoked %d times\n", i++);
-return;
+    static int i = 1;
+    printf("Function foo() is invoked %d times\n", i++);
+    return;
 }
 ```
-The above program has a buffer overflow vulnerability. It first reads an input up to `1000` bytes from
-a file called `badfile`. It then passes the input data to the `bof()` function, which copies the input to its
-internal buffer using `strcpy()`. However, the internal buffer’s size is less than `1000` , so here is potential
-buffer-overflow vulnerability.
-This program is a root-owned `Set-UID` program, so if a normal user can exploit this buffer overflow
-vulnerability, the user might be able to get a root shell. It should be noted that the program gets its input
-from a file called `badfile`, which is provided by users. Therefore, we can construct the file in a way such
-that when the vulnerable program copies the file contents into its buffer, a root shell can be spawned.
+&emsp; The above program has a buffer overflow vulnerability. It first reads an input up to `1000` bytes from a file called `badfile`. It then passes the input data to the `bof()` function, which copies the input to its internal buffer using `strcpy()`. However, the internal buffer’s size is less than `1000` , so here is potential buffer-overflow vulnerability.
+<Br>
+&emsp; This program is a root-owned `Set-UID` program, so if a normal user can exploit this buffer overflow vulnerability, the user might be able to get a root shell. It should be noted that the program gets its input from a file called `badfile`, which is provided by users. Therefore, we can construct the file in a way such that when the vulnerable program copies the file contents into its buffer, a root shell can be spawned.
 
-**Compilation**. Let us first compile the code and turn it into a root-owned `Set-UID` program. Do not forget
-to include the `-fno-stack-protector` option (for turning off the StackGuard protection) and the"`-z
-noexecstack`" option (for turning on the non-executable stack protection). It should also be noted that
-changing ownership must be done before turning on the `Set-UID` bit, because ownership changes cause
-the `Set-UID` bit to be turned off. All these commands are included in the provided `Makefile`.
+**Compilation**. Let us first compile the code and turn it into a root-owned `Set-UID` program. Do not forget to include the `-fno-stack-protector` option (for turning off the StackGuard protection) and the"`-z noexecstack`" option (for turning on the non-executable stack protection). It should also be noted that changing ownership must be done before turning on the `Set-UID` bit, because ownership changes cause the `Set-UID` bit to be turned off. All these commands are included in the provided `Makefile`.
 ```
 // Note: N should be replaced by the value set by the instructor
 $ gcc -m32 -DBUF_SIZE=N -fno-stack-protector -z noexecstack -o retlib retlib.c
 $ sudo chown root retlib
 $ sudo chmod 4755 retlib
 ```
-**For instructors**. To prevent students from using the solutions from the past (or from those posted on the
-Internet), instructors can change the value for `BUF_SIZE` by requiring students to compile the code using
-a different `BUF_SIZE` value. Without the `-DBUF_SIZE` option, `BUFSIZE` is set to the default value `12`
-(defined in the program). When this value changes, the layout of the stack will change, and the solution
-will be different. Students should ask their instructors for the value of `N`. The value of `N` can be set in the
-provided `Makefile` and `N` can be from 10 to 800.
+**For instructors**. To prevent students from using the solutions from the past (or from those posted on the Internet), instructors can change the value for `BUF_SIZE` by requiring students to compile the code using a different `BUF_SIZE` value. Without the `-DBUF_SIZE` option, `BUFSIZE` is set to the default value `12` (defined in the program). When this value changes, the layout of the stack will change, and the solution will be different. Students should ask their instructors for the value of `N`. The value of `N` can be set in the provided `Makefile` and `N` can be from 10 to 800.
 
 ## 3 Lab Tasks
 
