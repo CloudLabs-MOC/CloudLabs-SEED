@@ -215,7 +215,7 @@ void sleep (int s)
 }
 ```
 
-2. We can compile the above program using the following commands (in the `-lc` argument, the second character is `):
+2. We can compile the above program using the following commands (in the `-lc` argument, the second character is L):
 ```
 $ gcc -fPIC -g -c mylib.c
 $ gcc -shared -o libmylib.so.1.0.1 mylib.o -lc
