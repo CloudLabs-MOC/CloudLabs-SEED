@@ -11,76 +11,53 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 Buffer overflow is defined as the condition in which a program attempts to write data beyond the boundary of a buffer. This vulnerability can be used by a malicious user to alter the flow control of the program, leading to the execution of malicious code. The objective of this lab is for students to gain practical insights into this type of vulnerability, and learn how to exploit the vulnerability in attacks.
 <Br>
 <Br>
-In this lab, students will be given a program with a buffer-overflow vulnerability; their task is to develop
-a scheme to exploit the vulnerability and finally gain the root privilege. In addition to the attacks, students
-will be guided to walk through several protection schemes that have been implemented in the operating
-system to counter against buffer-overflow attacks. Students need to evaluate whether the schemes work or
-not and explain why. This lab covers the following topics:
+In this lab, students will be given a program with a buffer-overflow vulnerability; their task is to develop a scheme to exploit the vulnerability and finally gain the root privilege. In addition to the attacks, students will be guided to walk through several protection schemes that have been implemented in the operating system to counter against buffer-overflow attacks. Students need to evaluate whether the schemes work or not and explain why. This lab covers the following topics:
 
 - Buffer overflow vulnerability and attack
 - Stack layout
 - Address randomization, non-executable stack, and StackGuard
 - Shellcode (32-bit and 64-bit)
-- The return-to-libc attack, which aims at defeating the non-executable stack countermeasure, is covered
-    in a separate lab.
+- The return-to-libc attack, which aims at defeating the non-executable stack countermeasure, is covered in a separate lab.
 
 **Readings and videos.** Detailed coverage of the buffer-overflow attack can be found in the following:
 
-- Chapter 4 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by
-    Wenliang Du. See details athttps://www.handsonsecurity.net.
-- Section 4 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
-    Du. See details athttps://www.handsonsecurity.net/video.html.
+- Chapter 4 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details athttps://www.handsonsecurity.net.
+- Section 4 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang Du. See details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
+image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
 
-Note for instructors. Instructors can customize this lab by choosing values forL1, ...,L4. See Section 4
-for details. Depending on the background of students and the time allocated for this lab, instructors can
-also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient
-to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the
+**Note for instructors.** Instructors can customize this lab by choosing values for `L1, ...,L4`. See Section 4 for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the
 countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Buffer_Overflow_Setuid/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Buffer_Overflow_Setuid/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 ## 2 Environment Setup
 
 ### 2.1 Turning Off Countermeasures
 
-Modern operating systems have implemented several security mechanisms to make the buffer-overflow at-
-tack difficult. To simplify our attacks, we need to disable them first. Later on, we will enable them and see
-whether our attack can still be successful or not.
+Modern operating systems have implemented several security mechanisms to make the buffer-overflow attack difficult. To simplify our attacks, we need to disable them first. Later on, we will enable them and see whether our attack can still be successful or not.
 
-Address Space Randomization. Ubuntuand several other Linux-based systems uses address space ran-
-domization to randomize the starting address of heap and stack. This makes guessing the exact addresses
-difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be dis-
-abled using the following command:
+**Address Space Randomization.** `Ubuntu` and several other Linux-based systems uses address space randomization to randomize the starting address of heap and stack. This makes guessing the exact addresses difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be disabled using the following command:
 
 ```
 $ sudo sysctl -w kernel.randomize_va_space=0
 ```
 
-Configuring **/bin/sh**. In the recent versions of Ubuntu OS, the/bin/shsymbolic link points to the
-/bin/dashshell. Thedashprogram, as well asbash, has implemented a security countermeasure that
-prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed
-in aSet-UIDprocess, they will immediately change the effective user ID to the process’s real user ID,
-essentially dropping the privilege.
-Since our victim program is a Set-UIDprogram, and our attack relies on running/bin/sh, the
-countermeasure in/bin/dashmakes our attack more difficult. Therefore, we will link/bin/shto
-another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit
-more effort, the countermeasure in/bin/dash can be easily defeated). We have installed a shell program
-calledzshin our Ubuntu 20.04 VM. The following command can be used to link/bin/shtozsh:
-
+Configuring **/bin/sh**. In the recent versions of Ubuntu OS, the `/bin/sh` symbolic link points to the `/bin/dash` shell. The `dash` program, as well as `bash`, has implemented a security countermeasure that prevents itself from being executed in a `Set-UID` process. Basically, if they detect that they are executed in a `Set-UID` process, they will immediately change the effective user ID to the process’s real user ID, essentially dropping the privilege.
+<Br>
+Since our victim program is a `Set-UID` program, and our attack relies on running `/bin/sh`, the countermeasure in `/bin/dash` makes our attack more difficult. Therefore, we will link `/bin/sh` to another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit more effort, the countermeasure in `/bin/dash` can be easily defeated). We have installed a shell program
+calledzshin our Ubuntu 20.04 VM. The following command can be used to link `/bin/sh` to `zsh`:
+```
 $ sudo ln -sf /bin/zsh /bin/sh
+```
 
-StackGuard and Non-Executable Stack. These are two additional countermeasures implemented in the
-system. They can be turned off during the compilation. We will discuss them later when we compile the
-vulnerable program.
+**StackGuard and Non-Executable Stack.** These are two additional countermeasures implemented in the system. They can be turned off during the compilation. We will discuss them later when we compile the vulnerable program.
 
 ## 3 Task 1: Getting Familiar with Shellcode
 
