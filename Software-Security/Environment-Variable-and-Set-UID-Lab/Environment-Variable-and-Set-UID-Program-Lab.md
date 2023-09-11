@@ -9,29 +9,24 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ## 1 Overview
 
 The learning objective of this lab is for students to understand how environment variables affect program and system behaviors. Environment variables are a set of dynamic named values that can affect the way running processes will behave on a computer. They are used by most operating systems, since they were introduced to Unix in 1979. Although environment variables affect program behaviors, how they achieve that is not well understood by many programmers. As a result, if a program uses environment variables, but the programmer does not know that they are used, the program may have vulnerabilities.
-    
-    In this lab, students will understand how environment variables work, how they are propagated from
-parent process to child, and how they affect system/program behaviors. We are particularly interested in how
-environment variables affect the behavior ofSet-UIDprograms, which are usually privileged programs.
+  
+    In this lab, students will understand how environment variables work, how they are propagated from parent process to child, and how they affect system/program behaviors. We are particularly interested in how environment variables affect the behavior ofSet-UID programs, which are usually privileged programs.
 This lab covers the following topics:
 
 - Environment variables
-- Set-UIDprograms
+- `Set-UID` programs
 - Securely invoke external programs
 - Capability leaking
 - Dynamic loader/linker
 
-Readings and videos. Detailed coverage of theSet-UIDmechanism, environment variables, and their
-related security problems can be found in the following:
+**Readings and videos.** Detailed coverage of the `Set-UID` mechanism, environment variables, and their related security problems can be found in the following:
 
 - Chapters 1 and 2 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd
     Edition, by Wenliang Du. See details athttps://www.handsonsecurity.net.
 - Section 2 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details athttps://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
 
 ## 2 Lab Tasks
 
