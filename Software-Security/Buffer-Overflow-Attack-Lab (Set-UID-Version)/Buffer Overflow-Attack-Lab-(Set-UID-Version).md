@@ -62,17 +62,19 @@ domization to randomize the starting address of heap and stack. This makes guess
 difficult; guessing addresses is one of the critical steps of buffer-overflow attacks. This feature can be dis-
 abled using the following command:
 
-$ sudo sysctl -w kernel.randomize_va_space=
+```
+$ sudo sysctl -w kernel.randomize_va_space=0
+```
 
 Configuring **/bin/sh**. In the recent versions of Ubuntu OS, the/bin/shsymbolic link points to the
 /bin/dashshell. Thedashprogram, as well asbash, has implemented a security countermeasure that
-prevents itself from being executed in aSet-UIDprocess. Basically, if they detect that they are executed
+prevents itself from being executed in a Set-UID process. Basically, if they detect that they are executed
 in aSet-UIDprocess, they will immediately change the effective user ID to the process’s real user ID,
 essentially dropping the privilege.
-Since our victim program is aSet-UIDprogram, and our attack relies on running/bin/sh, the
+Since our victim program is a Set-UIDprogram, and our attack relies on running/bin/sh, the
 countermeasure in/bin/dashmakes our attack more difficult. Therefore, we will link/bin/shto
 another shell that does not have such a countermeasure (in later tasks, we will show that with a little bit
-more effort, the countermeasure in/bin/dashcan be easily defeated). We have installed a shell program
+more effort, the countermeasure in/bin/dash can be easily defeated). We have installed a shell program
 calledzshin our Ubuntu 20.04 VM. The following command can be used to link/bin/shtozsh:
 
 $ sudo ln -sf /bin/zsh /bin/sh
