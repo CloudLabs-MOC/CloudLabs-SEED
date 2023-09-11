@@ -26,7 +26,7 @@ This lab covers the following topics:
 Readings. Detailed coverage of the secret-key encryption can be found in the following:
 
 - Chapter 21 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+    by Wenliang Du. See details at https://www.handsonsecurity.net.
 
 Lab Environment. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
 from the SEED website.
@@ -43,16 +43,16 @@ $ sudo unzip Labsetup.zip
 In this lab, we use a container to run an encryption oracle. The container is only needed in Task 6.3, so you
 do not need to start the container for other tasks.
 
-Container Setup and Commands. Please download theLabsetup.zipfile to your VM from the lab’s
-website, unzip it, enter theLabsetupfolder, and use thedocker-compose.ymlfile to set up the lab
-environment. Detailed explanation of the content in this file and all the involvedDockerfilecan be
+Container Setup and Commands. Please download the Labsetup.zip file to your VM from the lab’s
+website, unzip it, enter the Labsetup folder, and use the docker-compose.yml file to set up the lab
+environment. Detailed explanation of the content in this file and all the involved Dockerfile can be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
 SEED lab environment using containers, it is very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
+we are going to use these commands very frequently, we have created aliases for them in the .bashrcfile
 (in our provided SEEDUbuntu 20.04 VM).
 
-
+```
 $ docker-compose build # Build the container image
 $ docker-compose up # Start the container
 $ docker-compose down # Shut down the container
@@ -61,12 +61,14 @@ $ docker-compose down # Shut down the container
 $ dcbuild # Alias for: docker-compose build
 $ dcup # Alias for: docker-compose up
 $ dcdown # Alias for: docker-compose down
+```
 
 All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the"docker ps"command to find out the ID of
-the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the.bashrcfile.
+to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
+the container, and then use "docker exec" to start a shell on that container. We have created aliases for
+them in the .bashrc file.
 
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
@@ -82,6 +84,7 @@ root@9652715c8e0a:/#
 // Note: If a docker command requires a container ID, you do not need to
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
+```
 
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
@@ -100,37 +103,44 @@ the ciphertext made by us.
 
 - Step 1: let us generate the encryption key, i.e., the substitution table. We will permute the alphabet
     fromatozusing Python, and use the permuted alphabet as the key. See the following program.
-    #!/bin/env python
 
 ```
+#!/bin/env python
+
 import random
-```
-
-```
 s = "abcdefghijklmnopqrstuvwxyz"
 list = random.sample(s, len(s))
 key = ’’.join(list)
 print(key)
 ```
+
 - Step 2: let us do some simplification to the original article. We convert all upper cases to lower cases,
     and then removed all the punctuations and numbers. We do keep the spaces between words, so you can
     still see the boundaries of the words in the ciphertext. In real encryption using monoalphabetic cipher,
     spaces will be removed. We keep the spaces to simplify the task. We did this using the following
     command:
-    $ tr [:upper:] [:lower:] < article.txt > lowercase.txt
-    $ tr -cd ’[a-z][\n][:space:]’ < lowercase.txt > plaintext.txt
+
+```
+$ tr [:upper:] [:lower:] < article.txt > lowercase.txt
+$ tr -cd ’[a-z][\n][:space:]’ < lowercase.txt > plaintext.txt
+```
+
 - Step 3: we use thetrcommand to do the encryption. We only encrypt letters, while leaving the space
     and return characters alone.
-    $ tr ’abcdefghijklmnopqrstuvwxyz’ ’sxtrwinqbedpvgkfmalhyuojzc’ \
+
+```
+$ tr ’abcdefghijklmnopqrstuvwxyz’ ’sxtrwinqbedpvgkfmalhyuojzc’ \
        < plaintext.txt > ciphertext.txt
+```
 
 We have created a ciphertext using a different encryption key (not the one described above). It is included
-inLabsetup.zipfile, which can be downloaded from the lab’s website. Your job is to use the frequency
+in  Labsetup.zip file, which can be downloaded from the lab’s website. Your job is to use the frequency
 analysis to figure out the encryption key and the original plaintext.
-We have also provided a Python program (freq.py) inside theLabsetup/Filesfolder. It reads
-theciphertext.txtfile, and produces the statistics for n-grams, including the single-letter frequencies,
+We have also provided a Python program (freq.py) inside the Labsetup/Files folder. It reads
+the ciphertext.txt file, and produces the statistics for n-grams, including the single-letter frequencies,
 bigram frequencies (2-letter sequence), and trigram frequencies (3-letter sequence), etc.
 
+```
 $ ./freq.py
 -------------------------------------
 1-gram (top 20):
@@ -150,20 +160,19 @@ ytn: 78
 vup: 30
 mur: 20
 ...
+```
 
 Guidelines. Using the frequency analysis, you can find out the plaintext for some of the characters quite
 easily. For those characters, you may want to change them back to its plaintext, as you may be able to get
-more clues. It is better to use capital letters for plaintext, so for the same letter, we know which is plaintext
+more clues. It is better to use capital letters for plaintext, so for the same letter, we know which is plaintext and which is ciphertext. You can use the t r command to do this. For example, in the following, we replace
+letters a, e, and t in in.txt with letters X, G, E, respectively; the results are saved in out.txt.
 
-
-and which is ciphertext. You can use thetrcommand to do this. For example, in the following, we replace
-lettersa,e, andtinin.txtwith lettersX,G,E, respectively; the results are saved inout.txt.
-
+```
 $ tr ’aet’ ’XGE’ < in.txt > out.txt
+```
 
-```
 There are many online resources that you can use. We list some useful links in the following:
-```
+
 - https://en.wikipedia.org/wiki/Frequency_analysis: This Wikipedia page pro-
     vides frequencies for a typical English plaintext.
 - https://en.wikipedia.org/wiki/Bigram: Bigram frequency.
@@ -171,18 +180,17 @@ There are many online resources that you can use. We list some useful links in t
 
 ## 4 Task 2: Encryption using Different Ciphers and Modes
 
-In this task, we will play with various encryption algorithms and modes. You can use the following
-openssl enccommand to encrypt/decrypt a file. To see the manuals, you can typeman openssl
-andman enc.
+In this task, we will play with various encryption algorithms and modes. You can use the following openssl enc command to encrypt/decrypt a file. To see the manuals, you can type man openssl and man enc.
 
+```
 $ openssl enc -ciphertype -e -in plain.txt -out cipher.bin \
 -K 00112233445566778889aabbccddeeff \
 -iv 0102030405060708
+```
 
-Please replace theciphertypewith a specific cipher type, such as-aes-128-cbc,-bf-cbc,
--aes-128-cfb, etc. In this task, you should try at least 3 different ciphers. You can find the meaning
-of the command-line options and all the supported cipher types by typing"man enc". We include some
-common options for theopenssl enccommand in the following:
+Please replace the ciphertype with a specific cipher type, such as -aes-128-cbc, -bf-cbc, -aes-128-cfb, etc. In this task, you should try at least 3 different ciphers. You can find the meaning
+of the command-line options and all the supported cipher types by typing "man enc". We include some
+common options for the openssl enc command in the following:
 
 ```
 -in <file> input file
@@ -194,17 +202,17 @@ common options for theopenssl enccommand in the following:
 ```
 ## 5 Task 3: Encryption Mode – ECB vs. CBC
 
-The filepicoriginal.bmpis included in theLabsetup.zipfile, and it is a simple picture. We
+The file picoriginal.bmp is included in the Labsetup.zip file, and it is a simple picture. We
 would like to encrypt this picture, so people without the encryption keys cannot know what is in the picture.
 Please encrypt the file using the ECB (Electronic Code Book) and CBC (Cipher Block Chaining) modes,
 and then do the following:
 
 1. Let us treat the encrypted picture as a picture, and use a picture viewing software to display it. How-
-    ever, For the.bmpfile, the first 54 bytes contain the header information about the picture, we have
-    to set it correctly, so the encrypted file can be treated as a legitimate.bmpfile. We will replace the
-    header of the encrypted picture with that of the original picture. We can use theblesshex editor
+    ever, For the .bmpfile, the first 54 bytes contain the header information about the picture, we have
+    to set it correctly, so the encrypted file can be treated as a legitimate .bmpfile. We will replace the
+    header of the encrypted picture with that of the original picture. We can use the bless hex editor
     tool (already installed on our VM) to directly modify binary files. We can also use the following
-    commands to get the header fromp1.bmp, the data fromp2.bmp(from offset 55 to the end of the
+    commands to get the header from p1.bmp, the data from p2.bmp(from offset 55 to the end of the
     file), and then combine the header and data together into a new file.
 
 
@@ -213,13 +221,13 @@ $ head -c 54 p1.bmp > header
 $ tail -c +55 p2.bmp > body
 $ cat header body > new.bmp
 ```
+
 2. Display the encrypted picture using a picture viewing program (we have installed an image viewer
     program calledeogon our VM). Can you derive any useful information about the original picture
-    from the encrypted picture? Please explain your observations.
-
-```
+    from the encrypted picture? Please explain your observations.\
+   
 Select a picture of your choice, repeat the experiment above, and report your observations.
-```
+
 ## 6 Task 4: Padding
 
 For block ciphers, when the size of a plaintext is not a multiple of the block size, padding may be required.
@@ -232,25 +240,29 @@ for details). We will conduct the following experiments to understand how this t
     following"echo -n"command to create such files. The following example creates a filef1.txt
     with length 5 (without the-noption, the length will be 6, because a newline character will be added
     byecho):
-    $ echo -n "12345" > f1.txt
 
 ```
-We then use"openssl enc -aes-128-cbc -e"to encrypt these three files using 128-bit AES
+$ echo -n "12345" > f1.txt
+```
+We then use "openssl enc -aes-128-cbc -e" to encrypt these three files using 128-bit AES
 with CBC mode. Please describe the size of the encrypted files.
 We would like to see what is added to the padding during the encryption. To achieve this goal, we
-will decrypt these files using"openssl enc -aes-128-cbc -d". Unfortunately, decryption
+will decrypt these files using "openssl enc -aes-128-cbc -d". Unfortunately, decryption
 by default will automatically remove the padding, making it impossible for us to see the padding.
-However, the command does have an option called"-nopad", which disables the padding, i.e.,
+However, the command does have an option called "-nopad", which disables the padding, i.e.,
 during the decryption, the command will not remove the padded data. Therefore, by looking at the
 decrypted data, we can see what data are used in the padding. Please use this technique to figure out
 what paddings are added to the three files.
 It should be noted that padding data may not be printable, so you need to use a hex tool to display the
 content. The following example shows how to display a file in the hex format:
+
+```
 $ hexdump -C p1.txt
 00000000 31 32 33 34 35 36 37 38 39 49 4a 4b 4c 0a |123456789IJKL.|
 $ xxd p1.txt
 00000000: 3132 3334 3536 3738 3949 4a4b 4c0a 123456789IJKL.
 ```
+
 ## 7 Task 5: Error Propagation – Corrupted Cipher Text
 
 To understand the error propagation property of various encryption modes, we would like to do the following
@@ -278,7 +290,7 @@ in Chapter 21.5 of the SEED book.
 
 ### 8.1 Task 6.1. IV Experiment
 
-A basic requirement for IV isuniqueness, which means that no IV may be reused under the same key. To
+A basic requirement for IV is uniqueness, which means that no IV may be reused under the same key. To
 understand why, please encrypt the same plaintext using (1) two different IVs, and (2) the same IV. Please
 describe your observation, based on which, explain why IV needs to be unique.
 
@@ -287,25 +299,26 @@ describe your observation, based on which, explain why IV needs to be unique.
 One may argue that if the plaintext does not repeat, using the same IV is safe. Let us look at the Output
 Feedback (OFB) mode. Assume that the attacker gets hold of a plaintext (P1) and a ciphertext (C1) ,
 can he/she decrypt other encrypted messages if the IV is always the same? You are given the following
-information, please try to figure out the actual content ofP2based onC2,P1, andC1.
+information, please try to figure out the actual content of P2 based on C2, P1, and C1.
 
+```
 Plaintext (P1): This is a known message!
 Ciphertext (C1): a469b1c502c1cab966965e50425438e1bb1b5f9037a4c
 
 Plaintext (P2): (unknown to you)
 Ciphertext (C2): bf73bcd3509299d566c35b5d450337e1bb175f903fafc
+```
 
 If we replace OFB in this experiment with CFB (Cipher Feedback), how much ofP2can be revealed?
 You only need to answer the question; there is no need to demonstrate that.
-The attack used in this experiment is called theknown-plaintext attack, which is an attack model for
+The attack used in this experiment is called the known-plaintext attack, which is an attack model for
 cryptanalysis where the attacker has access to both the plaintext and its encrypted version (ciphertext). If
 this can lead to the revealing of further secret information, the encryption scheme is not considered as secure.
 
-
-Sample Code. We provide a sample program calledsamplecode.py, which can be found inside the
-Labsetup/Filesfolder. It shows you how to XOR strings (ascii strings and hex strings). The code is
+Sample Code. We provide a sample program called samplecode.py, which can be found inside the Labsetup/Files folder. It shows you how to XOR strings (ascii strings and hex strings). The code is
 shown in the following:
 
+```
 #!/usr/bin/python
 
 # XOR two bytearrays
@@ -327,6 +340,7 @@ r3 = xor(D2, D2)
 print(r1.hex())
 print(r2.hex())
 print(r3.hex())
+```
 
 ### 8.3 Task 6.3. Common Mistake: Use a Predictable IV
 
@@ -338,15 +352,16 @@ No; Eve can see the ciphertext and the IV used to encrypt the message, but since
 AES is quite strong, Eve has no idea what the actual content is. However, since Bob uses predictable IVs,
 Eve knows exactly what IV Bob is going to use next.
 A good cipher should not only tolerate the known-plaintext attack described previously, it should also
-tolerate thechosen-plaintext attack, which is an attack model for cryptanalysis where the attacker can obtain
+tolerate the chosen-plaintext attack, which is an attack model for cryptanalysis where the attacker can obtain
 the ciphertext for an arbitrary plaintext. Since AES is a strong cipher that can tolerate the chosen-plaintext
 attack, Bob does not mind encrypting any plaintext given by Eve; he does use a different IV for each
 plaintext, but unfortunately, the IVs he generates are not random, and they can always be predictable.
 Your job is to construct a message and ask Bob to encrypt it and give you the ciphertext. Your objective
-is to use this opportunity to figure out whether the actual content of Bob’s secret message isYesorNo. For
+is to use this opportunity to figure out whether the actual content of Bob’s secret message is Yes or No. For
 this task, your are given an encryption oracle which simulates Bob and encrypts message with 128-bit AES
 with CBC mode. You can get access to the oracle by running the following command:
 
+```
 $ nc 10.9.0.80 3000
 Bob’s secret message is either "Yes" or "No", without quotations.
 Bob’s ciphertex: 54601f27c6605da997865f62765117ce
@@ -354,12 +369,12 @@ The IV used : d27d724f59a84d9b61c0f2883efa7bbc
 
 Next IV : d34c739f59a84d9b61c0f2883efa7bbc
 
-
 Your plaintext : 11223344aabbccdd
 Your ciphertext: 05291d3169b2921f08fe34449ddc
 
 Next IV : cd9f1ee659a84d9b61c0f2883efa7bbc
 Your plaintext : <your input>
+```
 
 After showing you the next IV, the oracle will ask you to input a plaintext message (as a hex string).
 The oracle will encrypt the message with the next IV, and outputs the new ciphertext. You can try different
@@ -369,7 +384,7 @@ let the oracle print out the next IV. To exit from the interaction, press Ctrl+C
 ### 8.4 Additional Readings
 
 There are more advanced cryptanalysis on IV that is beyond the scope of this lab. Students can read the
-article posted in this URL:https://defuse.ca/cbcmodeiv.htm. Because the requirements on IV
+article posted in this URL: https://defuse.ca/cbcmodeiv.htm. Because the requirements on IV
 really depend on cryptographic schemes, it is hard to remember what properties should be maintained when
 we select an IV. However, we will be safe if we always use a new IV for each encryption, and the new IV
 needs to be generated using a good pseudo random number generator, so it is unpredictable by adversaries.
@@ -384,46 +399,52 @@ their courses or not.
 In this task, you are given a plaintext and a ciphertext, and your job is to find the key that is used for the
 encryption. You do know the following facts:
 
-- Theaes-128-cbccipher is used for the encryption.
+- The aes-128-cbc cipher is used for the encryption.
 - The key used to encrypt this plaintext is an English word shorter than 16 characters; the word can be
     found from a typical English dictionary. Since the word has less than 16 characters (i.e. 128 bits),
-    pound signs (#: hexadecimal value is0x23) are appended to the end of the word to form a key of
+    pound signs (#: hexadecimal value is 0x23) are appended to the end of the word to form a key of
     128 bits.
 
 Your goal is to write a program to find out the encryption key. You can download a English word list
-from the Internet. We have also included one in theLabsetup.zipfile. The plaintext, ciphertext, and IV
+from the Internet. We have also included one in the Labsetup.zip file. The plaintext, ciphertext, and IV
 are listed in the following:
 
+```
 Plaintext (total 21 characters): This is a top secret.
 Ciphertext (in hex format): 764aa26b55a4da654df6b19e4bce00f
 ed05e09346fb0e762583cb7da2ac93a
 IV (in hex format): aabbccddeeff
+```
 
-```
 You need to pay attention to the following issues:
-```
+
 - If you choose to store the plaintext message in a file, and feed the file to your program, you need to
     check whether the file length is 21. If you type the message in a text editor, you need to be aware that
     some editors may add a special character to the end of the file. The easiest way to store the message
-    in a file is to use the following command (the-nflag tellsechonot to add a trailing newline):
-
+    in a file is to use the following command (the -n flag tells echo not to add a trailing newline):
 
 ```
 $ echo -n "This is a top secret." > file
 ```
+
 - In this task, you are supposed to write your own program to invoke the crypto library. No credit will
-    be given if you simply use theopensslcommands to do this task. Sample code can be found from
+    be given if you simply use the openssl commands to do this task. Sample code can be found from
     the following URL:
        https://www.openssl.org/docs/man1.1.1/man3/EVP_CipherInit.html
-- When you compile your code usinggcc, do not forget to include the-lcryptoflag, because your
-    code needs thecryptolibrary. See the following example:
-    $ gcc -o myenc myenc.c -lcrypto
+
+- When you compile your code using gcc, do not forget to include the -lcryptoflag, because your
+    code needs the crypto library. See the following example:
+
+```
+$ gcc -o myenc myenc.c -lcrypto
+```
 
 Note to instructors. We encourage instructors to generate their own plaintext and ciphertext using a dif-
 ferent key; this way students will not be able to get the answer from another place or from previous courses.
 Instructors can use the following commands to achieve this goal (please replace the wordexamplewith
 another secret word, and add the correct number of # signs to make the length of the string to be 16):
 
+```
 $ echo -n "This is a top secret." > plaintext.txt
 $ echo -n "example#########" > key
 $ xxd -p key
@@ -433,6 +454,7 @@ $ openssl enc -aes-128-cbc -e -in plaintext.txt -out ciphertext.bin \
 -iv 010203040506070809000a0b0c0d0e0f \
 $ xxd -p ciphertext.bin
 e5accdb667e8e569b1b34f423508c15422631198454e104ceb658f5918800c
+```
 
 ## 10 Submission
 
