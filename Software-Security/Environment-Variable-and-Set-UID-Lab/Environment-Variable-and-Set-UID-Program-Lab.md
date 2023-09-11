@@ -242,111 +242,78 @@ int main()
 
 **Step 3.** You should be able to observe different behaviors in the scenarios described above, even though you are running the same program. You need to figure out what causes the difference. Environment variables play a role here. Please design an experiment to figure out the main causes, and explain why the behaviors in Step 2 are different. (Hint: the child process may not inherit the `LD_*` environment variables).
 
-### 2.8 Task 8: Invoking External Programs Usingsystem()versusexecve()
+### 2.8 Task 8: Invoking External Programs Using `system() `versus `execve()`
 
-Althoughsystem()andexecve()can both be used to run new programs,system()is quite danger-
-ous if used in a privileged program, such asSet-UIDprograms. We have seen how the PATH environment
-variable affect the behavior ofsystem(), because the variable affects how the shell works. execve()
-does not have the problem, because it does not invoke shell. Invoking shell has another dangerous conse-
-quence, and this time, it has nothing to do with environment variables. Let us look at the following scenario.
-Bob works for an auditing agency, and he needs to investigate a company for a suspected fraud. For
-the investigation purpose, Bob needs to be able to read all the files in the company’sUnixsystem; on the
-other hand, to protect the integrity of the system, Bob should not be able to modify any file. To achieve this
-goal, Vince, the superuser of the system, wrote a special set-root-uid program (see below), and then gave the
-executable permission to Bob. This program requires Bob to type a file name at the command line, and then
-it will run/bin/catto display the specified file. Since the program is running as a root, it can display any
-file Bob specifies. However, since the program has no write operations, Vince is very sure that Bob cannot
-use this special program to modify any file.
+Although `system()` and `execve()` can both be used to run new programs, `system()` is quite dangerous if used in a privileged program, such as `Set-UID` programs. We have seen how the PATH environment variable affect the behavior of `system()`, because the variable affects how the shell works. `execve()` does not have the problem, because it does not invoke shell. Invoking shell has another dangerous consequence, and this time, it has nothing to do with environment variables. Let us look at the following scenario.
+Bob works for an auditing agency, and he needs to investigate a company for a suspected fraud. For the investigation purpose, Bob needs to be able to read all the files in the company’s `Unix` system; on the other hand, to protect the integrity of the system, Bob should not be able to modify any file. To achieve this goal, Vince, the superuser of the system, wrote a special set-root-uid program (see below), and then gave the executable permission to Bob. This program requires Bob to type a file name at the command line, and then it will run `/bin/cat` to display the specified file. Since the program is running as a root, it can display any file Bob specifies. However, since the program has no write operations, Vince is very sure that Bob cannot use this special program to modify any file.
 
-Listing 3:catall.c
+**Listing 3:** catall.c
+```
 int main(int argc, char *argv[])
 {
-char *v[3];
-char *command;
+  char *v[3];
+  char *command;
 
-```
-if(argc < 2) {
-printf("Please type a file name.\n");
-return 1;
+  if(argc < 2) {
+    printf("Please type a file name.\n");
+    return 1;
+  }
+
+  v[0] = "/bin/cat"; v[1] = argv[1]; v[2] = NULL;
+  command = malloc(strlen(v[0]) + strlen(v[1]) + 2);
+  sprintf(command, "%s %s", v[0], v[1]);
+
+  // Use only one of the followings.
+  system(command);
+  // execve(v[0], v, NULL);
+  return 0 ;
 }
 ```
-```
-v[0] = "/bin/cat"; v[1] = argv[1]; v[2] = NULL;
-command = malloc(strlen(v[0]) + strlen(v[1]) + 2);
-sprintf(command, "%s %s", v[0], v[1]);
-```
-```
-// Use only one of the followings.
-system(command);
-// execve(v[0], v, NULL);
-```
 
-return 0 ;
-}
+**Step 1:** Compile the above program, make it a root-owned `Set-UID` program. The program will use `system()` to invoke the command. If you were Bob, can you compromise the integrity of the system? For example, can you remove a file that is not writable to you?
 
-Step 1: Compile the above program, make it a root-ownedSet-UIDprogram. The program will use
-system()to invoke the command. If you were Bob, can you compromise the integrity of the system? For
-example, can you remove a file that is not writable to you?
-
-Step 2: Comment out thesystem(command)statement, and uncomment theexecve()statement;
-the program will useexecve()to invoke the command. Compile the program, and make it a root-owned
-Set-UID. Do your attacks in Step 1 still work? Please describe and explain your observations.
+**Step 2:** Comment out the `system(command)` statement, and uncomment the `execve()` statement; the program will use `execve()` to invoke the command. Compile the program, and make it a root-owned `Set-UID`. Do your attacks in Step 1 still work? Please describe and explain your observations.
 
 ### 2.9 Task 9: Capability Leaking
 
-To follow the Principle of Least Privilege,Set-UIDprograms often permanently relinquish their root
-privileges if such privileges are not needed anymore. Moreover, sometimes, the program needs to hand over
-its control to the user; in this case, root privileges must be revoked. Thesetuid()system call can be
-used to revoke the privileges. According to the manual, “setuid()sets the effective user ID of the calling
-process. If the effective UID of the caller is root, the real UID and saved set-user-ID are also set”. Therefore,
-if aSet-UIDprogram with effective UID 0 callssetuid(n), the process will become a normal process,
-with all its UIDs being set ton.
-When revoking the privilege, one of the common mistakes is capability leaking. The process may have
-gained some privileged capabilities when it was still privileged; when the privilege is downgraded, if the
-program does not clean up those capabilities, they may still be accessible by the non-privileged process.
-In other words, although the effective user ID of the process becomes non-privileged, the process is still
+To follow the Principle of Least Privilege, `Set-UID` programs often permanently relinquish their root privileges if such privileges are not needed anymore. Moreover, sometimes, the program needs to hand over its control to the user; in this case, root privileges must be revoked. The `setuid()` system call can be used to revoke the privileges. According to the manual, “`setuid()` sets the effective user ID of the calling
+process. If the effective UID of the caller is root, the real UID and saved set-user-ID are also set”. Therefore, if a `Set-UID` program with effective UID 0 calls `setuid(n)`, the process will become a normal process, with all its UIDs being set to `n`.
+When revoking the privilege, one of the common mistakes is capability leaking. The process may have gained some privileged capabilities when it was still privileged; when the privilege is downgraded, if the program does not clean up those capabilities, they may still be accessible by the non-privileged process. In other words, although the effective user ID of the process becomes non-privileged, the process is still
 privileged because it possesses privileged capabilities.
-Compile the following program, change its owner to root, and make it aSet-UIDprogram. Run the
-program as a normal user. Can you exploit the capability leaking vulnerability in this program? The goal is
-to write to the/etc/zzzfile as a normal user.
+Compile the following program, change its owner to root, and make it a `Set-UID` program. Run the program as a normal user. Can you exploit the capability leaking vulnerability in this program? The goal is to write to the `/etc/zzz` file as a normal user.
 
-Listing 4:capleak.c
+**Listing 4:** capleak.c
+```
 void main()
 {
-int fd;
-char *v[2];
+  int fd;
+  char *v[2];
 
-```
-/* Assume that /etc/zzz is an important system file,
-* and it is owned by root with permission 0644.
-* Before running this program, you should create
-* the file /etc/zzz first. */
-fd = open("/etc/zzz", O_RDWR | O_APPEND);
-if (fd == -1) {
-printf("Cannot open /etc/zzz\n");
-exit(0);
+  /* Assume that /etc/zzz is an important system file,
+   * and it is owned by root with permission 0644.
+   * Before running this program, you should create
+   * the file /etc/zzz first. */
+  fd = open("/etc/zzz", O_RDWR | O_APPEND);
+  if (fd == -1) {
+    printf("Cannot open /etc/zzz\n");
+    exit(0);
+  }
+
+  // Print out the file descriptor value
+  printf("fd is %d\n", fd);
+
+  // Permanently disable the privilege by making the
+  // effective uid the same as the real uid
+  setuid(getuid());
+
+  // Execute /bin/sh
+  v[0] = "/bin/sh"; v[1] = 0;
+  execve(v[0], v, 0);
 }
 ```
-```
-// Print out the file descriptor value
-printf("fd is %d\n", fd);
-```
-
-```
-// Permanently disable the privilege by making the
-// effective uid the same as the real uid
-setuid(getuid());
-```
-// Execute /bin/sh
-v[0] = "/bin/sh"; v[1] = 0;
-execve(v[0], v, 0);
-}
 
 ## 3 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
