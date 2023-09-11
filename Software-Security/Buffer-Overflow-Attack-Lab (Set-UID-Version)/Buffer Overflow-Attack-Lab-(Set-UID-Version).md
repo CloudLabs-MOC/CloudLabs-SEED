@@ -313,56 +313,41 @@ In our buffer-overflow attacks, we need to store at least one address in the pay
 
 ## 8 Task 6: Launching Attack on 64-bit Program (Level 4)
 
-The target program (stack-L4) in this task is similar to the one in the Level 2, except that the buffer size
-is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is
-the same: get the root shell by attacking thisSet-UIDprogram. You may encounter additional challenges
-in this attack due to the small buffer size. If that is the case, you need to explain how your have solved those
-challenges in your attack.
+The target program `(stack-L4)` in this task is similar to the one in the Level 2, except that the buffer size is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is the same: get the root shell by attacking this `Set-UID` program. You may encounter additional challenges in this attack due to the small buffer size. If that is the case, you need to explain how your have solved those challenges in your attack.
 
 ## 9 Tasks 7: Defeating dash ’s Countermeasure
 
-Thedashshell in the Ubuntu OS drops privileges when it detects that the effective UID does not equal to
-the real UID (which is the case in aSet-UIDprogram). This is achieved by changing the effective UID
-back to the real UID, essentially, dropping the privilege. In the previous tasks, we let/bin/shpoints
-to another shell calledzsh, which does not have such a countermeasure. In this task, we will change it
-back, and see how we can defeat the countermeasure. Please do the following, so/bin/shpoints back to
-/bin/dash.
-
+The `dash` shell in the Ubuntu OS drops privileges when it detects that the effective UID does not equal to the real UID (which is the case in a `Set-UID` program). This is achieved by changing the effective UID back to the real UID, essentially, dropping the privilege. In the previous tasks, we let `/bin/sh` points to another shell called `zsh`, which does not have such a countermeasure. In this task, we will change it back, and see how we can defeat the countermeasure. Please do the following, so `/bin/sh` points back to `/bin/dash`.
+```
 $ sudo ln -sf /bin/dash /bin/sh
+```
 
 To defeat the countermeasure in buffer-overflow attacks, all we need to do is to change the real UID,
-so it equals the effective UID. When a root-ownedSet-UIDprogram runs, the effective UID is zero, so
-before we invoke the shell program, we just need to change the real UID to zero. We can achieve this by
-invokingsetuid(0)before executingexecve()in the shellcode.
-The following assembly code shows how to invokesetuid(0). The binary code is already put inside
-callshellcode.c. You just need to add it to the beginning of the shellcode.
-
+so it equals the effective UID. When a root-owned `Set-UID` program runs, the effective UID is zero, so before we invoke the shell program, we just need to change the real UID to zero. We can achieve this by invoking `setuid(0)` before executing `execve()` in the shellcode.
+<Br>
+The following assembly code shows how to invoke `setuid(0)`. The binary code is already put inside
+`call_shellcode.c. You just need to add it to the beginning of the shellcode.
+```
 ; Invoke setuid(0): 32-bit
-xor ebx, ebx ; ebx = 0: setuid()’s argument
+xor ebx, ebx         ; ebx = 0: setuid()’s argument
 xor eax, eax
-mov al, 0xd5 ; setuid()’s system call number
-int 0x
+mov al, 0xd5         ; setuid()’s system call number
+int 0x80
 
 ; Invoke setuid(0): 64-bit
-xor rdi, rdi ; rdi = 0: setuid()’s argument
+xor rdi, rdi         ; rdi = 0: setuid()’s argument
 xor rax, rax
-mov al, 0x69 ; setuid()’s system call number
+mov al, 0x69         ; setuid()’s system call number
 syscall
+```
 
-Experiment. Compilecallshellcode.cinto root-owned binary (by typing"make setuid").
-Run the shellcodea32.outanda64.outwith or without thesetuid(0)system call. Please describe
+**Experiment.** Compile `call_shellcode.c` into root-owned binary (by typing "`make setuid`"). Run the shellcode `a32.out` and `a64.out` with or without the `setuid(0)` system call. Please describe
 and explain your observations.
 
-Launching the attack again. Now, using the updated shellcode, we can attempt the attack again on the
-vulnerable program, and this time, with the shell’s countermeasure turned on. Repeat your attack on Level
-1, and see whether you can get the root shell. After getting the root shell, please run the following command
-
-
-to prove that the countermeasure is turned on. Although repeating the attacks on Levels 2 and 3 are not
-required, feel free to do that and see whether they work or not.
-
+**Launching the attack again.** Now, using the updated shellcode, we can attempt the attack again on the vulnerable program, and this time, with the shell’s countermeasure turned on. Repeat your attack on Level 1, and see whether you can get the root shell. After getting the root shell, please run the following command to prove that the countermeasure is turned on. Although repeating the attacks on Levels 2 and 3 are not required, feel free to do that and see whether they work or not.
+```
 # ls -l /bin/sh /bin/zsh /bin/dash
-
+```
 ## 10 Task 8: Defeating Address Randomization
 
 On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have
