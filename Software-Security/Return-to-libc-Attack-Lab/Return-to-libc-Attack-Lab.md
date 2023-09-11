@@ -1,5 +1,5 @@
 # Return-to-libc Attack Lab
-![Diagram](./Software-Security/media/exe2.2-task2-step1-binaryfile1.png)
+![Diagram](./Software-Security/media/return-libc.png)
 
 ```
 Copyright © 2006 - 2020 by Wenliang Du.
