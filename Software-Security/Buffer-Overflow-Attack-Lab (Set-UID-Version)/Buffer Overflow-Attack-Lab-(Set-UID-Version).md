@@ -295,20 +295,11 @@ In your lab report, in addition to providing screenshots to demonstrate your inv
 
 ## 6 Task 4: Launching Attack without Knowing Buffer Size (Level 2)
 
-In the Level-1 attack, usinggdb, we get to know the size of the buffer. In the real world, this piece of
-information may be hard to get. For example, if the target is a server program running on a remote machine,
-we will not be able to get a copy of the binary or source code. In this task, we are going to add a constraint:
-you can still usegdb, but you are not allowed to derive the buffer size from your investigation. Actually,
-the buffer size is provided inMakefile, but you are not allowed to use that information in your attack.
-Your task is to get the vulnerable program to run your shellcode under this constraint. We assume that
-you do know the range of the buffer size, which is from 100 to 200 bytes. Another fact that may be useful
-to you is that, due to the memory alignment, the value stored in the frame pointer is always multiple of four
-(for 32-bit programs).
-Please be noted, you are only allowed to construct one payload that works for any buffer size within this
-range. You will not get all the credits if you use the brute-force method, i.e., trying one buffer size each
-time. The more you try, the easier it will be detected and defeated by the victim. That’s why minimizing the
-number of trials is important for attacks. In your lab report, you need to describe your method, and provide
-evidences.
+In the Level-1 attack, using `gdb`, we get to know the size of the buffer. In the real world, this piece of information may be hard to get. For example, if the target is a server program running on a remote machine, we will not be able to get a copy of the binary or source code. In this task, we are going to add a constraint: you can still use `gdb`, but you are not allowed to derive the buffer size from your investigation. Actually, the buffer size is provided in `Makefile`, but you are not allowed to use that information in your attack.
+<Br>
+Your task is to get the vulnerable program to run your shellcode under this constraint. We assume that you do know the range of the buffer size, which is from 100 to 200 bytes. Another fact that may be useful to you is that, due to the memory alignment, the value stored in the frame pointer is always multiple of four (for 32-bit programs).
+<Br>
+Please be noted, you are only allowed to construct one payload that works for any buffer size within this range. You will not get all the credits if you use the brute-force method, i.e., trying one buffer size each time. The more you try, the easier it will be detected and defeated by the victim. That’s why minimizing the number of trials is important for attacks. In your lab report, you need to describe your method, and provide evidences.
 
 ## 7 Task 5: Launching Attack on 64-bit Program (Level 3)
 
