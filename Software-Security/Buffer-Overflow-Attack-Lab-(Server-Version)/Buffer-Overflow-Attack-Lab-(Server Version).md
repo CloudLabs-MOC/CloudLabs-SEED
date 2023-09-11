@@ -199,28 +199,20 @@ Press Ctrl+C
 server-1-10.9.0.5 | Got a connection from 10.9.0.1
 server-1-10.9.0.5 | Starting stack
 server-1-10.9.0.5 | Input size: 6
-server-1-10.9.0.5 | Frame Pointer (ebp) inside bof(): 0xffffdb88 P
-server-1-10.9.0.5 | Buffer’s address inside bof(): 0xffffdb18 P
+server-1-10.9.0.5 | Frame Pointer (ebp) inside bof(): 0xffffdb88     ✰
+server-1-10.9.0.5 | Buffer’s address inside bof(): 0xffffdb18        ✰
 server-1-10.9.0.5 | ==== Returned Properly ====
 ```
-The server will accept up to `517` bytes of the data from the user, and that will cause a buffer overflow.
-Your job is to construct your payload to exploit this vulnerability. If you save your payload in a file, you can
-send the payload to the server using the following command.
+The server will accept up to `517` bytes of the data from the user, and that will cause a buffer overflow. Your job is to construct your payload to exploit this vulnerability. If you save your payload in a file, you can send the payload to the server using the following command.
 ```
 $ cat <file> | nc 10.9.0.5 9090
 ```
-If the server program returns, it will print out "`Returned Properly`". If this message is not printed
-out, the `stack` program has probably crashed. The server will still keep running, taking new connections.
-For this task, two pieces of information essential for buffer-overflow attacks are printed out as hints to
-students: the value of the frame pointer and the address of the buffer (lines marked by *). The frame point
-register called `ebp` for the x86 architecture and `rbp` for the x64 architecture. You can use these two pieces
+If the server program returns, it will print out "`Returned Properly`". If this message is not printed out, the `stack` program has probably crashed. The server will still keep running, taking new connections.
+<Br>
+For this task, two pieces of information essential for buffer-overflow attacks are printed out as hints to students: the value of the frame pointer and the address of the buffer (lines marked by *). The frame point register called `ebp` for the x86 architecture and `rbp` for the x64 architecture. You can use these two pieces
 of information to construct your payload.
 
-**Added randomness.** We have added a little bit of randomness in the program, so different students are
-likely to see different values for the buffer address and frame pointer. The values only change when the
-container restarts, so as long as you keep the container running, you will see the same numbers (the numbers
-seen by different students are still different). This randomness is different from the address-randomization
-countermeasure. Its sole purpose is to make students’ work a little bit different.
+**Added randomness.** We have added a little bit of randomness in the program, so different students are likely to see different values for the buffer address and frame pointer. The values only change when the container restarts, so as long as you keep the container running, you will see the same numbers (the numbers seen by different students are still different). This randomness is different from the address-randomization countermeasure. Its sole purpose is to make students’ work a little bit different.
 
 ### 4.2 Writing Exploit Code and Launching Attack
 
