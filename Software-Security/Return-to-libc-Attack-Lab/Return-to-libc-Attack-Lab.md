@@ -144,16 +144,11 @@ $ sudo chmod 4755 retlib
 
 ### 3.1 Task 1: Finding out the Addresses of libc Functions
 
-In `Linux`, when a program runs, the `libc` library will be loaded into memory. When the memory address
-randomization is turned off, for the same program, the library is always loaded in the same memory address
-(for different programs, the memory addresses of the `libc` library may be different). Therefore, we can
-easily find out the address of `system()` using a debugging tool such asgdb. Namely, we can debug the target program `retlib`. Even though the program is a root-owned `Set-UID` program, we can still debug it, except that the privilege will be dropped (i.e., the effective user ID will be the same as the real user ID).
-Inside `gdb`, we need to type the `run` command to execute the target program once, otherwise, the library
-code will not be loaded. We use the `p` command (or `print`) to print out the address of the `system()` and
-`exit()` functions (we will need `exit()` later on).
+In `Linux`, when a program runs, the `libc` library will be loaded into memory. When the memory address randomization is turned off, for the same program, the library is always loaded in the same memory address (for different programs, the memory addresses of the `libc` library may be different). Therefore, we can easily find out the address of `system()` using a debugging tool such asgdb. Namely, we can debug the target program `retlib`. Even though the program is a root-owned `Set-UID` program, we can still debug it, except that the privilege will be dropped (i.e., the effective user ID will be the same as the real user ID).
+Inside `gdb`, we need to type the `run` command to execute the target program once, otherwise, the library code will not be loaded. We use the `p` command (or `print`) to print out the address of the `system()` and `exit()` functions (we will need `exit()` later on).
 ```
 $ touch badfile
-$ gdb -q retlib ##Use "Quiet" mode
+$ gdb -q retlib     <-- Use "Quiet" mode
 Reading symbols from ./retlib...
 (No debugging symbols found in ./retlib)
 gdb-peda$ break main
@@ -167,13 +162,9 @@ gdb-peda$ p exit
 $2 = {<text variable, no debug info>} **0xf7e04f80** <exit>
 gdb-peda$ quit
 ```
-It should be noted that even for the same program, if we change it from a `Set-UID` program to a
-non-`Set-UID` program, the `libc` library may not be loaded into the same location. Therefore, when we
-debug the program, we need to debug the target `Set-UID` program; otherwise, the address we get may be
-incorrect.
+&emsp; It should be noted that even for the same program, if we change it from a `Set-UID` program to a non-`Set-UID` program, the `libc` library may not be loaded into the same location. Therefore, when we debug the program, we need to debug the target `Set-UID` program; otherwise, the address we get may be incorrect.
 
-**Running gdb in batch mode**. If you prefer to run `gdb` in a batch mode, you can put the `gdb` commands
-in a file, and then askgdbto execute the commands from this file:
+**Running gdb in batch mode**. If you prefer to run `gdb` in a batch mode, you can put the `gdb` commands in a file, and then askgdbto execute the commands from this file:
 ```
 $ cat gdb_command.txt
 break main
@@ -187,43 +178,30 @@ Breakpoint 1, 0x56556327 in main ()
 $1 = {<text variable, no debug info>} 0xf7e12420 <system>
 $2 = {<text variable, no debug info>} 0xf7e04f80 <exit>
 ```
+
 ### 3.2 Task 2: Putting the shell string in the memory
 
 Our attack strategy is to jump to the `system()` function and get it to execute an arbitrary command.
 Since we would like to get a shell prompt, we want the `system()` function to execute the "`/bin/sh`"
-program. Therefore, the command string "`/bin/sh`" must be put in the memory first and we have to know
-its address (this address needs to be passed to the  `system()` function). There are many ways to achieve
-these goals; we choose a method that uses environment variables. Students are encouraged to use other
-approaches.
-When we execute a program from a shell prompt, the shell actually spawns a child process to execute the
-program, and all the exported shell variables become the environment variables of the child process. This creates an easy way for us to put some arbitrary string in the child process’s memory. Let us define a new
-shell variable `MYSHELL`, and let it contain the string "`/bin/sh`". From the following commands, we can
-verify that the string gets into the child process, and it is printed out by the `env` command running inside
-the child process.
+program. Therefore, the command string "`/bin/sh`" must be put in the memory first and we have to know its address (this address needs to be passed to the  `system()` function). There are many ways to achieve these goals; we choose a method that uses environment variables. Students are encouraged to use other approaches.
+<Br>
+&emsp; When we execute a program from a shell prompt, the shell actually spawns a child process to execute the program, and all the exported shell variables become the environment variables of the child process. This creates an easy way for us to put some arbitrary string in the child process’s memory. Let us define a new shell variable `MYSHELL`, and let it contain the string "`/bin/sh`". From the following commands, we can verify that the string gets into the child process, and it is printed out by the `env` command running inside the child process.
 ```
 $ export MYSHELL=/bin/sh
 $ env | grep MYSHELL
 MYSHELL=/bin/sh
 ```
-We will use the address of this variable as an argument to `system()` call. The location of this variable
-in the memory can be found out easily using the following program:
+&emsp; We will use the address of this variable as an argument to `system()` call. The location of this variable in the memory can be found out easily using the following program:
 ```
 void main(){
-char* shell = getenv("MYSHELL");
-if (shell)
-printf("%x\n", (unsigned int)shell);
+    char* shell = getenv("MYSHELL");
+    if (shell)
+        printf("%x\n", (unsigned int)shell);
 }
 ```
-Compile the code above into a binary called `prtenv`. If the address randomization is turned off, you
-will find out that the same address is printed out. When you run the vulnerable program `retlib` inside the
-same terminal, the address of the environment variable will be the same (see the special note below). You
-can verify that by putting the code above inside `retlib.c`. However, the length of the program name does
-make a difference. That’s why we choose 6 characters for the program name `prtenv` to match the length
-of `retlib`.
+&emsp; Compile the code above into a binary called `prtenv`. If the address randomization is turned off, you will find out that the same address is printed out. When you run the vulnerable program `retlib` inside the same terminal, the address of the environment variable will be the same (see the special note below). You can verify that by putting the code above inside `retlib.c`. However, the length of the program name does make a difference. That’s why we choose 6 characters for the program name `prtenv` to match the length of `retlib`.
 
-Note. You should use the `-m32` flag when compiling the above program, so the binary code `prtenv` will
-be for 32-bit machines, instead of for 64-bit ones. The vulnerable program `retlib` is a 32-bit binary, so if
-`prtenv` is 64-bit, the address of the environment variable will be different.
+**Note.** You should use the `-m32` flag when compiling the above program, so the binary code `prtenv` will be for 32-bit machines, instead of for 64-bit ones. The vulnerable program `retlib` is a 32-bit binary, so if `prtenv` is 64-bit, the address of the environment variable will be different.
 
 ### 3.3 Task 3: Launching the Attack
 
