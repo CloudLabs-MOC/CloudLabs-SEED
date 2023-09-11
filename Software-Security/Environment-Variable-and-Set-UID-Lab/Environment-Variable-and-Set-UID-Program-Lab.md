@@ -137,48 +137,38 @@ int main()
 
 ### 2.5 Task 5: Environment Variable andSet-UIDPrograms
 
-Set-UIDis an important security mechanism in Unix operating systems. When aSet-UIDprogram
-runs, it assumes the owner’s privileges. For example, if the program’s owner is root, when anyone runs
-this program, the program gains the root’s privileges during its execution.Set-UIDallows us to do many
-interesting things, but since it escalates the user’s privilege, it is quite risky. Although the behaviors of
-Set-UIDprograms are decided by their program logic, not by users, users can indeed affect the behav-
-iors via environment variables. To understand howSet-UIDprograms are affected, let us first figure out
-whether environment variables are inherited by theSet-UIDprogram’s process from the user’s process.
+`Set-UID` is an important security mechanism in Unix operating systems. When a `Set-UID` program runs, it assumes the owner’s privileges. For example, if the program’s owner is root, when anyone runs this program, the program gains the root’s privileges during its execution. `Set-UID` allows us to do many interesting things, but since it escalates the user’s privilege, it is quite risky. Although the behaviors of `Set-UID` programs are decided by their program logic, not by users, users can indeed affect the behaviors via environment variables. To understand how `Set-UID` programs are affected, let us first figure out whether environment variables are inherited by the `Set-UID` program’s process from the user’s process.
 
-Step 1. Write the following program that can print out all the environment variables in the current process.
-
+**Step 1.** Write the following program that can print out all the environment variables in the current process.
+```
 #include <stdio.h>
 #include <stdlib.h>
 
 extern char **environ;
 int main()
 {
-int i = 0;
-while (environ[i] != NULL) {
-printf("%s\n", environ[i]);
-i++;
+  int i = 0;
+  while (environ[i] != NULL) {
+    printf("%s\n", environ[i]);
+    i++;
+  }
 }
-}
+```
 
-Step 2. Compile the above program, change its ownership toroot, and make it aSet-UIDprogram.
-
+**Step 2.** Compile the above program, change its ownership toroot, and make it a `Set-UID` program.
+```
 // Asssume the program’s name is foo
 $ sudo chown root foo
 $ sudo chmod 4755 foo
+```
 
+**Step 3.** In your shell (you need to be in a normal user account, not the `root` account), use the `export` command to set the following environment variables (they may have already exist):
 
-Step 3. In your shell (you need to be in a normal user account, not therootaccount), use theexport
-command to set the following environment variables (they may have already exist):
+- `PATH`
+- `LD_LIBRARY_PATH`
+- `ANY_NAME` (this is an environment variable defined by you, so pick whatever name you want).
 
-- PATH
-- LDLIBRARYPATH
-- ANYNAME(this is an environment variable defined by you, so pick whatever name you want).
-
-These environment variables are set in the user’s shell process. Now, run theSet-UIDprogram from
-Step 2 in your shell. After you type the name of the program in your shell, the shell forks a child process,
-and uses the child process to run the program. Please check whether all the environment variables you set
-in the shell process (parent) get into theSet-UIDchild process. Describe your observation. If there are
-surprises to you, describe them.
+These environment variables are set in the user’s shell process. Now, run the `Set-UID` program from Step 2 in your shell. After you type the name of the program in your shell, the shell forks a child process, and uses the child process to run the program. Please check whether all the environment variables you set in the shell process (parent) get into the `Set-UID` child process. Describe your observation. If there are surprises to you, describe them.
 
 ### 2.6 Task 6: The PATH Environment Variable andSet-UIDPrograms
 
