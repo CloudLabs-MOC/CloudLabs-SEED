@@ -3,89 +3,60 @@
 ```
 Copyright © 2006 - 2020 by Wenliang Du.
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-The learning objective of this lab is for students to gain the first-hand experience on an interesting variant
-of buffer-overflow attack; this attack can bypass an existing protection scheme currently implemented in
-major Linux operating systems. A common way to exploit a buffer-overflow vulnerability is to overflow the
-buffer with a malicious shellcode, and then cause the vulnerable program to jump to the shellcode stored in
-the stack. To prevent these types of attacks, some operating systems allow programs to make their stacks
-non-executable; therefore, jumping to the shellcode causes the program to fail.
-Unfortunately, the above protection scheme is not fool-proof. There exists a variant of buffer-overflow
-attacks called ***Return-to-libc***, which does not need an executable stack; it does not even use shellcode.
-Instead, it causes the vulnerable program to jump to some existing code, such as the `system()` function in
-the `libc` library, which is already loaded into a process’s memory space.
-In this lab, students are given a program with a buffer-overflow vulnerability; their task is to develop
-a Return-to-libc attack to exploit the vulnerability and finally to gain the root privilege. In addition to the
-attacks, students will be guided to walk through some protection schemes implemented in Ubuntu to counter
-buffer-overflow attacks. This lab covers the following topics:
+The learning objective of this lab is for students to gain the first-hand experience on an interesting variant of buffer-overflow attack; this attack can bypass an existing protection scheme currently implemented in major Linux operating systems. A common way to exploit a buffer-overflow vulnerability is to overflow the buffer with a malicious shellcode, and then cause the vulnerable program to jump to the shellcode stored in the stack. To prevent these types of attacks, some operating systems allow programs to make their stacks non-executable; therefore, jumping to the shellcode causes the program to fail.
+<Br>
+&emsp; Unfortunately, the above protection scheme is not fool-proof. There exists a variant of buffer-overflow attacks called ***Return-to-libc***, which does not need an executable stack; it does not even use shellcode. Instead, it causes the vulnerable program to jump to some existing code, such as the `system()` function in the `libc` library, which is already loaded into a process’s memory space.
+<Br>
+&emsp; In this lab, students are given a program with a buffer-overflow vulnerability; their task is to develop a Return-to-libc attack to exploit the vulnerability and finally to gain the root privilege. In addition to the attacks, students will be guided to walk through some protection schemes implemented in Ubuntu to counter buffer-overflow attacks. This lab covers the following topics:
 
 - Buffer overflow vulnerability
 - Stack layout in a function invocation and Non-executable stack
 - Return-to-libc attack and Return-Oriented Programming (ROP)
 
-Readings and videos. Detailed coverage of the return-to-libc attack can be found in the following:
+**Readings and videos.** Detailed coverage of the return-to-libc attack can be found in the following:
 
 - Chapter 5 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by
     Wenliang Du. See details at `https://www.handsonsecurity.net`.
 - Section 5 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details at `https://www.handsonsecurity.net/video.html`.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
-
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Return_to_Libc/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Return_to_Libc/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
-Note for instructors. Instructors can customize this lab by choosing a value for the buffer size in the
-vulnerable program. See Section 2.3 for details.
+**Note for instructors.** Instructors can customize this lab by choosing a value for the buffer size in the vulnerable program. See Section 2.3 for details.
 
 
 ## 2 Environment Setup
 
 ### 2.1 Note on x86 and x64 Architectures
 
-The return-to-libc attack on the x64 machines (64-bit) is much more difficult than that on the x86 machines
-(32-bit). Although the SEED Ubuntu 20.04 VM is a 64-bit machine, we decide to keep using the 32-bit
-programs (x64 is compatible with x86, so 32-bit programs can still run on x64 machines). In the future, we
-may introduce a 64-bit version for this lab. Therefore, in this lab, when we compile programs using `gcc`,
-we always use the `-m32` flag, which means compiling the program into 32-bit binary.
+The return-to-libc attack on the x64 machines (64-bit) is much more difficult than that on the x86 machines (32-bit). Although the SEED Ubuntu 20.04 VM is a 64-bit machine, we decide to keep using the 32-bit programs (x64 is compatible with x86, so 32-bit programs can still run on x64 machines). In the future, we may introduce a 64-bit version for this lab. Therefore, in this lab, when we compile programs using `gcc`, we always use the `-m32` flag, which means compiling the program into 32-bit binary.
 
 ### 2.2 Turning off countermeasures
 
-You can execute the lab tasks using our pre-built Ubuntu virtual machines. Ubuntu and other Linux dis-
-tributions have implemented several security mechanisms to make the buffer-overflow attack difficult. To
-simplify our attacks, we need to disable them first.
+You can execute the lab tasks using our pre-built Ubuntu virtual machines. Ubuntu and other Linux distributions have implemented several security mechanisms to make the buffer-overflow attack difficult. To simplify our attacks, we need to disable them first.
 
 **Address Space Randomization**. Ubuntu and several other Linux-based systems use address space ran-
-domization to randomize the starting address of heap and stack, making guessing the exact addresses diffi-
-cult. Guessing addresses is one of the critical steps of buffer-overflow attacks. In this lab, we disable this
-feature using the following command:
+domization to randomize the starting address of heap and stack, making guessing the exact addresses difficult. Guessing addresses is one of the critical steps of buffer-overflow attacks. In this lab, we disable this feature using the following command:
 ```
 $ sudo sysctl -w kernel.randomize_va_space=0
 ```
 **The StackGuard Protection Scheme**. Thegcccompiler implements a security mechanism called Stack-
-Guard to prevent buffer overflows. In the presence of this protection, buffer overflow attacks do not work.
-We can disable this protection during the compilation using the `-fno-stack-protector` option. For example,
-to compile a program `example.c` with StackGuard disabled, we can do the following:
+Guard to prevent buffer overflows. In the presence of this protection, buffer overflow attacks do not work. We can disable this protection during the compilation using the `-fno-stack-protector` option. For example, to compile a program `example.c` with StackGuard disabled, we can do the following:
 ```
 $ gcc -m32 -fno-stack-protector example.c
 ```
-**Non-Executable Stack**. Ubuntu used to allow executable stacks, but this has now changed. The binary
-images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e.,
-they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide
-whether to make the stack of this running program executable or non-executable. This marking is done
-automatically by the recent versions of `gcc`, and by default, stacks are set to be non-executable. To change
-that, use the following option when compiling programs:
+**Non-Executable Stack**. Ubuntu used to allow executable stacks, but this has now changed. The binary images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the recent versions of `gcc`, and by default, stacks are set to be non-executable. To change that, use the following option when compiling programs:
 ```
 For executable stack:
 $ gcc -m32 -z execstack -o test test.c
@@ -93,24 +64,16 @@ $ gcc -m32 -z execstack -o test test.c
 For non-executable stack:
 $ gcc -m32 -z noexecstack -o test test.c
 ```
-Because the objective of this lab is to show that the non-executable stack protection does not work, you
-should always compile your program using the "`-z noexecstack`" option in this lab.
+&emsp; Because the objective of this lab is to show that the non-executable stack protection does not work, you should always compile your program using the "`-z noexecstack`" option in this lab.
 
-**Configuring /bin/sh**. In Ubuntu 20.04, the `/bin/sh` symbolic link points to the `/bin/dash` shell.
-Thedashshell has a countermeasure that prevents itself from being executed in a `Set-UID` process. If
-`dash` is executed in a `Set-UID` process, it immediately changes the effective user ID to the process’s real
-user ID, essentially dropping its privilege.
-Since our victim program is a `Set-UID` program, and our attack uses the `system()` function to
-run a command of our choice. This function does not run our command directly; it invokes `/bin/sh`
+**Configuring /bin/sh**. In Ubuntu 20.04, the `/bin/sh` symbolic link points to the `/bin/dash` shell. The `dash` shell has a countermeasure that prevents itself from being executed in a `Set-UID` process. If `dash` is executed in a `Set-UID` process, it immediately changes the effective user ID to the process’s real user ID, essentially dropping its privilege.
+&emsp; Since our victim program is a `Set-UID` program, and our attack uses the `system()` function to run a command of our choice. This function does not run our command directly; it invokes `/bin/sh`
 to run our command. Therefore, the countermeasure in `/bin/dash` immediately drops the `Set-UID`
-privilege before executing our command, making our attack more difficult. To disable this protection, we
-link `/bin/sh` to another shell that does not have such a countermeasure. We have installed a shell program
-calledzshin our Ubuntu 16.04 VM. We use the following commands to link `/bin/sh` to `zsh:`
+privilege before executing our command, making our attack more difficult. To disable this protection, we link `/bin/sh` to another shell that does not have such a countermeasure. We have installed a shell program called `zsh` in our Ubuntu 16.04 VM. We use the following commands to link `/bin/sh` to `zsh:`
 ```
 $ sudo ln -sf /bin/zsh /bin/sh
 ```
-It should be noted that the countermeasure implemented in `dash` can be circumvented. We will do that
-in a later task.
+&emsp; It should be noted that the countermeasure implemented in `dash` can be circumvented. We will do that in a later task.
 
 ### 2.3 The Vulnerable Program
 
