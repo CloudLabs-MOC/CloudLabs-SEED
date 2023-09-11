@@ -295,57 +295,55 @@ bash-5.0#   <---- Got root shell!
 
 ### 4.1 Understanding the stack layout
 
-To know how to conduct Return-to-libc attacks, we need to understand how stacks work. We use a small C
-program to understand the effects of a function invocation on the stack. More detailed explanation can be
-found in the SEED book and SEED lecture.
+To know how to conduct Return-to-libc attacks, we need to understand how stacks work. We use a small C program to understand the effects of a function invocation on the stack. More detailed explanation can be found in the SEED book and SEED lecture.
 ```
 /* foobar.c */
 #include<stdio.h>
 void foo(int x)
 {
-printf("Hello world: %d\n", x);
+    printf("Hello world: %d\n", x);
 }
 
 int main()
 {
-foo(1);
-return 0;
+    foo(1);
+    return 0;
 }
 ```
-We can use "`gcc -m32 -S foobar.c`" to compile this program to the assembly code. The resulting file `foobar.s` will look like the following:
+&emsp; We can use "`gcc -m32 -S foobar.c`" to compile this program to the assembly code. The resulting file `foobar.s` will look like the following:
 
 ```
 ......
 8 foo:
-9 pushl %ebp
-10 movl %esp, %ebp
-11 subl $8, %esp
-12 movl 8(%ebp), %eax
-13 movl %eax, 4(%esp)
-14 movl $.LC0, (%esp) : string "Hello world: %d\n"
-15 call printf
-16 leave
-17 ret
+9         pushl %ebp
+10        movl  %esp, %ebp
+11        subl  $8, %esp
+12        movl  8(%ebp), %eax
+13        movl  %eax, 4(%esp)
+14        movl  $.LC0, (%esp) : string "Hello world: %d\n"
+15        call  printf
+16        leave
+17        ret
 ......
 21 main:
-22 leal 4(%esp), %ecx
+22        leal  4(%esp), %ecx
 ```
 
 ```
-23 andl $-16, %esp
-24 pushl -4(%ecx)
-25 pushl %ebp
-26 movl %esp, %ebp
-27 pushl %ecx
-28 subl $4, %esp
-29 movl $1, (%esp)
-30 call foo
-31 movl $0, %eax
-32 addl $4, %esp
-33 popl %ecx
-34 popl %ebp
-35 leal -4(%ecx), %esp
-36 ret
+23        andl   $-16, %esp
+24        pushl  -4(%ecx)
+25        pushl  %ebp
+26        movl   %esp, %ebp
+27        pushl  %ecx
+28        subl   $4, %esp
+29        movl   $1, (%esp)
+30        call   foo
+31        movl   $0, %eax
+32        addl   $4, %esp
+33        popl   %ecx
+34        popl   %ebp
+35        leal   -4(%ecx), %esp
+36        ret
 ```
 ### 4.2 Calling and enteringfoo()
 
