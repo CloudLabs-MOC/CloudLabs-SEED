@@ -119,23 +119,21 @@ Step 3. Please draw your conclusion regarding how the new program gets its envir
 
 ### 2.4 Task 4: Environment Variables andsystem()
 
-In this task, we study how environment variables are affected when a new program is executed via the
-system()function. This function is used to execute a command, but unlikeexecve(), which di-
-rectly executes a command,system()actually executes"/bin/sh -c command", i.e., it executes
-/bin/sh, and asks the shell to execute the command.
-If you look at the implementation of thesystem()function, you will see that it usesexecl()to
-execute/bin/sh;execl()callsexecve(), passing to it the environment variables array. Therefore,
-usingsystem(), the environment variables of the calling process is passed to the new program/bin/sh.
+In this task, we study how environment variables are affected when a new program is executed via the `system()` function. This function is used to execute a command, but unlike `execve()`, which directly executes a command, `system()` actually executes "`/bin/sh -c command`", i.e., it executes `/bin/sh`, and asks the shell to execute the command.
+If you look at the implementation of the `system()` function, you will see that it uses `execl()` to execute `/bin/sh;execl()` calls `execve()`, passing to it the environment variables array. Therefore, using `system()`, the environment variables of the calling process is passed to the new program `/bin/sh`.
 Please compile and run the following program to verify this.
 
+```
 #include <stdio.h>
 #include <stdlib.h>
 
 int main()
 {
-system("/usr/bin/env");
-return 0 ;
+  system("/usr/bin/env");
+  return 0 ;
 }
+```
+
 
 ### 2.5 Task 5: Environment Variable andSet-UIDPrograms
 
