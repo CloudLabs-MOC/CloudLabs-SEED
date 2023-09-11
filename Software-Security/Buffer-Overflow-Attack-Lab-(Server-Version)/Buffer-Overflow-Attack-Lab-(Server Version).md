@@ -258,10 +258,7 @@ $ cat badfile | nc 10.9.0.5 9090
 
 ## 5 Task 3: Level-2 Attack
 
-In this task, we are going to increase the difficulty of the attack a little bit by not displaying an essential
-piece of the information. Our target server is `10.9.0.6`(the port number is still `9090` , and the vulnerable
-program is still a 32-bit program). Let’s first send a benign message to this server. We will see the following
-messages printed out by the target container.
+In this task, we are going to increase the difficulty of the attack a little bit by not displaying an essential piece of the information. Our target server is `10.9.0.6`(the port number is still `9090` , and the vulnerable program is still a 32-bit program). Let’s first send a benign message to this server. We will see the following messages printed out by the target container.
 ```
 // On the VM (i.e., the attacker machine)
 $ echo hello | nc 10.9.0.6 9090
@@ -271,31 +268,19 @@ Ctrl+C
 server-2-10.9.0.6 | Got a connection from 10.9.0.1
 server-2-10.9.0.6 | Starting stack
 server-2-10.9.0.6 | Input size: 6
-server-2-10.9.0.6 | Buffer’s address inside bof(): 0xffffda3c
+server-2-10.9.0.6 | Buffer’s address inside bof():             0xffffda3c
 server-2-10.9.0.6 | ==== Returned Properly ====
 ```
 As you can see, the server only gives out one hint, the address of the buffer; it does not reveal the
-value of the frame pointer. This means, the size of the buffer is unknown to you. That makes exploiting
-the vulnerability more difficult than the Level-1 attack. Although the actual buffer size can be found in
-`Makefile`, you are not allowed to use that information in the attack, because in the real world, it is
-unlikely that you will have this file. To simplify the task, we do assume that the the range of the buffer size
-is known. Another fact that may be useful to you is that, due to the memory alignment, the value stored in
-the frame pointer is always multiple of four (for 32-bit programs).
+value of the frame pointer. This means, the size of the buffer is unknown to you. That makes exploiting the vulnerability more difficult than the Level-1 attack. Although the actual buffer size can be found in `Makefile`, you are not allowed to use that information in the attack, because in the real world, it is unlikely that you will have this file. To simplify the task, we do assume that the the range of the buffer size is known. Another fact that may be useful to you is that, due to the memory alignment, the value stored in the frame pointer is always multiple of four (for 32-bit programs).
 ```
 Range of the buffer size (in bytes): [100, 300]
 ```
-Your job is to construct one payload to exploit the buffer overflow vulnerability on the server, and get
-a root shell on the target server (using the reverse shell technique). Please be noted, you are only allowed
-to construct one payload that works for any buffer size within this range. You will not get all the credits if
-you use the brute-force method, i.e., trying one buffer size each time. The more you try, the easier it will be
-detected and defeated by the victim. That’s why minimizing the number of trials is important for attacks. In
-your lab report, you need to describe your method, and provide evidences.
+Your job is to construct one payload to exploit the buffer overflow vulnerability on the server, and get a root shell on the target server (using the reverse shell technique). Please be noted, you are only allowed to construct one payload that works for any buffer size within this range. You will not get all the credits if you use the brute-force method, i.e., trying one buffer size each time. The more you try, the easier it will be detected and defeated by the victim. That’s why minimizing the number of trials is important for attacks. In your lab report, you need to describe your method, and provide evidences.
 
 ## 6 Task 4: Level-3 Attack
 
-In the previous tasks, our target servers are 32-bit programs. In this task, we switch to a 64-bit server
-program. Our new target is `10.9.0.7`, which runs the 64-bit version of the `stack` program. Let’s first
-send a hello message to this server. We will see the following messages printed out by the target container.
+In the previous tasks, our target servers are 32-bit programs. In this task, we switch to a 64-bit server program. Our new target is `10.9.0.7`, which runs the 64-bit version of the `stack` program. Let’s first send a hello message to this server. We will see the following messages printed out by the target container.
 ```
 // On the VM (i.e., the attacker machine)
 $ echo hello | nc 10.9.0.7 9090
@@ -305,23 +290,15 @@ Ctrl+C
 server-3-10.9.0.7 | Got a connection from 10.9.0.1
 server-3-10.9.0.7 | Starting stack
 server-3-10.9.0.7 | Input size: 6
-server-3-10.9.0.7 | Frame Pointer (rbp) inside bof(): 0x00007fffffffe1b0
-server-3-10.9.0.7 | Buffer’s address inside bof(): 0x00007fffffffe070
+server-3-10.9.0.7 | Frame Pointer (rbp) inside bof():         0x00007fffffffe1b0
+server-3-10.9.0.7 | Buffer’s address inside bof():            0x00007fffffffe070
 server-3-10.9.0.7 | ==== Returned Properly ====
 ```
-You can see the values of the frame pointer and buffer’s address become 8 bytes long (instead of 4 bytes
-in 32-bit programs). Your job is to construct your payload to exploit the buffer overflow vulnerability of the
-server. You ultimate goal is to get a root shell on the target server. You can use the shellcode from Task 1,
-but you need to use the 64-bit version of the shellcode.
+You can see the values of the frame pointer and buffer’s address become 8 bytes long (instead of 4 bytes in 32-bit programs). Your job is to construct your payload to exploit the buffer overflow vulnerability of the server. You ultimate goal is to get a root shell on the target server. You can use the shellcode from Task 1, but you need to use the 64-bit version of the shellcode.
 
-**Challenges.** Compared to buffer-overflow attacks on 32-bit machines, attacks on 64-bit machines is more
-difficult. The most difficult part is the address. Although the x64 architecture supports 64-bit address space,
-only the address from `0x00` through `0x00007FFFFFFFFFFF` is allowed. That means for every address (8 bytes), the highest two bytes are always zeros. This causes a problem.
-In our buffer-overflow attacks, we need to store at least one address in the payload, and the payload will
-be copied into the stack via `strcpy()`. We know that the `strcpy()` function will stop copying when it
-sees a zero. Therefore, if a zero appears in the middle of the payload, the content after the zero cannot be
-copied into the stack. How to solve this problem is the most difficult challenge in this attack. In your report,
-you need to describe how you solve this problem.
+**Challenges.** Compared to buffer-overflow attacks on 32-bit machines, attacks on 64-bit machines is more difficult. The most difficult part is the address. Although the x64 architecture supports 64-bit address space, only the address from `0x00` through `0x00007FFFFFFFFFFF` is allowed. That means for every address (8 bytes), the highest two bytes are always zeros. This causes a problem.
+<Br>
+In our buffer-overflow attacks, we need to store at least one address in the payload, and the payload will be copied into the stack via `strcpy()`. We know that the `strcpy()` function will stop copying when it sees a zero. Therefore, if a zero appears in the middle of the payload, the content after the zero cannot be copied into the stack. How to solve this problem is the most difficult challenge in this attack. In your report, you need to describe how you solve this problem.
 
 ## 7 Task 5: Level-4 Attack
 
