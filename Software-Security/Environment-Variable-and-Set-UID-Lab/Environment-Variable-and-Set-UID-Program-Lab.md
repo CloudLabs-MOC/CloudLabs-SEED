@@ -89,37 +89,31 @@ Step 3. Compare the difference of these two files using the `diff` command. Plea
 
 ### 2.3 Task 3: Environment Variables andexecve()
 
-In this task, we study how environment variables are affected when a new program is executed viaexecve().
-The functionexecve()calls a system call to load a new command and execute it; this function never re-
-turns. No new process is created; instead, the calling process’s text, data, bss, and stack are overwritten by
-that of the program loaded. Essentially,execve()runs the new program inside the calling process. We
-are interested in what happens to the environment variables; are they automatically inherited by the new
-program?
+In this task, we study how environment variables are affected when a new program is executed via `execve()`. The function `execve()` calls a system call to load a new command and execute it; this function never re-turns. No new process is created; instead, the calling process’s text, data, bss, and stack are overwritten by that of the program loaded. Essentially, `execve()` runs the new program inside the calling process. We
+are interested in what happens to the environment variables; are they automatically inherited by the new program?
 
-Step 1. Please compile and run the following program, and describe your observation. This program
-simply executes a program called/usr/bin/env, which prints out the environment variables of the
-current process.
+Step 1. Please compile and run the following program, and describe your observation. This program simply executes a program called `/usr/bin/env`, which prints out the environment variables of the current process.
 
-Listing 2:myenv.c
+**Listing 2:** myenv.c
+```
 #include <unistd.h>
 
 extern char **environ;
 int main()
 {
-char *argv[2];
+  char *argv[2];
+  argv[0] = "/usr/bin/env";
+  argv[1] = NULL;
+  execve("/usr/bin/env", argv, NULL);    ➀
 
-```
-argv[0] = "/usr/bin/env";
-argv[1] = NULL;
-execve("/usr/bin/env", argv, NULL); ¿
-```
-return 0 ;
+  return 0 ;
 }
+```
 
-Step 2. Change the invocation ofexecve()in Line¿to the following; describe your observation.
-
+Step 2. Change the invocation of `execve()` in Line ➀ to the following; describe your observation.
+```
 execve("/usr/bin/env", argv, environ);
-
+```
 Step 3. Please draw your conclusion regarding how the new program gets its environment variables.
 
 
