@@ -51,7 +51,7 @@ for this lab). Please do the following tasks:
 In this task, we study how a child process gets its environment variables from its parent. In Unix, `fork()` creates a new process by duplicating the calling process. The new process, referred to as the child, is an exact duplicate of the calling process, referred to as the parent; however, several things are not inherited by the child (please see the manual of `fork()` by typing the following command: `man fork`). In this task,
 we would like to know whether the parent’s environment variables are inherited by the child process or not.
 
-Step 1. Please compile and run the following program, and describe your observation. The program can be found in the `Labsetup` folder; it can be compiled using "`gcc myprintenv.c`", which will generate a binary called `a.out`. Let’s run it and save the output into a file using "`a.out > file`".
+**Step 1.** Please compile and run the following program, and describe your observation. The program can be found in the `Labsetup` folder; it can be compiled using "`gcc myprintenv.c`", which will generate a binary called `a.out`. Let’s run it and save the output into a file using "`a.out > file`".
 
 **Listing 1:** myprintenv.c
 ```
@@ -83,16 +83,16 @@ void main()
 }
 ```
 
-Step 2. Now comment out the `printenv()` statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
+**Step 2.** Now comment out the `printenv()` statement in the child process case (Line ➀), and uncomment the `printenv()` statement in the parent process case (Line ➁). Compile and run the code again, and describe your observation. Save the output in another file.
 
-Step 3. Compare the difference of these two files using the `diff` command. Please draw your conclusion.
+**Step 3.** Compare the difference of these two files using the `diff` command. Please draw your conclusion.
 
-### 2.3 Task 3: Environment Variables andexecve()
+### 2.3 Task 3: Environment Variables and `execve()`
 
 In this task, we study how environment variables are affected when a new program is executed via `execve()`. The function `execve()` calls a system call to load a new command and execute it; this function never re-turns. No new process is created; instead, the calling process’s text, data, bss, and stack are overwritten by that of the program loaded. Essentially, `execve()` runs the new program inside the calling process. We
 are interested in what happens to the environment variables; are they automatically inherited by the new program?
 
-Step 1. Please compile and run the following program, and describe your observation. This program simply executes a program called `/usr/bin/env`, which prints out the environment variables of the current process.
+**Step 1.** Please compile and run the following program, and describe your observation. This program simply executes a program called `/usr/bin/env`, which prints out the environment variables of the current process.
 
 **Listing 2:** myenv.c
 ```
@@ -110,14 +110,16 @@ int main()
 }
 ```
 
-Step 2. Change the invocation of `execve()` in Line ➀ to the following; describe your observation.
+**Step 2.** Change the invocation of `execve()` in Line ➀ to the following; describe your observation.
+
 ```
 execve("/usr/bin/env", argv, environ);
 ```
-Step 3. Please draw your conclusion regarding how the new program gets its environment variables.
+
+**Step 3.** Please draw your conclusion regarding how the new program gets its environment variables.
 
 
-### 2.4 Task 4: Environment Variables andsystem()
+### 2.4 Task 4: Environment Variables and `system()`
 
 In this task, we study how environment variables are affected when a new program is executed via the `system()` function. This function is used to execute a command, but unlike `execve()`, which directly executes a command, `system()` actually executes "`/bin/sh -c command`", i.e., it executes `/bin/sh`, and asks the shell to execute the command.
 If you look at the implementation of the `system()` function, you will see that it uses `execl()` to execute `/bin/sh;execl()` calls `execve()`, passing to it the environment variables array. Therefore, using `system()`, the environment variables of the calling process is passed to the new program `/bin/sh`.
@@ -135,7 +137,7 @@ int main()
 ```
 
 
-### 2.5 Task 5: Environment Variable andSet-UIDPrograms
+### 2.5 Task 5: Environment Variable and `Set-UID` Programs
 
 `Set-UID` is an important security mechanism in Unix operating systems. When a `Set-UID` program runs, it assumes the owner’s privileges. For example, if the program’s owner is root, when anyone runs this program, the program gains the root’s privileges during its execution. `Set-UID` allows us to do many interesting things, but since it escalates the user’s privilege, it is quite risky. Although the behaviors of `Set-UID` programs are decided by their program logic, not by users, users can indeed affect the behaviors via environment variables. To understand how `Set-UID` programs are affected, let us first figure out whether environment variables are inherited by the `Set-UID` program’s process from the user’s process.
 
@@ -170,7 +172,7 @@ $ sudo chmod 4755 foo
 
 These environment variables are set in the user’s shell process. Now, run the `Set-UID` program from Step 2 in your shell. After you type the name of the program in your shell, the shell forks a child process, and uses the child process to run the program. Please check whether all the environment variables you set in the shell process (parent) get into the `Set-UID` child process. Describe your observation. If there are surprises to you, describe them.
 
-### 2.6 Task 6: The PATH Environment Variable andSet-UIDPrograms
+### 2.6 Task 6: The PATH Environment Variable and `Set-UID` Programs
 
 Because of the shell program invoked, calling `system()` within a `Set-UID` program is quite dangerous. This is because the actual behavior of the shell program can be affected by environment variables, such as `PATH`; these environment variables are provided by the user, who may be malicious. By changing these variables, malicious users can control the behavior of the `Set-UID` program. In `Bash`, you can change the `PATH` environment variable in the following way (this example adds the directory `/home/seed` to the
 beginning of the `PATH` environment variable):
@@ -194,63 +196,51 @@ Since our victim program is a `Set-UID` program, the countermeasure `in/bin/dash
 $ sudo ln -sf /bin/zsh /bin/sh
 ```
 
-### 2.7 Task 7: TheLDPRELOADEnvironment Variable andSet-UIDPrograms
+### 2.7 Task 7: The `LD_PRELOAD` Environment Variable and `Set-UID` Programs
 
-In this task, we study howSet-UIDprograms deal with some of the environment variables. Several en-
-vironment variables, includingLDPRELOAD,LDLIBRARYPATH, and otherLD*influence the behavior
-of dynamic loader/linker. A dynamic loader/linker is the part of an operating system (OS) that loads (from
-persistent storage to RAM) and links the shared libraries needed by an executable at run time.
-In Linux,ld.soorld-linux.so, are the dynamic loader/linker (each for different types of binary).
-Among the environment variables that affect their behaviors,LDLIBRARYPATHandLDPRELOADare
-the two that we are concerned in this lab. In Linux,LDLIBRARYPATHis a colon-separated set of di-
-rectories where libraries should be searched for first, before the standard set of directories.LDPRELOAD
-specifies a list of additional, user-specified, shared libraries to be loaded before all others. In this task, we
-will only studyLDPRELOAD.
+In this task, we study how `Set-UID` programs deal with some of the environment variables. Several environment variables, including `LD_PRELOAD`, `LD_LIBRARY_PATH`, and other `LD_*` influence the behavior of dynamic loader/linker. A dynamic loader/linker is the part of an operating system (OS) that loads (from persistent storage to RAM) and links the shared libraries needed by an executable at run time.
+In Linux, `ld.so` or `ld-linux.so`, are the dynamic loader/linker (each for different types of binary). Among the environment variables that affect their behaviors, `LD_LIBRARY_PATH` and `LD_PRELOAD` are the two that we are concerned in this lab. In Linux, `LD_LIBRARY_PATH` is a colon-separated set of directories where libraries should be searched for first, before the standard set of directories. `LD_PRELOAD` specifies a list of additional, user-specified, shared libraries to be loaded before all others. In this task, we will only study `LD_PRELOAD`.
 
-Step 1. First, we will see how these environment variables influence the behavior of dynamic loader/linker
-when running a normal program. Please follow these steps:
+**Step 1.** First, we will see how these environment variables influence the behavior of dynamic loader/linker when running a normal program. Please follow these steps:
 
-1. Let us build a dynamic link library. Create the following program, and name itmylib.c. It basically
-    overrides thesleep()function inlibc:
-    #include <stdio.h>
-    void sleep (int s)
-    {
-       /* If this is invoked by a privileged program,
-          you can do damages here! */
-       printf("I am not sleeping!\n");
-    }
-2. We can compile the above program using the following commands (in the-lcargument, the second
-    character is`):
-    $ gcc -fPIC -g -c mylib.c
-    $ gcc -shared -o libmylib.so.1.0.1 mylib.o -lc
-3. Now, set theLDPRELOADenvironment variable:
-    $ export LD_PRELOAD=./libmylib.so.1.0.
-4. Finally, compile the following programmyprog, and in the same directory as the above dynamic link
-    librarylibmylib.so.1.0.1:
-    /* myprog.c */
-    #include <unistd.h>
-    int main()
-    {
-       sleep(1);
-       return 0;
-    }
+1. Let us build a dynamic link library. Create the following program, and name it `mylib.c`. It basically overrides the `sleep()` function in `libc`:
+```    
+#include <stdio.h>
+void sleep (int s)
+{
+  /* If this is invoked by a privileged program,
+     you can do damages here! */
+  printf("I am not sleeping!\n");
+}
+```
 
-Step 2. After you have done the above, please runmyprogunder the following conditions, and observe
-what happens.
+2. We can compile the above program using the following commands (in the `-lc` argument, the second character is `):
+```
+$ gcc -fPIC -g -c mylib.c
+$ gcc -shared -o libmylib.so.1.0.1 mylib.o -lc
+```
+3. Now, set the `LD_PRELOAD` environment variable:
+```
+$ export LD_PRELOAD=./libmylib.so.1.0.1
+```
+5. Finally, compile the following program `myprog`, and in the same directory as the above dynamic link library `libmylib.so.1.0.1`:
+```
+/* myprog.c */
+#include <unistd.h>
+int main()
+{
+  sleep(1);
+  return 0;
+}
+```
+**Step 2.** After you have done the above, please run `myprog` under the following conditions, and observe what happens.
 
+- Make `myprog` a regular program, and run it as a normal user.
+- Make `myprog` a `Set-UID` root program, and run it as a normal user.
+- Make `myprog` a `Set-UID` root program, export the `LD_PRELOAD` environment variable again in the root account and run it.
+- Make `myprog` a `Set-UID` user1 program (i.e., the owner is user1, which is another user account), export the `LD_PRELOAD` environment variable again in a different user’s account (not-root user) and run it.
 
-- Makemyproga regular program, and run it as a normal user.
-- MakemyprogaSet-UIDroot program, and run it as a normal user.
-- MakemyprogaSet-UIDroot program, export theLDPRELOADenvironment variable again in
-    the root account and run it.
-- MakemyprogaSet-UIDuser1 program (i.e., the owner is user1, which is another user account),
-    export theLDPRELOADenvironment variable again in a different user’s account (not-root user) and
-    run it.
-
-Step 3. You should be able to observe different behaviors in the scenarios described above, even though
-you are running the same program. You need to figure out what causes the difference. Environment variables
-play a role here. Please design an experiment to figure out the main causes, and explain why the behaviors
-in Step 2 are different. (Hint: the child process may not inherit theLD*environment variables).
+**Step 3.** You should be able to observe different behaviors in the scenarios described above, even though you are running the same program. You need to figure out what causes the difference. Environment variables play a role here. Please design an experiment to figure out the main causes, and explain why the behaviors in Step 2 are different. (Hint: the child process may not inherit the `LD_*` environment variables).
 
 ### 2.8 Task 8: Invoking External Programs Usingsystem()versusexecve()
 
