@@ -351,34 +351,27 @@ and explain your observations.
 ```
 ## 10 Task 8: Defeating Address Randomization
 
-On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have
-219 =524, 288 possibilities. This number is not that high and can be exhausted easily with the brute-force
-approach. In this task, we use such an approach to defeat the address randomization countermeasure on our
-32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command. Then we
-run the same attack againststack-L1. Please describe and explain your observation.
-
+On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have 2<sup>19</sup>=524,288 possibilities. This number is not that high and can be exhausted easily with the brute-force approach. In this task, we use such an approach to defeat the address randomization countermeasure on our 32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command. Then we run the same attack against `stack-L1`. Please describe and explain your observation.
+```
 $ sudo /sbin/sysctl -w kernel.randomize_va_space=
-
-We then use the brute-force approach to attack the vulnerable program repeatedly, hoping that the ad-
-dress we put in thebadfilecan eventually be correct. We will only try this onstack-L1, which is a
-32-bit program. You can use the following shell script to run the vulnerable program in an infinite loop. If
-your attack succeeds, the script will stop; otherwise, it will keep running. Please be patient, as this may take
-a few minutes, but if you are very unlucky, it may take longer. Please describe your observation.
-
+```
+We then use the brute-force approach to attack the vulnerable program repeatedly, hoping that the address we put in the `badfile` can eventually be correct. We will only try this onstack-L1, which is a 32-bit program. You can use the following shell script to run the vulnerable program in an infinite loop. If your attack succeeds, the script will stop; otherwise, it will keep running. Please be patient, as this may take a few minutes, but if you are very unlucky, it may take longer. Please describe your observation.
+```
 #!/bin/bash
 
-SECONDS=
-value=
+SECONDS=0
+value=0
 
 while true; do
-value=$(( $value + 1 ))
-duration=$SECONDS
-min=$(($duration / 60))
-sec=$(($duration % 60))
-echo "$min minutes and $sec seconds elapsed."
-echo "The program has been running $value times so far."
-./stack-L
+    value=$(( $value + 1 ))
+    duration=$SECONDS
+    min=$(($duration / 60))
+    sec=$(($duration % 60))
+    echo "$min minutes and $sec seconds elapsed."
+    echo "The program has been running $value times so far."
+    ./stack-L
 done
+```
 
 Brute-force attacks on 64-bit programs is much harder, because the entropy is much larger. Although
 this is not required, free free to try it just for fun. Let it run overnight. Who knows, you may be very lucky.
@@ -387,43 +380,22 @@ this is not required, free free to try it just for fun. Let it run overnight. Wh
 
 ### 11.1 Task 9.a: Turn on the StackGuard Protection
 
-Many compiler, such asgcc, implements a security mechanism calledStackGuardto prevent buffer over-
-flows. In the presence of this protection, buffer overflow attacks will not work. In our previous tasks, we
-disabled the StackGuard protection mechanism when compiling the programs. In this task, we will turn it
-on and see what will happen.
-First, repeat the Level-1 attack with the StackGuard off, and make sure that the attack is still success-
-ful. Remember to turn off the address randomization, because you have turned it on in the previous task.
-Then, we turn on the StackGuard protection by recompiling the vulnerablestack.cprogram without
-
-
-the-fno-stack-protectorflag. Ingccversion 4.3.3 and above, StackGuard is enabled by default.
-Launch the attack; report and explain your observations.
+Many compiler, such asgcc, implements a security mechanism called *StackGuard* to prevent buffer overflows. In the presence of this protection, buffer overflow attacks will not work. In our previous tasks, we disabled the StackGuard protection mechanism when compiling the programs. In this task, we will turn it on and see what will happen.
+<Br>
+First, repeat the Level-1 attack with the StackGuard off, and make sure that the attack is still successful. Remember to turn off the address randomization, because you have turned it on in the previous task. Then, we turn on the StackGuard protection by recompiling the vulnerable `stack.c` program without the `-fno-stack-protector` flag. In `gcc` version 4.3.3 and above, StackGuard is enabled by default. Launch the attack; report and explain your observations.
 
 ### 11.2 Task 9.b: Turn on the Non-executable Stack Protection
 
 Operating systems used to allow executable stacks, but this has now changed: In Ubuntu OS, the binary
-images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e.,
-they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide
-whether to make the stack of this running program executable or non-executable. This marking is done
-automatically by thegcc, which by default makes stack non-executable. We can specifically make it non-
-executable using the"-z noexecstack"flag in the compilation. In our previous tasks, we used"-z
-execstack"to make stacks executable.
-In this task, we will make the stack non-executable. We will do this experiment in theshellcode
-folder. Thecallshellcodeprogram puts a copy of shellcode on the stack, and then executes the code
-from the stack. Please recompilecallshellcode.cintoa32.outanda64.out, without the"-z
-execstack"option. Run them, describe and explain your observations.
+images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the `gcc`, which by default makes stack non-executable. We can specifically make it nonexecutable using the "`-z noexecstack`" flag in the compilation. In our previous tasks, we used "`-z execstack`" to make stacks executable.
+<Br>
+In this task, we will make the stack non-executable. We will do this experiment in the `shellcode`
+folder. The `call_shellcode` program puts a copy of shellcode on the stack, and then executes the code from the stack. Please recompile `call_shellcode.c` into `a32.out` and `a64.out`, without the "`-z execstack`" option. Run them, describe and explain your observations.
 
-Defeating the non-executable stack countermeasure. It should be noted that non-executable stack only
-makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because
-there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. Thereturn-to-
-libcattack is an example. We have designed a separate lab for that attack. If you are interested, please see
-our Return-to-Libc Attack Lab for details.
+**Defeating the non-executable stack countermeasure.** It should be noted that non-executable stack only makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. The *return-to-libc* attack is an example. We have designed a separate lab for that attack. If you are interested, please see our Return-to-Libc Attack Lab for details.
 
 ## 12 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
