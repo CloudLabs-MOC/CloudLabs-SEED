@@ -352,9 +352,11 @@ and explain your observations.
 ## 10 Task 8: Defeating Address Randomization
 
 On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have 2<sup>19</sup>=524,288 possibilities. This number is not that high and can be exhausted easily with the brute-force approach. In this task, we use such an approach to defeat the address randomization countermeasure on our 32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command. Then we run the same attack against `stack-L1`. Please describe and explain your observation.
+
 ```
-$ sudo /sbin/sysctl -w kernel.randomize_va_space=
+$ sudo /sbin/sysctl -w kernel.randomize_va_space=2
 ```
+
 We then use the brute-force approach to attack the vulnerable program repeatedly, hoping that the address we put in the `badfile` can eventually be correct. We will only try this onstack-L1, which is a 32-bit program. You can use the following shell script to run the vulnerable program in an infinite loop. If your attack succeeds, the script will stop; otherwise, it will keep running. Please be patient, as this may take a few minutes, but if you are very unlucky, it may take longer. Please describe your observation.
 ```
 #!/bin/bash
