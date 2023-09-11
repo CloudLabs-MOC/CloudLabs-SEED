@@ -345,10 +345,9 @@ int main()
 35        leal   -4(%ecx), %esp
 36        ret
 ```
-### 4.2 Calling and enteringfoo()
+### 4.2 Calling and entering `foo()`
 
-Let us concentrate on the stack while calling `foo()`. We can ignore the stack before that. Please note that
-line numbers instead of instruction addresses are used in this explanation.
+Let us concentrate on the stack while calling `foo()`. We can ignore the stack before that. Please note that line numbers instead of instruction addresses are used in this explanation.
 
 ```
 esp
@@ -435,14 +434,11 @@ bfffe
 (^00000001) bfffe
 Parameters
 Local
-Figure 1: Entering and Leavingfoo()
+**Figure 1:** Entering and Leavingfoo()
 
-- **Line 28-29:**: These two statements push the value 1 , i.e. the argument to the `foo()`, into the stack.
-    This operation increments `%esp` by four. The stack after these two statements is depicted in Fig-
-    ure 1(a).
+- **Line 28-29:**: These two statements push the value 1 , i.e. the argument to the `foo()`, into the stack. This operation increments `%esp` by four. The stack after these two statements is depicted in Figure 1(a).
 - **Line 30: call foo** : The statement pushes the address of the next instruction that immediately
-    follows the `call` statement into the stack (i.e the return address), and then jumps to the code of
-    `foo()`. The current stack is depicted in Figure 1(b).
+    follows the `call` statement into the stack (i.e the return address), and then jumps to the code of `foo()`. The current stack is depicted in Figure 1(b).
 
 - **Line 9-10**: The first line of the function `foo()` pushes  `%ebp` into the stack, to save the previous
     frame pointer. The second line lets `%ebp` point to the current frame. The current stack is depicted in
