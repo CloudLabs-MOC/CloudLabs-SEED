@@ -349,131 +349,36 @@ int main()
 
 Let us concentrate on the stack while calling `foo()`. We can ignore the stack before that. Please note that line numbers instead of instruction addresses are used in this explanation.
 
-```
-esp
-```
-```
-variables
-```
-```
-bfffe
-bfffe
-bfffe75c
-bfffe
-```
-```
-Parameters
-Return addr
-Old ebp
-```
-```
-00000001
-080483dc
-bfffe
-```
-```
-bfffe
-```
-```
-(d) Line 11: subl $8, %esp
-```
-```
-esp
-```
-```
-ebp
-```
-```
-bfffe
-bfffe
-bfffe75c
-```
-```
-00000001
-Return addr 080483dc
-```
-```
-Parameters
-```
-```
-esp
-```
-```
-(b) Line 30: call foo
-```
-```
-bfffe
-```
-(^00000001) bfffe
-Parameters
-esp
-Line 29: movl $1, (%esp)
-(a) Line 28: subl $4, %esp
-bfffe
-bfffe
-bfffe75c
-bfffe
-Parameters
-Return addr
-Old ebp
-00000001
-080483dc
-bfffe
-esp ebp
-(c) Line 9: push %ebp
-Line 10: movl %esp, %ebp
-(e) Line 16: leave (f) Line 17: ret
-bfffe
-bfffe
-bfffe75c
-00000001
-Return addr 080483dc
-Parameters
-esp^
-bfffe
-(^00000001) bfffe
-Parameters
-Local
 **Figure 1:** Entering and Leavingfoo()
 
 - **Line 28-29:**: These two statements push the value 1 , i.e. the argument to the `foo()`, into the stack. This operation increments `%esp` by four. The stack after these two statements is depicted in Figure 1(a).
 - **Line 30: call foo** : The statement pushes the address of the next instruction that immediately
     follows the `call` statement into the stack (i.e the return address), and then jumps to the code of `foo()`. The current stack is depicted in Figure 1(b).
 
-- **Line 9-10**: The first line of the function `foo()` pushes  `%ebp` into the stack, to save the previous
-    frame pointer. The second line lets `%ebp` point to the current frame. The current stack is depicted in
-    Figure 1(c).
+- **Line 9-10**: The first line of the function `foo()` pushes  `%ebp` into the stack, to save the previous frame pointer. The second line lets `%ebp` point to the current frame. The current stack is depicted in Figure 1(c).
 - **Line 11: subl $8, %esp** : The stack pointer is modified to allocate space (8 bytes) for local
-    variables and the two arguments passed to `printf`. Since there is no local variable in function `foo`,
-    the 8 bytes are for arguments only. See Figure 1(d).
+    variables and the two arguments passed to `printf`. Since there is no local variable in function `foo`, the 8 bytes are for arguments only. See Figure 1(d).
 
-### 4.3 Leavingfoo()
+### 4.3 Leaving `foo()`
 
-Now the control has passed to the function `foo()`. Let us see what happens to the stack when the function
-returns.
+Now the control has passed to the function `foo()`. Let us see what happens to the stack when the function returns.
 
-- **Line 16: leave** : This instruction implicitly performs two instructions (it was a macro in earlier x
-    releases, but was made into an instruction later):
+- **Line 16: leave** : This instruction implicitly performs two instructions (it was a macro in earlier x86 releases, but was made into an instruction later):
 
 ```
 mov %ebp, %esp
 pop %ebp
 ```
 
-The first statement releases the stack space allocated for the function; the second statement recovers
-the previous frame pointer. The current stack is depicted in Figure 1(e).
+The first statement releases the stack space allocated for the function; the second statement recovers the previous frame pointer. The current stack is depicted in Figure 1(e).
 
-- **Line 17: ret** : This instruction simply pops the return address out of the stack, and then jump to the
-    return address. The current stack is depicted in Figure 1(f).
+- **Line 17: ret** : This instruction simply pops the return address out of the stack, and then jump to the return address. The current stack is depicted in Figure 1(f).
 - **Line 32: addl $4, %esp** : Further restore the stack by releasing more memories allocated for
     foo. As you can see that the stack is now in exactly the same state as it was before entering the
     function `foo`(i.e., before line 28).
 
 ## 5 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
