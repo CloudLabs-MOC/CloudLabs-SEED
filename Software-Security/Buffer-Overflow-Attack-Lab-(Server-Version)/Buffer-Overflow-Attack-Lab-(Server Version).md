@@ -9,6 +9,7 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 ## 1 Overview
 
 Buffer overflow is defined as the condition in which a program attempts to write data beyond the boundary of a buffer. This vulnerability can be used by a malicious user to alter the flow control of the program, leading to the execution of malicious code. The objective of this lab is for students to gain practical insights into this type of vulnerability, and learn how to exploit the vulnerability in attacks.
+<Br>
 In this lab, students will be given four different servers, each running a program with a buffer-overflow vulnerability. Their task is to develop a scheme to exploit the vulnerability and finally gain the root privilege on these servers. In addition to the attacks, students will also experiment with several countermeasures against buffer-overflow attacks. Students need to evaluate whether the schemes work or not and explain why. This lab covers the following topics:
 
 - Buffer overflow vulnerability and attack
@@ -26,8 +27,8 @@ In this lab, students will be given four different servers, each running a progr
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Buffer_Overflow_Server/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Buffer_Overflow_Server/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 **Note for instructors.** Instructors can customize this lab by choosing values for `L1, ...,L4`. See Section 2. for details. Depending on the background of students and the time allocated for this lab, instructors can also make the Level-2, Level-3, and Level-4 tasks (or some of them) optional. The Level-1 task is sufficient to cover the basics of the buffer-overflow attacks. Levels 2 to 4 increase the attack difficulties. All the countermeasure tasks are based on the Level-1 task, so skipping the other levels does not affect those tasks.
@@ -63,21 +64,21 @@ Listing 1: The vulnerable programstack.c
 
 int bof(char *str)
 {
-char buffer[BUF_SIZE];
+    char buffer[BUF_SIZE];
 
-/* The following statement has a buffer overflow problem */
-strcpy(buffer, str); P
-return 1;
+    /* The following statement has a buffer overflow problem */
+    strcpy(buffer, str); P
+    return 1;
 }
 
 int main(int argc, char **argv)
 {
-char str[517];
+    char str[517];
 
-int length = fread(str, sizeof(char), 517, stdin);
-bof(str);
-fprintf(stdout, "==== Returned Properly ====\n");
-return 1;
+    int length = fread(str, sizeof(char), 517, stdin);
+    bof(str);
+    fprintf(stdout, "==== Returned Properly ====\n");
+    return 1;
 }
 ```
 The above program has a buffer overflow vulnerability. It reads data from the standard input, and then passes the data to another buffer in the function `bof()`. The original input can have a maximum length of `517` bytes, but the buffer in `bof()` is only `BUF_SIZE` bytes long, which is less than `517`. Because `strcpy()` does not check boundaries, buffer overflow will occur.
@@ -88,19 +89,18 @@ The program will run on a server with the root privilege, and its standard input
 $ gcc -DBUF_SIZE=$(L1) -o stack -z execstack -fno-stack-protector stack.c
 ```
 We will compile the `stack` program into both 32-bit and 64-bit binaries. Our pre-built Ubuntu 20.04 VM is a 64-bit VM, but it still supports 32-bit binaries. All we need to do is to use the `-m32` option in the `gcc` command. For 32-bit compilation, we also use `-static` to generate a statically-linked binary, which is self-contained and not depending on any dynamic library, because the 32-bit dynamic libraries are not installed in our containers.
-
+<Br>
 The compilation commands are already provided in `Makefile`. To compile the code, you need to type make to execute those commands. The variables `L1,L2,L3,` and`L4` are set in `Makefile;` they will be used during the compilation. After the compilation, we need to copy the binary into the` bof-containers` folder, so they can be used by the containers. The following commands conduct compilation and installation.
 ```
 $ make
 $ make install
 ```
-**For instructors (customization).** To make the lab slightly different from the one offered in the past, instructors can change the value for `BUF_SIZE` by requiring students to compile the server code using different `BUF_SIZE` values. In `Makefile`, the `BUF_SIZE` value is set by four variables `L1, ...,L4`.
-Instructors should pick the values for these variables based on the following suggestions:
+**For instructors (customization).** To make the lab slightly different from the one offered in the past, instructors can change the value for `BUF_SIZE` by requiring students to compile the server code using different `BUF_SIZE` values. In `Makefile`, the `BUF_SIZE` value is set by four variables `L1, ...,L4`. Instructors should pick the values for these variables based on the following suggestions:
 
-- L1: pick a number between 100 and 400
-- L2: pick a number between 100 and 200
-- L3: pick a number between 100 and 400
-- L4: pick a number between 20 and 80; we need to keep this number smaller, to make this level more challenging than the previous level.
+- `L1:` pick a number between 100 and 400
+- `L2:` pick a number between 100 and 200
+- `L3:` pick a number between 100 and 400
+- `L4:` pick a number between 20 and 80; we need to keep this number smaller, to make this level more challenging than the previous level.
 
 **The Server Program.** In the `server-code` folder, you can find a program called `server.c`. This is the main entry point of the server. It listens to port `9090`. When it receives a TCP connection, it invokes the `stack` program, and sets the TCP connection as the standard input of the `stack` program. This way, when `stack` reads data from `stdin`, it actually reads from the TCP connection, i.e. the data are provided by the user on the TCP client side. It is not necessary for students to read the source code of `server.c`.
 
@@ -110,19 +110,21 @@ Please download the `Labsetup.zip` file to your VM from the lab’s website, unz
 
 In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file (in our provided SEEDUbuntu 20.04 VM).
 ```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
+$ docker-compose build     # Build the container image
+$ docker-compose up        # Start the container
+$ docker-compose down      # Shut down the container
 
 // Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
+$ dcbuild         # Alias for: docker-compose build
+$ dcup            # Alias for: docker-compose up
+$ dcdown          # Alias for: docker-compose down
 ```
+
 All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for them in the `.bashrc` file.
+
 ```
-$ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id> // Alias for: docker exec -it <id> /bin/bash
+$ dockps         // Alias for: docker ps --format "{{.ID}} {{.Names}}"
+$ docksh <id>    // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
