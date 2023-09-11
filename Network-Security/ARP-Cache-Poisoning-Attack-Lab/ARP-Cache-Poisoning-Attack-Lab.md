@@ -78,6 +78,7 @@ to get a shell on that container. We first need to use the `"docker ps"` command
 the container, and then use"docker exec"to start a shell on that container. We have created aliases for
 them in the `.bashrc` file.
 
+```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
 
@@ -89,11 +90,13 @@ b1004832e275 hostA-10.9.0.5
 
 $ docksh 96
 root@9652715c8e0a:/#
+```
 
-
+```
 // Note: If a docker command requires a container ID, you do not need to
 // type the entire ID string. Typing the first few characters will
 // be sufficient, as long as they are unique among all the containers.
+```
 
 If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
