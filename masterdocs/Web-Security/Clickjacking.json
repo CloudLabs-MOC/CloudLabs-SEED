@@ -1,0 +1,13 @@
+[
+    {
+      "Name": "SEED Security",
+      "Language": "English",
+      "BaseURL": "https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main",
+      "Files": [
+        {
+          "RawFilePath": "https://raw.githubusercontent.com/CloudLabs-MOC/CloudLabs-SEED/main/Web-Security/Clickjacking-Attack-Lab-(Cupcakes)/Clickjacking.md",
+          "Order": 1
+        }
+      ]
+    }
+  ]
