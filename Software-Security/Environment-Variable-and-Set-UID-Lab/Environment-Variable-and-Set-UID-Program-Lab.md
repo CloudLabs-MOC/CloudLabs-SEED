@@ -3,8 +3,7 @@
 ```
 Copyright © 2006 - 2016 by Wenliang Du.
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
