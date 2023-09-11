@@ -163,12 +163,10 @@ The code above includes two copies of shellcode, one is 32-bit and the other is 
 
 ## 4 Task 2: Understanding the Vulnerable Program
 
-The vulnerable program used in this lab is calledstack.c, which is in thecodefolder. This program has
-a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. The
-code listed below has some non-essential information removed, so it is slightly different from what you get
-from the lab setup file.
+The vulnerable program used in this lab is called `stack.c`, which is in the `code` folder. This program has a buffer-overflow vulnerability, and your job is to exploit this vulnerability and gain the root privilege. The code listed below has some non-essential information removed, so it is slightly different from what you get from the lab setup file.
 
-Listing 2: The vulnerable program (stack.c)
+**Listing 2:** The vulnerable program (`stack.c`)
+```
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -182,63 +180,44 @@ Listing 2: The vulnerable program (stack.c)
 
 int bof(char *str)
 {
-char buffer[BUF_SIZE];
+    char buffer[BUF_SIZE];
 
-```
-/* The following statement has a buffer overflow problem */
-strcpy(buffer, str);
-```
-return 1;
+    /* The following statement has a buffer overflow problem */
+    strcpy(buffer, str);
+
+    return 1;
 }
 
 int main(int argc, char **argv)
 {
-char str[517];
-FILE *badfile;
+    char str[517];
+    FILE *badfile;
 
-badfile = fopen("badfile", "r");
-fread(str, sizeof(char), 517, badfile);
-bof(str);
-printf("Returned Properly\n");
-return 1;
+    badfile = fopen("badfile", "r");
+    fread(str, sizeof(char), 517, badfile);
+    bof(str);
+    printf("Returned Properly\n");
+    return 1;
 }
+```
 
-The above program has a buffer overflow vulnerability. It first reads an input from a file calledbadfile,
-and then passes this input to another buffer in the functionbof(). The original input can have a maximum
-length of 517 bytes, but the buffer inbof()is onlyBUFSIZEbytes long, which is less than 517. Be-
-causestrcpy()does not check boundaries, buffer overflow will occur. Since this program is a root-owned
-Set-UIDprogram, if a normal user can exploit this buffer overflow vulnerability, the user might be able
-to get a root shell. It should be noted that the program gets its input from a file calledbadfile. This
-file is under users’ control. Now, our objective is to create the contents forbadfile, such that when the
-vulnerable program copies the contents into its buffer, a root shell can be spawned.
+The above program has a buffer overflow vulnerability. It first reads an input from a file called `badfile`, and then passes this input to another buffer in the function `bof()`. The original input can have a maximum length of `517` bytes, but the buffer in `bof()` is only `BUFSIZE` bytes long, which is less than `517`. Because `strcpy()` does not check boundaries, buffer overflow will occur. Since this program is a root-owned `Set-UID` program, if a normal user can exploit this buffer overflow vulnerability, the user might be able to get a root shell. It should be noted that the program gets its input from a file called `badfile`. This file is under users’ control. Now, our objective is to create the contents for `badfile`, such that when the vulnerable program copies the contents into its buffer, a root shell can be spawned.
 
-
-Compilation. To compile the above vulnerable program, do not forget to turn off the StackGuard and the
-non-executable stack protections using the-fno-stack-protectorand"-z execstack"options.
-After the compilation, we need to make the program a root-ownedSet-UIDprogram. We can achieve this
-by first change the ownership of the program toroot(Line¿), and then change the permission to 4755 to
-enable theSet-UIDbit (Line¡). It should be noted that changing ownership must be done before turning
-on theSet-UIDbit, because ownership change will cause theSet-UIDbit to be turned off.
-
+**Compilation.** To compile the above vulnerable program, do not forget to turn off the StackGuard and the non-executable stack protections using the `-fno-stack-protector` and "`-z execstack`" options. After the compilation, we need to make the program a root-owned `Set-UID` program. We can achieve this by first change the ownership of the program to `root`(Line ➀), and then change the permission to `4755` to enable the `Set-UID` bit (Line ➁). It should be noted that changing ownership must be done before turning on the `Set-UID` bit, because ownership change will cause the `Set-UID` bit to be turned off.
+```
 $ gcc -DBUF_SIZE=100 -m32 -o stack -z execstack -fno-stack-protector stack.c
-$ sudo chown root stack ¿
-$ sudo chmod 4755 stack ¡
+$ sudo chown root stack    ➀
+$ sudo chmod 4755 stack    ➁
+```
+The compilation and setup commands are already included in `Makefile`, so we just need to typemake
+to execute those commands. The variables `L1, ...,L4` are set inMakefile; they will be used during the compilation. If the instructor has chosen a different set of values for these variables, you need to change them in `Makefile`.
 
-The compilation and setup commands are already included inMakefile, so we just need to typemake
-to execute those commands. The variablesL1, ...,L4are set inMakefile; they will be used during the
-compilation. If the instructor has chosen a different set of values for these variables, you need to change
-them inMakefile.
+**For instructors (customization).** To make the lab slightly different from the one offered in the past, instructors can change the value for `BUF_SIZE`by requiring students to compile the server code using different `BUF_SIZE` values. In `Makefile`, the `BUF_SIZE` value is set by four variables `L1, ...,L4`. Instructors should pick the values for these variables based on the following suggestions:
 
-For instructors (customization). To make the lab slightly different from the one offered in the past,
-instructors can change the value forBUFSIZEby requiring students to compile the server code using
-differentBUFSIZEvalues. InMakefile, theBUFSIZEvalue is set by four variablesL1, ...,L4.
-Instructors should pick the values for these variables based on the following suggestions:
-
-- L1: pick a number between 100 and 400
-- L2: pick a number between 100 and 200
-- L3: pick a number between 100 and 400
-- L4: we need to keep this number smaller, to make this level more challenging than the previous level.
-    Since there are not many choices, we will fix this number at 10.
+- `L1:` pick a number between 100 and 400
+- `L2:` pick a number between 100 and 200
+- `L3:` pick a number between 100 and 400
+- `L4:` we need to keep this number smaller, to make this level more challenging than the previous level. Since there are not many choices, we will fix this number at 10.
 
 ## 5 Task 3: Launching Attack on 32-bit Program (Level 1)
 
