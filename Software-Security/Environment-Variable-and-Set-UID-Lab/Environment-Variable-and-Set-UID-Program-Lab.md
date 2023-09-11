@@ -172,40 +172,27 @@ These environment variables are set in the user’s shell process. Now, run the 
 
 ### 2.6 Task 6: The PATH Environment Variable andSet-UIDPrograms
 
-Because of the shell program invoked, callingsystem()within aSet-UIDprogram is quite dangerous.
-This is because the actual behavior of the shell program can be affected by environment variables, such as
-PATH; these environment variables are provided by the user, who may be malicious. By changing these
-variables, malicious users can control the behavior of theSet-UIDprogram. InBash, you can change
-thePATHenvironment variable in the following way (this example adds the directory/home/seedto the
-beginning of thePATHenvironment variable):
-
+Because of the shell program invoked, calling `system()` within a `Set-UID` program is quite dangerous. This is because the actual behavior of the shell program can be affected by environment variables, such as `PATH`; these environment variables are provided by the user, who may be malicious. By changing these variables, malicious users can control the behavior of the `Set-UID` program. In `Bash`, you can change the `PATH` environment variable in the following way (this example adds the directory `/home/seed` to the
+beginning of the `PATH` environment variable):
+```
 $ export PATH=/home/seed:$PATH
-
-TheSet-UIDprogram below is supposed to execute the/bin/lscommand; however, the program-
-mer only uses the relative path for thelscommand, rather than the absolute path:
-
+```
+The `Set-UID` program below is supposed to execute the `/bin/ls` command; however, the programmer only uses the relative path for the `ls` command, rather than the absolute path:
+```
 int main()
 {
-system("ls");
-return 0;
+  system("ls");
+  return 0;
 }
-
-Please compile the above program, change its owner toroot, and make it aSet-UIDprogram. Can
-you get thisSet-UIDprogram to run your own malicious code, instead of/bin/ls? If you can, is your
+```
+Please compile the above program, change its owner toroot, and make it a `Set-UID` program. Can you get this `Set-UID` program to run your own malicious code, instead of `/bin/ls`? If you can, is your
 malicious code running with the root privilege? Describe and explain your observations.
 
-Note: Thesystem(cmd)function executes the/bin/shprogram first, and then asks this shell pro-
-gram to run thecmdcommand. In Ubuntu 20.04 (and several versions before),/bin/shis actually a
-symbolic link pointing to/bin/dash. This shell program has a countermeasure that prevents itself from
-being executed in aSet-UIDprocess. Basically, ifdashdetects that it is executed in aSet-UIDprocess,
-it immediately changes the effective user ID to the process’s real user ID, essentially dropping the privilege.
-Since our victim program is aSet-UIDprogram, the countermeasure in/bin/dashcan prevent our
-attack. To see how our attack works without such a countermeasure, we will link/bin/shto another shell
-that does not have such a countermeasure. We have installed a shell program calledzshin our Ubuntu
-20.04 VM. We use the following commands to link/bin/shto/bin/zsh:
-
+Note: The `system(cmd)` function executes the `/bin/sh` program first, and then asks this shell program to run the `cmd` command. In Ubuntu 20.04 (and several versions before), `/bin/sh` is actually a symbolic link pointing to `/bin/dash`. This shell program has a countermeasure that prevents itself from being executed in a `Set-UID` process. Basically, if `dash` detects that it is executed in a `Set-UID` process, it immediately changes the effective user ID to the process’s real user ID, essentially dropping the privilege.
+Since our victim program is a `Set-UID` program, the countermeasure `in/bin/dash` can prevent our attack. To see how our attack works without such a countermeasure, we will link `/bin/sh` to another shell that does not have such a countermeasure. We have installed a shell program called `zsh` in our Ubuntu 20.04 VM. We use the following commands to link `/bin/sh` to `/bin/zsh`:
+```
 $ sudo ln -sf /bin/zsh /bin/sh
-
+```
 
 ### 2.7 Task 7: TheLDPRELOADEnvironment Variable andSet-UIDPrograms
 
