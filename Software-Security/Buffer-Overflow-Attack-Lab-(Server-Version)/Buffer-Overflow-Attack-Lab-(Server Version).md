@@ -302,87 +302,64 @@ In our buffer-overflow attacks, we need to store at least one address in the pay
 
 ## 7 Task 5: Level-4 Attack
 
-The server in this task is similar to that in Level 3, except that the buffer size is much smaller. From the
-following printout, you can see the distance between the frame pointer and the buffer’s address is only about
-32 bytes (the actual distance in the lab may be different). In Level 3, the distance is much larger. Your goal
-is the same: get the root shell on this server. The server still takes in 517 byte of input data from the user.
+The server in this task is similar to that in Level 3, except that the buffer size is much smaller. From the following printout, you can see the distance between the frame pointer and the buffer’s address is only about 32 bytes (the actual distance in the lab may be different). In Level 3, the distance is much larger. Your goal is the same: get the root shell on this server. The server still takes in 517 byte of input data from the user.
 ```
 server-4-10.9.0.8 | Got a connection from 10.9.0.1
 server-4-10.9.0.8 | Starting stack
 server-4-10.9.0.8 | Input size: 6
-server-4-10.9.0.8 | Frame Pointer (rbp) inside bof(): 0x00007fffffffe1b
-server-4-10.9.0.8 | Buffer’s address inside bof(): 0x00007fffffffe
+server-4-10.9.0.8 | Frame Pointer (rbp) inside bof():         0x00007fffffffe1b
+server-4-10.9.0.8 | Buffer’s address inside bof():            0x00007fffffffe
 server-4-10.9.0.8 | ==== Returned Properly ====
 ```
 ## 8 Task 6: Experimenting with the Address Randomization
 
-At the beginning of this lab, we turned off one of the countermeasures, the Address Space Layout Random-
-ization (ASLR). In this task, we will turn it back on, and see how it affects the attack. You can run the
-following command on your VM to enable ASLR. This change is global, and it will affect all the containers
-running inside the VM.
+At the beginning of this lab, we turned off one of the countermeasures, the Address Space Layout Randomization (ASLR). In this task, we will turn it back on, and see how it affects the attack. You can run the following command on your VM to enable ASLR. This change is global, and it will affect all the containers running inside the VM.
 ```
 $ sudo /sbin/sysctl -w kernel.randomize_va_space=2
 ```
-Please send a hello message to the Level 1 and Level 3 servers, and do it multiple times. In your report,
-please report your observation, and explain why ASLR makes the buffer-overflow attack more difficult.
-Defeating the 32-bit randomization. It was reported that on 32-bit Linux machines, only 19 bites can be
-used for address randomization. That is not enough, and we can easily hit the target if we run the attack for
-sufficient number of times. For 64-bit machines, the number of bits used for randomization is significantly
-increased.
-In this task, we will give it a try on the 32-bit Level 1 server. We use the brute-force approach to attack
-the server repeatedly, hoping that the address we put in our payload can eventually be correct. We will use
-the payload from the Level-1 attack. You can use the following shell script to run the vulnerable program in
-an infinite loop. If you get a reverse shell, the script will stop; otherwise, it will keep running. If you are not
-so unlucky, you should be able to get a reverse shell within 10 minutes.
+Please send a `hello` message to the Level 1 and Level 3 servers, and do it multiple times. In your report, please report your observation, and explain why ASLR makes the buffer-overflow attack more difficult.
+
+**Defeating the 32-bit randomization.** It was reported that on 32-bit Linux machines, only 19 bites can be used for address randomization. That is not enough, and we can easily hit the target if we run the attack for sufficient number of times. For 64-bit machines, the number of bits used for randomization is significantly increased.
+<Br>
+In this task, we will give it a try on the 32-bit Level 1 server. We use the brute-force approach to attack the server repeatedly, hoping that the address we put in our payload can eventually be correct. We will use the payload from the Level-1 attack. You can use the following shell script to run the vulnerable program in an infinite loop. If you get a reverse shell, the script will stop; otherwise, it will keep running. If you are not so unlucky, you should be able to get a reverse shell within 10 minutes.
 ```
 #!/bin/bash
 
-SECONDS=
-value=
+SECONDS=0
+value=0
 while true; do
 
-
-value=$(( $value + 1 ))
-duration=$SECONDS
-min=$(($duration / 60))
-sec=$(($duration % 60))
-echo "$min minutes and $sec seconds elapsed."
-echo "The program has been running $value times so far."
-cat badfile | nc 10.9.0.5 9090
+    value=$(( $value + 1 ))
+    duration=$SECONDS
+    min=$(($duration / 60))
+    sec=$(($duration % 60))
+    echo "$min minutes and $sec seconds elapsed."
+    echo "The program has been running $value times so far."
+    cat badfile | nc 10.9.0.5 9090
 done
 ```
+
 ## 9 Tasks 7: Experimenting with Other Countermeasures
 
 ### 9.1 Task 7.a: Turn on the StackGuard Protection
 
-Many compiler, such as `gcc`, implements a security mechanism called `StackGuard` to prevent buffer over-
-flows. In the presence of this protection, buffer overflow attacks will not work. The provided vulnerable
-programs were compiled without enabling the StackGuard protection. In this task, we will turn it on and see
-what will happen.
+Many compiler, such as `gcc`, implements a security mechanism called `StackGuard` to prevent buffer overflows. In the presence of this protection, buffer overflow attacks will not work. The provided vulnerable programs were compiled without enabling the StackGuard protection. In this task, we will turn it on and see what will happen.
+<Br>
 Please go to the `server-code` folder, remove the `-fno-stack-protector` flag from the `gcc`
-flag, and compile `stack.c`. We will only use `stack-L1`, but instead of running it in a container, we will
-directly run it from the command line. Let’s create a file that can cause buffer overflow, and then feed the
-content of the file `stack-L1`. Please describe and explain your observations.
+flag, and compile `stack.c`. We will only use `stack-L1`, but instead of running it in a container, we will directly run it from the command line. Let’s create a file that can cause buffer overflow, and then feed the content of the file `stack-L1`. Please describe and explain your observations.
 ```
 $ ./stack-L1 < badfile
 ```
+
 ### 9.2 Task 7.b: Turn on the Non-executable Stack Protection
 
 Operating systems used to allow executable stacks, but this has now changed: In Ubuntu OS, the binary
-images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e.,
-they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide
-whether to make the stack of this running program executable or non-executable. This marking is done
-automatically by the `gcc`, which by default makes stack non-executable. We can specifically make it non-
-executable using the "`-z noexecstack`" flag in the compilation. In our previous tasks, we used "`-z execstack`" to make stacks executable.
-In this task, we will make the stack non-executable. We will do this experiment in the shellcode
-folder. The `call_shellcode` program puts a copy of shellcode on the stack, and then executes the code
-from the stack. Please recompile `call_shellcode.c` into `a32.out` and `a64.out`, without the"`-z execstack`" option. Run them, describe and explain your observations.
+images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the `gcc`, which by default makes stack non-executable. We can specifically make it non-executable using the "`-z noexecstack`" flag in the compilation. In our previous tasks, we used "`-z execstack`" to make stacks executable.
+<Br>
+In this task, we will make the stack non-executable. We will do this experiment in the `shellcode`
+folder. The `call_shellcode` program puts a copy of shellcode on the stack, and then executes the code from the stack. Please recompile `call_shellcode.c` into `a32.out` and `a64.out`, without the"`-z execstack`" option. Run them, describe and explain your observations.
 
-**Defeating the non-executable stack countermeasure.** It should be noted that non-executable stack only
-makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because
-there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. The return-to-
-libc attack is an example. We have designed a separate lab for that attack. If you are interested, please see
-our Return-to-Libc Attack Lab for details.
+**Defeating the non-executable stack countermeasure.** It should be noted that non-executable stack only makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. The *return-to-libc* attack is an example. We have designed a separate lab for that attack. If you are interested, please see our Return-to-Libc Attack Lab for details.
 
 
 ## 10 Guidelines on Reverse Shell
