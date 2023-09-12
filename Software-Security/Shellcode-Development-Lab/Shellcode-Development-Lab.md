@@ -217,66 +217,49 @@ env[0] = address to the "aaa=1234" string
 ```
 ## 3 Task 2: Using Code Segment
 
-As we can see from the shellcode in Task 1, the way how it solves the data address problem is that it
-dynamically constructs all the necessary data structures on the stack, so their addresses can be obtained
-from the stack pointeresp.
-There is another approach to solve the same problem, i.e., getting the address of all the necessary data
-structures. In this approach, data are stored in the code region, and its address is obtained via the function
-call mechanism. Let’s look at the following code.
+As we can see from the shellcode in Task 1, the way how it solves the data address problem is that it dynamically constructs all the necessary data structures on the stack, so their addresses can be obtained from the stack pointer `esp`.
+<Br>
+&emsp; There is another approach to solve the same problem, i.e., getting the address of all the necessary data structures. In this approach, data are stored in the code region, and its address is obtained via the function call mechanism. Let’s look at the following code.
 
-Listing 3:mysh2.s
+**Listing 3:** mysh2.s
+```
 section .text
-global _start
-_start:
-BITS 32
-jmp short two
-one:
-pop ebx
-xor eax, eax
-mov [ebx+7], al ; save 0x00 (1 byte) to memory at address ebx+
-mov [ebx+8], ebx ; save ebx (4 bytes) to memory at address ebx+
+    global _start
+        _start:
+            BITS 32
+            jmp short two
+        one:
+            pop ebx                                    ➊
+            xor eax, eax
+            mov [ebx+7], al ; save 0x00 (1 byte) to memory at address ebx+7
+            mov [ebx+8], ebx ; save ebx (4 bytes) to memory at address ebx+8
 
-
+            mov [ebx+12], eax ; save eax (4 bytes) to memory at address ebx+12
+            lea ecx, [ebx+8] ; let ecx = ebx + 8
+            xor edx, edx
+            mov al, 0x0b
+            int 0x80
+        two:
+            call one
+            db ’/bin/sh*AAAABBBB’ ;                    ➋
 ```
-mov [ebx+12], eax ; save eax (4 bytes) to memory at address ebx+
-lea ecx, [ebx+8] ; let ecx = ebx + 8
-xor edx, edx
-mov al, 0x0b
-int 0x
-two:
-call one
-db ’/bin/sh*AAAABBBB’ ; À
+&emsp; The code above first jumps to the instruction at location `two`, which does another jump (to location `one`), but this time, it uses the `call` instruction. This instruction is for function call, i.e., before it jumps to the target location, it keeps a record of the address of the next instruction as the return address, so when the function returns, it can return to the instruction right after the `call` instruction.
+<Br>
+&emsp; In this example, the “instruction” right after the `call` instruction (Line ➋) is not actually an instruction; it stores a string. However, this does not matter, the `call` instruction will push its address (i.e., the string’s address) into the stack, in the return address field of the function frame. When we get into the function, i.e.,
+after jumping to location `one`, the top of the stack is where the return address is stored. Therefore, the `pop ebx` instruction in Line ➊ actually get the address of the string on Line ➋, and save it to the `ebx` register. That is how the address of the string is obtained.
+<Br>
+&emsp; The string at Line ➋ is not a completed string; it is just a place holder. The program needs to construct the needed data structure inside this place holder. Since the address of the string is already obtained, the address of all the data structures constructed inside this place holder can be easily derived.
+<Br>
+&emsp; If we want to get an executable, we need to use the `--omagic` option when running the linker program (`ld`), so the code segment is writable. By default, the code segment is not writable. When this program runs, it needs to modify the data stored in the code region; if the code segment is not writable, the program will crash. This is not a problem for actual attacks, because in attacks, the code is typically injected into a writable data segment (e.g. stack or heap). Usually we do not run shellcode as a standalone program.
 ```
-The code above first jumps to the instruction at locationtwo, which does another jump (to location
-one), but this time, it uses thecallinstruction. This instruction is for function call, i.e., before it jumps to
-the target location, it keeps a record of the address of the next instruction as the return address, so when the
-function returns, it can return to the instruction right after thecallinstruction.
-In this example, the “instruction” right after thecallinstruction (LineÀ) is not actually an instruction;
-it stores a string. However, this does not matter, thecallinstruction will push its address (i.e., the string’s
-address) into the stack, in the return address field of the function frame. When we get into the function, i.e.,
-after jumping to locationone, the top of the stack is where the return address is stored. Therefore, thepop
-ebxinstruction in Line actually get the address of the string on LineÀ, and save it to theebxregister.
-That is how the address of the string is obtained.
-The string at LineÀis not a completed string; it is just a place holder. The program needs to construct
-the needed data structure inside this place holder. Since the address of the string is already obtained, the
-address of all the data structures constructed inside this place holder can be easily derived.
-If we want to get an executable, we need to use the--omagicoption when running the linker program
-(ld), so the code segment is writable. By default, the code segment is not writable. When this program
-runs, it needs to modify the data stored in the code region; if the code segment is not writable, the program
-will crash. This is not a problem for actual attacks, because in attacks, the code is typically injected into a
-writable data segment (e.g. stack or heap). Usually we do not run shellcode as a standalone program.
-
 $ nasm -f elf32 mysh2.s -o mysh2.o
-$ ld --omagic -m elf_i386 mysh2.o -o mysh
-
-Tasks. You need to do the followings: (1) Please provide a detailed explanation for each line of the code in
-mysh2.s, starting from the line labeledone. Please explain why this code would successfully execute the
-/bin/shprogram, how theargv[]array is constructed, etc. (2) Please use the technique frommysh2.s
-to implement a new shellcode, so it executes/usr/bin/env, and it prints out the following environment
-variables:
-
-a=
-b=
+$ ld --omagic -m elf_i386 mysh2.o -o mysh2
+```
+**Tasks.** You need to do the followings: (1) Please provide a detailed explanation for each line of the code in `mysh2.s`, starting from the line labeled `one`. Please explain why this code would successfully execute the `/bin/sh` program, how the `argv[]` array is constructed, etc. (2) Please use the technique from `mysh2.s` to implement a new shellcode, so it executes `/usr/bin/env`, and it prints out the following environment variables:
+```
+a=11
+b=22
+```
 
 ## 4 Task 3: Writing 64-bit Shellcode
 
