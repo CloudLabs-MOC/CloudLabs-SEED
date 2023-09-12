@@ -153,47 +153,29 @@ shellcode= (
 ```
 ### 2.2 Task 1.b. Eliminating Zeros from the Code
 
-Shellcode is widely used in buffer-overflow attacks. In many cases, the vulnerabilities are caused by string
-copy, such as thestrcpy()function. For these string copy functions, zero is considered as the end of
-the string. Therefore, if we have a zero in the middle of a shellcode, string copy will not be able to copy
-anything after the zero from this shellcode to the target buffer, so the attack will not be able to succeed.
-Although not all the vulnerabilities have issues with zeros, it becomes a requirement for shellcode not
-to have any zero in the machine code; otherwise, the application of a shellcode will be limited.
-There are many techniques that can get rid of zeros from the shellcode. The codemysh.sneeds to use
-zeros in four different places. Please identify all of those places, and explain how the code uses zeros but
-without introducing zero in the code. Some hints are given in the following:
+Shellcode is widely used in buffer-overflow attacks. In many cases, the vulnerabilities are caused by string copy, such as the `strcpy()` function. For these string copy functions, zero is considered as the end of the string. Therefore, if we have a zero in the middle of a shellcode, string copy will not be able to copy anything after the zero from this shellcode to the target buffer, so the attack will not be able to succeed.
+<Br>
+&emsp; Although not all the vulnerabilities have issues with zeros, it becomes a requirement for shellcode not to have any zero in the machine code; otherwise, the application of a shellcode will be limited.
+<Br>
+&emsp; There are many techniques that can get rid of zeros from the shellcode. The code `mysh.s` needs to use zeros in four different places. Please identify all of those places, and explain how the code uses zeros but without introducing zero in the code. Some hints are given in the following:
 
-- If we want to assign zero toeax, we can use"mov eax, 0", but doing so, we will get a zero in
-    the machine code. A typical way to solve this problem is to use"xor eax, eax". Please explain
-    why this would work.
-- If we want to store0x00000099toeax. We cannot just usemov eax, 0x99, because the second
-    operand is actually0x00000099, which contains three zeros. To solve this problem, we can first set
-    eaxto zero, and then assign a one-byte number0x99to thealregister, which is the least significant
-    8 bits of theeaxregister.
+- If we want to assign zero to `eax`, we can use "`mov eax, 0`", but doing so, we will get a zero in the machine code. A typical way to solve this problem is to use "`xor eax, eax`". Please explain why this would work.
 
+- If we want to store `0x00000099` to `eax`. We cannot just use `mov eax`, `0x99`, because the second operand is actually `0x00000099`, which contains three zeros. To solve this problem, we can first set `eax` to zero, and then assign a one-byte number `0x99` to the `al` register, which is the least significant 8 bits of the `eax` register.
 
-- Another way is to use shift. In the following code, first0x237A7978is assigned toebx. The ASCII
-    values forx,y,z, and#are0x78,0x79,0x7a,0x23, respectively. Because most Intel CPUs use
-    the small-Endian byte order, the least significant byte is the one stored at the lower address (i.e., the
-    characterx), so the number presented byxyz#is actually0x237A7978. You can see this when you
-    dissemble the code usingobjdump.
-    After assigning the number toebx, we shift this register to the left for 8 bits, so the most significant
-    byte0x23will be pushed out and discarded. We then shift the register to the right for 8 bits, so the
-    most significant byte will be filled with0x00. After that,ebxwill contain0x007A7978, which is
-    equivalent to"xyz\0", i.e., the last byte of this string becomes zero.
+- Another way is to use shift. In the following code, first `0x237A7978` is assigned to `ebx`. The ASCII values for `x,y,z,` and `#` are `0x78,0x79,0x7a,0x23`, respectively. Because most Intel CPUs use the small-Endian byte order, the least significant byte is the one stored at the lower address (i.e., the character `x`), so the number presented by `xyz#` is actually `0x237A7978`. You can see this when you dissemble the code using `objdump`.
+    <Br>
+    After assigning the number to `ebx`, we shift this register to the left for 8 bits, so the most significant byte `0x23` will be pushed out and discarded. We then shift the register to the right for 8 bits, so the most significant byte will be filled with `0x00`. After that,ebxwill contain `0x007A7978`, which is equivalent to "`xyz\0`", i.e., the last byte of this string becomes zero.
+```
     mov ebx, "xyz#"
     shl ebx, 8
     shr ebx, 8
-
-Task. In Line of the shellcodemysh.s, we push"//sh"into the stack. Actually, we just want to push
-"/sh"into the stack, but thepushinstruction has to push a 32-bit number. Therefore, we add a redundant
-/at the beginning; for the OS, this is equivalent to just one single/.
-For this task, we will use the shellcode to execute/bin/bash, which has 9 bytes in the command
-string (10 bytes if counting the zero at the end). Typically, to push this string to the stack, we need to make
-the length multiple of 4, so we would convert the string to/bin////bash.
-However, for this task, you are not allowed to add any redundant/to the string, i.e., the length of the
-command must be 9 bytes (/bin/bash). Please demonstrate how you can do that. In addition to showing
-that you can get a bash shell, you also need to show that there is no zero in your code.
+```
+**Task.** In Line ➊ of the shellcode `mysh.s`, we push "`//sh`" into the stack. Actually, we just want to push "`/sh`" into the stack, but the `push` instruction has to push a 32-bit number. Therefore, we add a redundant / at the beginning; for the OS, this is equivalent to just one single/.
+<Br>
+&emsp; For this task, we will use the shellcode to execute `/bin/bash`, which has 9 bytes in the command string (10 bytes if counting the zero at the end). Typically, to push this string to the stack, we need to make the length multiple of 4, so we would convert the string to `/bin////bash`.
+<Br>
+&emsp; However, for this task, you are not allowed to add any redundant/to the string, i.e., the length of the command must be 9 bytes (`/bin/bash`). Please demonstrate how you can do that. In addition to showing that you can get a bash shell, you also need to show that there is no zero in your code.
 
 ### 2.3 Task 1.c. Providing Arguments for System Calls
 
