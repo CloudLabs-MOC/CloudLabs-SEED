@@ -263,44 +263,34 @@ b=22
 
 ## 4 Task 3: Writing 64-bit Shellcode
 
-Once we know how to write the 32-bit shellcode, writing 64-bit shellcode will not be difficult, because they
-are quite similar; the differences are mainly in the registers. For the x64 architecture, invoking system call
-is done through thesyscallinstruction, and the first three arguments for the system call are stored in the
-rdx,rsi,rdiregisters, respectively. The following is an example of 64-bit shellcode:
+Once we know how to write the 32-bit shellcode, writing 64-bit shellcode will not be difficult, because they are quite similar; the differences are mainly in the registers. For the x64 architecture, invoking system call is done through the `syscall` instruction, and the first three arguments for the system call are stored in the `rdx, rsi, rdi` registers, respectively. The following is an example of 64-bit shellcode:
 
 
+**Listing 4:** A 64-bit shellcode `mysh64.s`
 ```
-Listing 4: A 64-bit shellcodemysh64.s
 section .text
 global _start
-_start:
-; The following code calls execve("/bin/sh", ...)
-xor rdx, rdx ; 3rd argument (stored in rdx)
-push rdx
-mov rax,’/bin//sh’
-push rax
-mov rdi, rsp ; 1st argument (stored in rdi)
-push rdx
-push rdi
-mov rsi, rsp ; 2nd argument (stored in rsi)
-xor rax, rax
-mov al, 0x3b ; execve()
-syscall
-```
+    _start:
+        ; The following code calls execve("/bin/sh", ...)
+        xor rdx, rdx ;         3rd argument (stored in rdx)
+        push rdx
+        mov rax,’/bin//sh’
+        push rax
+        mov rdi, rsp ;         1st argument (stored in rdi)
+        push rdx
+        push rdi
+        mov rsi, rsp ;         2nd argument (stored in rsi)
+        xor rax, rax
+        mov al, 0x3b ; execve()
+        syscall
 ```
 We can use the following commands to compile the assemble code into 64-bit binary code:
 ```
 $ nasm -f elf64 mysh_64.s -o mysh_64.o
-$ ld mysh_64.o -o mysh_
-
-Task. Repeat Task 1.b for this 64-bit shellcode. Namely, instead of executing"/bin/sh", we need to
-execute"/bin/bash", and we are not allowed to use any redundant/in the command string, i.e., the
-length of the command must be 9 bytes (/bin/bash). Please demonstrate how you can do that. In addition
-to showing that you can get a bash shell, you also need to show that there is no zero in your code.
+$ ld mysh_64.o -o mysh_64
+```
+**Task.** Repeat Task 1.b for this 64-bit shellcode. Namely, instead of executing "`/bin/sh`", we need to execute "`/bin/bash`", and we are not allowed to use any redundant/in the command string, i.e., the length of the command must be 9 bytes (`/bin/bash`). Please demonstrate how you can do that. In addition to showing that you can get a bash shell, you also need to show that there is no zero in your code.
 
 ## 5 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
