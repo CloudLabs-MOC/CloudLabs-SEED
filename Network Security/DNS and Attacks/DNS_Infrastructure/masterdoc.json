@@ -1,0 +1,13 @@
+[
+   {
+     "Name": "SEED Security",
+     "Language": "English",
+     "BaseURL": "https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main",
+     "Files": [
+       {
+         "RawFilePath": "https://raw.githubusercontent.com/CloudLabs-MOC/CloudLabs-SEED/updated-labguide/Network%20Security/DNS%20and%20Attacks/DNS_Infrastructure/DNS_Infrastructure.md",
+         "Order": 1
+       }
+     ]
+   }
+ ]
