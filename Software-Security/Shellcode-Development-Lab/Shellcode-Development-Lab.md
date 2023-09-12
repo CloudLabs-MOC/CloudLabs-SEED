@@ -43,7 +43,7 @@ In this task, we provide a basic x86 shellcode to show students how to write a s
 <Br>
 &emsp; Brief explanation of the code is given in the comment, but if students want to see a full explanation, they can find much more detailed explanation of the code in the SEED book (Chapter 4.7) and also in the SEED lecture (Lecture 30 of the Computer Security course).
 
-**Listing 1:** A basic shellcode example `mysh.s`
+&emsp; &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp; **Listing 1:** A basic shellcode example `mysh.s`
 ```
 section .text
     global _start
@@ -115,7 +115,7 @@ d231c0b00bcd8000000000000000000000000000
 **Using the shellcode in attacking code.** In actual attacks, we need to include the shellcode in our attacking code, such as a Python or C program. We usually store the machine code in an array, but converting the machine code printed above to the array assignment in Python and C programs is quite tedious if done manually, especially if we need to perform this process many times in the lab. We wrote the following Python code to help this process. Just copy whatever you get from the `xxd` command (only the shellcode
 part) and paste it to the following code, between the lines marked by """. The code can be downloaded from the lab’s website.
 
-**Listing 2:** convert.py
+&emsp; &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp; &emsp;  &emsp;  &emsp;  &emsp; **Listing 2:** convert.py
 ```
 #!/usr/bin/env python3
 
@@ -221,7 +221,7 @@ As we can see from the shellcode in Task 1, the way how it solves the data addre
 <Br>
 &emsp; There is another approach to solve the same problem, i.e., getting the address of all the necessary data structures. In this approach, data are stored in the code region, and its address is obtained via the function call mechanism. Let’s look at the following code.
 
-**Listing 3:** mysh2.s
+&emsp; &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;   &emsp;  &emsp;  &emsp; **Listing 3:** mysh2.s
 ```
 section .text
     global _start
@@ -266,7 +266,7 @@ b=22
 Once we know how to write the 32-bit shellcode, writing 64-bit shellcode will not be difficult, because they are quite similar; the differences are mainly in the registers. For the x64 architecture, invoking system call is done through the `syscall` instruction, and the first three arguments for the system call are stored in the `rdx, rsi, rdi` registers, respectively. The following is an example of 64-bit shellcode:
 
 
-**Listing 4:** A 64-bit shellcode `mysh64.s`
+&emsp; &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp; **Listing 4:** A 64-bit shellcode `mysh64.s`
 ```
 section .text
 global _start
