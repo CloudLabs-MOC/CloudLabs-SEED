@@ -194,39 +194,27 @@ argv[0] = "/bin/sh"
 ```
 ### 2.4 Task 1.d. Providing Environment Variables for execve()
 
-The third parameter for theexecve()system call is a pointer to the environment variable array, and it
-allows us to pass environment variables to the program. In our sample program (LineÕ), we pass a null
-
-
-pointer toexecve(), so no environment variable is passed to the program. In this task, we will pass some
+The third parameter for the `execve()` system call is a pointer to the environment variable array, and it allows us to pass environment variables to the program. In our sample program (Line ➍), we pass a null pointer to `execve()`, so no environment variable is passed to the program. In this task, we will pass some
 environment variables.
-If we change the command"/bin/sh"in our shellcodemysh.sto"/usr/bin/env", which is
-a command to print out the environment variables. You can find out that when we run our shellcode, there
-will be no output, because our process does not have any environment variable.
-In this task, we will write a shellcode calledmyenv.s. When this program is executed, it executes the
-"/usr/bin/env"command, which can print out the following environment variables:
-
-$ ./myenv
-aaa=
-bbb=
-cccc=
-
-It should be noted that the value for the environment variableccccmust be exactly 4 bytes (no space is
-allowed to be added to the tail). We intentionally make the length of this environment variable string (name
-and value) not multiple of 4.
-To write such a shellcode, we need to construct an environment variable array on the stack, and store the
-address of this array to theedxregister, before invokingexecve(). The way to construct this array on the
-stack is exactly the same as the way how we construct theargv[]array. Basically, we first store the actual
-environment variable strings on the stack. Each string has a format ofname=value, and it is terminated
-by a zero byte. We need to get the addresses of these strings. Then, we construct the environment variable
-array, also on the stack, and store the addresses of the strings in this array. The array should look like the
-following (the order of the elements 0 , 1 , and 2 does not matter):
-
+<Br>
+&emsp; If we change the command "`/bin/sh`" in our shellcode `mysh.s` to "`/usr/bin/env`", which is a command to print out the environment variables. You can find out that when we run our shellcode, there will be no output, because our process does not have any environment variable.
+<Br>
+&emsp; In this task, we will write a shellcode called `myenv.s`. When this program is executed, it executes the "`/usr/bin/env`" command, which can print out the following environment variables:
+```
+$  ./myenv
+aaa=1234
+bbb=5678
+cccc=1234
+```
+&emsp; It should be noted that the value for the environment variable `cccc` must be exactly 4 bytes (no space is allowed to be added to the tail). We intentionally make the length of this environment variable string (name and value) not multiple of 4.
+<Br>
+&emsp; To write such a shellcode, we need to construct an environment variable array on the stack, and store the address of this array to the `edx` register, before invoking `execve()`. The way to construct this array on the stack is exactly the same as the way how we construct the `argv[]` array. Basically, we first store the actual environment variable strings on the stack. Each string has a format of `name=value`, and it is terminated by a zero byte. We need to get the addresses of these strings. Then, we construct the environment variable array, also on the stack, and store the addresses of the strings in this array. The array should look like the following (the order of the elements `0 , 1 , and 2` does not matter):
+```
 env[3] = 0 // 0 marks the end of the array
 env[2] = address to the "cccc=1234" string
 env[1] = address to the "bbb=5678" string
 env[0] = address to the "aaa=1234" string
-
+```
 ## 3 Task 2: Using Code Segment
 
 As we can see from the shellcode in Task 1, the way how it solves the data address problem is that it
