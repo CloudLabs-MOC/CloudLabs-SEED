@@ -5,7 +5,7 @@
      "BaseURL": "https://github.com/CloudLabs-MOC/CloudLabs-SEED/tree/main",
      "Files": [
        {
-         "RawFilePath": "https://raw.githubusercontent.com/CloudLabs-MOC/CloudLabs-SEED/main/Blockchain-Security/Smart-Contract-Reentrancy-Attack-Lab.md",
+         "RawFilePath": "https://raw.githubusercontent.com/CloudLabs-MOC/CloudLabs-SEED/updated-labguide/Network%20Security/MAC%20Layer%20and%20Attacks/MAC-Layer-and-Attacks.md",
          "Order": 1
        }
      ]
