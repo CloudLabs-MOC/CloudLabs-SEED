@@ -15,8 +15,7 @@ generation, and digital signature verification. The RSA algorithm is built upon 
 be quite easily implemented with the support of libraries.
 The learning objective of this lab is for students to gain hands-on experiences on the RSA algorithm.
 From lectures, students should have learned the theoretic part of the RSA algorithm, so they know math-
-ematically how to generate public/private keys and how to perform encryption/decryption and signature
-generation/verification. This lab enhances student’s understanding of RSA by requiring them to go through
+ematically how to generate public/private keys and how to perform encryption/decryption and signature generation/verification. This lab enhances student’s understanding of RSA by requiring them to go through
 every essential step of the RSA algorithm on actual numbers, so they can apply the theories learned from
 the class. Essentially, students will be implementing the RSA algorithm using the C program language. The
 lab covers the following security-related topics:
@@ -45,21 +44,21 @@ Department of Electrical Engineering and Computer Science at Syracuse University
 
 The RSA algorithm involves computations on large numbers. These computations cannot be directly con-
 ducted using simple arithmetic operators in programs, because those operators can only operate on primitive
-data types, such as 32-bit integer and 64-bit long integer types. The numbers involved in the RSA algorithms are typically more than 512 bits long. For example, to multiple two 32-bit integer numbersaandb, we just
-need to usea*bin our program. However, if they are big numbers, we cannot do that any more; instead,
+data types, such as 32-bit integer and 64-bit long integer types. The numbers involved in the RSA algorithms are typically more than 512 bits long. For example, to multiple two 32-bit integer numbers a and b, we just
+need to use a*b in our program. However, if they are big numbers, we cannot do that any more; instead,
 we need to use an algorithm (i.e., a function) to compute their products.
 There are several libraries that can perform arithmetic operations on integers of arbitrary size. In this
-lab, we will use the Big Number library provided by openssl. To use this library, we will define each big
-number as a BIGNUM type, and then use the APIs provided by the library for various operations, such as
+lab, we will use the Big Number library provided by `openssl`. To use this library, we will define each big
+number as a `BIGNUM` type, and then use the APIs provided by the library for various operations, such as
 addition, multiplication, exponentiation, modular operations, etc.
 
 ### 2.1 BIGNUM APIs
 
-All the big number APIs can be found from https://linux.die.net/man/3/bn. In the following,
+All the big number APIs can be found from `https://linux.die.net/man/3/bn`. In the following,
 we describe some of the APIs that are needed for this lab.
 
 - Some of the library functions requires temporary variables. Since dynamic memory allocation to cre-
-    ate BIGNUMs is quite expensive when used in conjunction with repeated subroutine calls, a BN_CTX
+    ate BIGNUMs is quite expensive when used in conjunction with repeated subroutine calls, a `BN_CTX`
     structure is created to holds BIGNUM temporary variables used by library functions. We need to
     create such a structure, and pass it to the functions that requires it.
 ```
@@ -101,35 +100,35 @@ OPENSSL_free(number_str);
 }
 ```
 
-- Computeres = a−bandres = a+b:
+- Compute `res = a−b` and `res = a+b`:
 ```
     BN_sub(res, a, b);
     BN_add(res, a, b);
 ```
 
-- Computeres = a∗b. It should be noted that aBNCTXstructure is need in this API.
+- Compute `res = a∗b`. It should be noted that a `BN_CTX` structure is need in this API.
 ```
     BN_mul(res, a, b, ctx)
 ```
 
-- Computeres = a∗b mod n:
+- Compute `res = a∗b mod n`:
 ```
     BN_mod_mul(res, a, b, n, ctx)
 ```
 
-- Computeres = ac mod n:
+- Compute `res = a^c mod n`:
 ```
     BN_mod_exp(res, a, c, n, ctx)
 ```
 
-- Compute modular inverse, i.e., givena, findb, such thata∗b mod n = 1. The valuebis called the inverse ofa, with respect to modularn.
+- Compute modular inverse, i.e., given `a`, find `b`, such that `a∗b mod n = 1`. The value `b`is called the inverse of `a`, with respect to modular `n`.
 ```
     BN_mod_inverse(b, a, n, ctx);
 ```
 
 ### 2.2 A Complete Example
 
-We show a complete example in the following. In this example, we initialize three BIGNUM variables,a,b, and n; we then compute a∗b and(a^b mod n).
+We show a complete example in the following. In this example, we initialize three BIGNUM variables, `a`, `b`, and `n`; we then compute `a∗b` and `(a^b mod n)`.
 
 ```
 /* bn_sample.c */
@@ -173,7 +172,7 @@ return 0;
 }
 ```
 
-Compilation. We can use the following command to compile bn_sample.c(the character after - is the letter l, not the number 1; it tells the compiler to use the crypto library).
+Compilation. We can use the following command to compile `bn_sample.c`(the character after - is the letter l, not the number 1; it tells the compiler to use the `crypto` library).
 
 ```
 $ gcc bn_sample.c -lcrypto
@@ -186,9 +185,9 @@ them from this PDF file.
 
 ### 3.1 Task 1: Deriving the Private Key
 
-Let p, q, and e be three prime numbers. Let n = p*q. We will use(e, n)as the public key. Please
-calculate the private key d. The hexadecimal values of p, q, and e are listed in the following. It should be
-noted that although p and q used in this task are quite large numbers, they are not large enough to be secure.
+Let p, q, and e be three prime numbers. Let `n = p*q`. We will use `(e, n)` as the public key. Please
+calculate the private key `d`. The hexadecimal values of `p`, `q`, and `e` are listed in the following. It should be
+noted that although `p` and `q` used in this task are quite large numbers, they are not large enough to be secure.
 We intentionally make them small for the sake of simplicity. In practice, these numbers should be at least
 512 bits long (the one used here are only 128 bits).
 
@@ -199,9 +198,9 @@ e = 0D88C
 ```
 ### 3.2 Task 2: Encrypting a Message
 
-Let (e, n) be the public key. Please encrypt the message "A top secret!"(the quotations are not
+Let `(e, n)` be the public key. Please encrypt the message `"A top secret!"` (the quotations are not
 included). We need to convert this ASCII string to a hex string, and then convert the hex string to a BIGNUM
-using the hex-to-bn API BNhex2bn(). The following python command can be used to convert a plain
+using the hex-to-bn API `BNhex2bn()`. The following `python` command can be used to convert a plain
 ASCII string to a hex string.
 
 ```
@@ -242,13 +241,13 @@ for the following message (please directly sign this message, instead of signing
 ```
 M = I owe you $2000.
 ```
-Please make a slight change to the messageM, such as changing$2000to$3000, and sign the modified
+Please make a slight change to the messageM, such as changing `$2000` to `$3000` , and sign the modified
 message. Compare both signatures and describe what you observe.
 
 ### 3.5 Task 5: Verifying a Signature
 
-Bob receives a message M ="Launch a missile." from Alice, with her signature S. We know that
-Alice’s public key is (e, n). Please verify whether the signature is indeed Alice’s or not. The public key
+Bob receives a message `M ="Launch a missile."` from Alice, with her signature `S`. We know that
+Alice’s public key is `(e, n)`. Please verify whether the signature is indeed Alice’s or not. The public key
 and signature (hexadecimal) are listed in the following:
 
 ```
@@ -257,7 +256,7 @@ S = 643D6F34902D9C7EC90CB0B2BCA36C47FA37165C0005CAB026C0542CBDB6802F
 e = 010001 (this hex value equals to decimal 65537)
 n = AE1CD4DC432798D933779FBD46C6E1247F0CF1233595113AA51B450F
 ```
-Suppose that the signature above is corrupted, such that the last byte of the signature changes from 2F to 3F, i.e, there is only one bit of change. Please repeat this task, and describe what will happen to the
+Suppose that the signature above is corrupted, such that the last byte of the signature changes from `2F` to `3F`, i.e, there is only one bit of change. Please repeat this task, and describe what will happen to the
 verification process.
 
 ### 3.6 Task 6: Manually Verifying an X.509 Certificate
@@ -267,10 +266,10 @@ a public key and an issuer’s signature on the data. We will download a real X.
 server, get its issuer’s public key, and then use this public key to verify the signature on the certificate.
 
 
-Step 1: Download a certificate from a real web server. We use the www.example.orgserver in
+Step 1: Download a certificate from a real web server. We use the `www.example.org` server in
 this document. Students should choose a different web server that has a different certificate than the
-one used in this document (it should be noted that www.example.comshare the same certificate with
-www.example.org). We can download certificates using browsers or use the following command:
+one used in this document (it should be noted that `www.example.com` share the same certificate with
+`www.example.org`). We can download certificates using browsers or use the following command:
 
 ```
 $ openssl s_client -connect www.example.org:443 -showcerts
@@ -299,19 +298,19 @@ cPUeybQ=
 ```
 
 The result of the command contains two certificates. The subject field (the entry starting with s:) of
-the certificate is www.example.org, i.e., this is www.example.org’s certificate. The issuer field (the
-entry starting with i:) provides the issuer’s information. The subject field of the second certificate is the
+the certificate is `www.example.org` , i.e., this is  www.example.org’s` certificate. The issuer field (the
+entry starting with `i:`) provides the issuer’s information. The subject field of the second certificate is the
 same as the issuer field of the first certificate. Basically, the second certificate belongs to an intermediate
 CA. In this task, we will use CA’s certificate to verify a server certificate.
 If you only get one certificate back using the above command, that means the certificate you get is signed
 by a root CA. Root CAs’ certificates can be obtained from the Firefox browser installed in our pre-built VM.
-Go to the Edit->Preferences->Privacy and then Security->View Certificates. Search for the name of the issuer and download its certificate.
-Copy and paste each of the certificate (the text between the line containing "Begin CERTIFICATE"
-and the line containing "END CERTIFICATE", including these two lines) to a file. Let us call the first one c0.pem and the second one c1.pem.
+Go to the `Edit->Preferences->Privacy and then Security->View Certificates`. Search for the name of the issuer and download its certificate.
+Copy and paste each of the certificate (the text between the line containing `"Begin CERTIFICATE"`
+and the line containing `"END CERTIFICATE"`, including these two lines) to a file. Let us call the first one `c0.pem` and the second one `c1.pem`.
 
 Step 2: Extract the public key **(e, n)** from the issuer’s certificate. Openssl provides commands to
-extract certain attributes from the x509 certificates. We can extract the value of n using -modulus. There
-is no specific command to extract e, but we can print out all the fields and can easily find the value of e.
+extract certain attributes from the x509 certificates. We can extract the value of n using `-modulus`. There
+is no specific command to extract `e`, but we can print out all the fields and can easily find the value of `e`.
 
 ```
 For modulus (n):
@@ -321,7 +320,7 @@ Print out all the fields, find the exponent (e):
 $ openssl x509 -in c1.pem -text -noout
 ```
 
-Step 3: Extract the signature from the server’s certificate. There is no specific openssl command to extract the signature field. However, we can print out all the fields and then copy and paste the signature
+Step 3: Extract the signature from the server’s certificate. There is no specific `openssl` command to extract the signature field. However, we can print out all the fields and then copy and paste the signature
 block into a file (note: if the signature algorithm used in the certificate is not based on RSA, you can find
 another certificate).
 
@@ -338,7 +337,7 @@ aa:6a:88:
 
 We need to remove the spaces and colons from the data, so we can get a hex-string that we can feed into
 our program. The following command commands can achieve this goal. Thetrcommand is a Linux utility
-tool for string operations. In this case, the-doption is used to delete":"and"space"from the data.
+tool for string operations. In this case, the `-d` option is used to delete":"and `"space"` from the data.
 
 ```
 $ cat signature | tr -d ’[:space:]:’
@@ -355,7 +354,7 @@ Finding out what part of the certificate is used to generate the hash is quite c
 understanding of the format of the certificate.
 X.509 certificates are encoded using the ASN.1 (Abstract Syntax Notation.One) standard, so if we can
 parse the ASN.1 structure, we can easily extract any field from a certificate. Openssl has a command called
-asn1parseused to extract data from ASN.1 formatted data, and is able to parse our X.509 certificate.
+`asn1parse` used to extract data from ASN.1 formatted data, and is able to parse our X.509 certificate.
 
 ```
 $ openssl asn1parse -i -in c0.pem
