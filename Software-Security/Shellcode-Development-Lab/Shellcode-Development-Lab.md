@@ -2,56 +2,39 @@
 
 ```
 Copyright © 2020 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-Shellcode is widely used in many attacks that involve code injection. Writing shellcode is quite challenging.
-Although we can easily find existing shellcode from the Internet, there are situations where we have to write
-a shellcode that satisfies certain specific requirements. Moreover, to be able to write our own shellcode from
-scratch is always exciting. There are several interesting techniques involved in shellcode. The purpose of
+Shellcode is widely used in many attacks that involve code injection. Writing shellcode is quite challenging. Although we can easily find existing shellcode from the Internet, there are situations where we have to write a shellcode that satisfies certain specific requirements. Moreover, to be able to write our own shellcode from scratch is always exciting. There are several interesting techniques involved in shellcode. The purpose of
 this lab is to help students understand these techniques so they can write their own shellcode.
-There are several challenges in writing shellcode, one is to ensure that there is no zero in the binary, and
-the other is to find out the address of the data used in the command. The first challenge is not very difficult
-to solve, and there are several ways to solve it. The solutions to the second challenge led to two typical
-approaches to write shellcode. In one approach, data are pushed into the stack during the execution, so their
-addresses can be obtained from the stack pointer. In the second approach, data are stored in the code region,
-right after acallinstruction. When thecallinstruction is executed, the address of the data is treated as
-the return address, and is pushed into the stack. Both solutions are quite elegant, and we hope students can
-learn these two techniques. This lab covers the following topics:
+<Br>
+&emsp; There are several challenges in writing shellcode, one is to ensure that there is no zero in the binary, and the other is to find out the address of the data used in the command. The first challenge is not very difficult to solve, and there are several ways to solve it. The solutions to the second challenge led to two typical approaches to write shellcode. In one approach, data are pushed into the stack during the execution, so their
+addresses can be obtained from the stack pointer. In the second approach, data are stored in the code region, right after acallinstruction. When thecallinstruction is executed, the address of the data is treated as the return address, and is pushed into the stack. Both solutions are quite elegant, and we hope students can learn these two techniques. This lab covers the following topics:
 
 - Shellcode
 - Assembly code
 - Disassembling
 
-Readings and videos. Detailed coverage of the shellcode can be found in the following:
+**Readings and videos.** Detailed coverage of the shellcode can be found in the following:
 
-- Chapters 4.7 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details at https://www.handsonsecurity.net.
-- Section 4 of the SEED Lecture (Lecture 30),Computer Security: A Hands-on Approach, by Wenliang
-    Du. See details at https://www.handsonsecurity.net/video.html.
+- Chapters 4.7 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at https://www.handsonsecurity.net.
+- Section 4 of the SEED Lecture (Lecture 30),Computer Security: A Hands-on Approach, by Wenliang Du. See details at https://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Shellcode/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Shellcode/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 ## 2 Task 1: Writing Shellcode
 
-In this task, we will first start with a shellcode example, to demonstrate how to write a shellcode. After that,
-we ask students to modify the code to accomplish various tasks.
-Shellcode is typically written using assembly languages, which depend on the computer architecture.
-We will be using the Intel architectures, which have two types of processors: x86 (for 32-bit CPU) and x
-(for 64-bit CPU). In this task, we will focus on 32-bit shellcode. In the final task, we will switch to 64-bit
-shellcode. Although most of the computers these days are 64-bit computers, they can run 32-bit programs.
+In this task, we will first start with a shellcode example, to demonstrate how to write a shellcode. After that, we ask students to modify the code to accomplish various tasks.
+<Br>
+&emsp; Shellcode is typically written using assembly languages, which depend on the computer architecture. We will be using the Intel architectures, which have two types of processors: x86 (for 32-bit CPU) and x64 (for 64-bit CPU). In this task, we will focus on 32-bit shellcode. In the final task, we will switch to 64-bit shellcode. Although most of the computers these days are 64-bit computers, they can run 32-bit programs.
 
 
 ### 2.1 Task 1.a: The Entire Process
