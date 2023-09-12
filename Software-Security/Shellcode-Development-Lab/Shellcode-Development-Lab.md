@@ -179,23 +179,19 @@ Shellcode is widely used in buffer-overflow attacks. In many cases, the vulnerab
 
 ### 2.3 Task 1.c. Providing Arguments for System Calls
 
-Insidemysh.s, in LinesÀandÃ, we construct theargv[]array for theexecve()system call. Since
-our command is/bin/sh, without any command-line arguments, ourargvarray only contains two ele-
-ments: the first one is a pointer to the command string, and the second one is zero.
-In this task, we need to run the following command, i.e., we want to useexecveto execute the follow-
-ing command, which uses/bin/shto execute the"ls -la"command.
-
+Inside `mysh.s`, in Lines ➋ and ➌, we construct the `argv[]` array for the `execve()` system call. Since our command is `/bin/sh`, without any command-line arguments, our `argv` array only contains two elements: the first one is a pointer to the command string, and the second one is zero.
+<Br>
+&emsp; In this task, we need to run the following command, i.e., we want to use `execve` to execute the following command, which uses `/bin/sh` to execute the "`ls -la`" command.
+```
 /bin/sh -c "ls -la"
-
-In this new command, theargvarray should have the following four elements, all of which need to
-be constructed on the stack. Please modifymysh.sand demonstrate your execution result. As usual, you
-cannot have zero in your shellcode (you are allowed to use redundant /).
-
+```
+&emsp; In this new command, the `argv` array should have the following four elements, all of which need to be constructed on the stack. Please modify `mysh.s` and demonstrate your execution result. As usual, you cannot have zero in your shellcode (you are allowed to use redundant /).
+```
 argv[3] = 0
 argv[2] = "ls -la"
 argv[1] = "-c"
 argv[0] = "/bin/sh"
-
+```
 ### 2.4 Task 1.d. Providing Environment Variables for execve()
 
 The third parameter for theexecve()system call is a pointer to the environment variable array, and it
