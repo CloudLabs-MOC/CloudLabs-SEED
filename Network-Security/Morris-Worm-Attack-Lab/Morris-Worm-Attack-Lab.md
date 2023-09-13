@@ -83,7 +83,7 @@ root@9652715c8e0a:/#
 
 ![Emulated Internet](../media/net-sec-morris-worm-emulated-internet.png)
 
-&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 1: The map of the emulated Internet
+<p align="center">Figure 1: The map of the emulated Internet</p>
 
 &emsp; Each computer (hosts or routers) running inside the emulator is a docker container. Users can access these computers using docker commands, such as getting a shell inside a container. The emulator also comes with a web application, which visualizes all the hosts, routers, and networks. After the emulator starts, the map can be accessed from this URL: `http://localhost:8080/map.html`. See Figure 1. To zoom in/out, use the mouse middle scroll. Click on any node, the detailed information of that node will be displayed on the side panel, from where, users can get a console on that node (container).
 
