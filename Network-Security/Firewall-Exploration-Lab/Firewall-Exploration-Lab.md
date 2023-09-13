@@ -132,37 +132,21 @@ $ dmesg                     (check the messages)
 
 ### 3.2 Task 1.B: Implement a Simple Firewall Using Netfilter
 
-In this task, we will write our packet filtering program as an LKM, and then insert in into the packet process-
-ing path inside the kernel. This cannot be easily done in the past before the `netfilter` was introduced
-into the `Linux`.
-`Netfilter` is designed to facilitate the manipulation of packets by authorized users. It achieves this
-goal by implementing a number of hooks in the `Linux `kernel. These hooks are inserted into various
-places, including the packet incoming and outgoing paths. If we want to manipulate the incoming packets,
-we simply need to connect our own programs (within LKM) to the corresponding hooks. Once an incoming
-packet arrives, our program will be invoked. Our program can decide whether this packet should be blocked
-or not; moreover, we can also modify the packets in the program.
-In this task, you need to use LKM and `Netfilter` to implement a packet filtering module. This module
-will fetch the firewall policies from a data structure, and use the policies to decide whether packets should
-be blocked or not. We would like students to focus on the filtering part, the core of firewalls, so students are
-allowed to hardcode firewall policies in the program. Detailed guidelines on how to use `Netfilter` can
+In this task, we will write our packet filtering program as an LKM, and then insert in into the packet processing path inside the kernel. This cannot be easily done in the past before the `netfilter` was introduced into the `Linux`.
+<Br>
+&emsp; `Netfilter` is designed to facilitate the manipulation of packets by authorized users. It achieves this goal by implementing a number of hooks in the `Linux` kernel. These hooks are inserted into various places, including the packet incoming and outgoing paths. If we want to manipulate the incoming packets, we simply need to connect our own programs (within LKM) to the corresponding hooks. Once an incoming
+packet arrives, our program will be invoked. Our program can decide whether this packet should be blocked or not; moreover, we can also modify the packets in the program.
+<Br>
+&emsp; In this task, you need to use LKM and `Netfilter` to implement a packet filtering module. This module will fetch the firewall policies from a data structure, and use the policies to decide whether packets should be blocked or not. We would like students to focus on the filtering part, the core of firewalls, so students are allowed to hardcode firewall policies in the program. Detailed guidelines on how to use `Netfilter` can
 be found in Chapter 17 of the SEED book. We will provide some guidelines in here as well.
 
-**Hooking to Netfilter**. Using `netfilter` is quite straightforward. All we need to do is to hook our
-functions (in the kernel module) to the corresponding `netfilter` hooks. Here we show an example (the
-code is in `Labsetup/packet_filter`, but it may not be exactly the same as this example).
+**Hooking to Netfilter**. Using `netfilter` is quite straightforward. All we need to do is to hook our functions (in the kernel module) to the corresponding `netfilter` hooks. Here we show an example (the code is in `Labsetup/packet_filter`, but it may not be exactly the same as this example).
 
+&emsp; The structure of the code follows the structure of the kernel module implemented earlier. When the kernel module is added to the kernel, the `registerFilter()` function in the code will be invoked. Inside this function, we register two hooks to `netfilter`.
+<Br>
+&emsp; To register a hook, you need to prepare a hook data structure, and set all the needed parameters, the most important of which are a function name (Line ➊) and a hook number (Line  ➋). The hook number is one of the 5 hooks in `netfilter`, and the specified function will be invoked when a packet has reached this hook. In this example, when a packet gets to the `LOCALIN` hook, the function `printInfo()` will be invoked (this function will be given later). Once the hook data structure is prepared, we attach the hook to `netfilter` in Line ➌).
 
-The structure of the code follows the structure of the kernel module implemented earlier. When the
-kernel module is added to the kernel, the `registerFilter`()function in the code will be invoked.
-Inside this function, we register two hooks to `netfilter`.
-To register a hook, you need to prepare a hook data structure, and set all the needed parameters, the
-most important of which are a function name (Line ) and a hook number (LineÀ). The hook number is
-one of the 5 hooks in `netfilter`, and the specified function will be invoked when a packet has reached
-this hook. In this example, when a packet gets to the `LOCALIN` hook, the function `printInfo()` will
-be invoked (this function will be given later). Once the hook data structure is prepared, we attach the hook
-to `netfilter` in LineÃ).
-
-Listing 2: Register hook functions to `netfilter`
+&emsp; &emsp; &emsp; &emsp;  &emsp; &emsp;  Listing 2: Register hook functions to `netfilter`
 ```
 static struct nf_hook_ops hook1, hook2;
 
@@ -170,11 +154,11 @@ int registerFilter(void) {
     printk(KERN_INFO "Registering filters.\n");
 
     // Hook 1
-    hook1.hook = printInfo;
-    hook1.hooknum = NF_INET_LOCAL_IN; À
+    hook1.hook = printInfo;                           ➊
+    hook1.hooknum = NF_INET_LOCAL_IN;                 ➋
     hook1.pf = PF_INET;
     hook1.priority = NF_IP_PRI_FIRST;
-    nf_register_net_hook(&init_net, &hook1); Ã
+    nf_register_net_hook(&init_net, &hook1);          ➌
 
     // Hook 2
     hook2.hook = blockUDP;
@@ -195,27 +179,19 @@ void removeFilter(void) {
 module_init(registerFilter);
 module_exit(removeFilter);
 ```
-**Note for Ubuntu 20.04 VM:** The code in the SEED book was developed in Ubuntu 16.04. It needs to be
-changed slightly to work in Ubuntu 20.04. The change is in the hook registration and un-registration APIs.
-See the difference in the following:
+**Note for Ubuntu 20.04 VM:** The code in the SEED book was developed in Ubuntu 16.04. It needs to be changed slightly to work in Ubuntu 20.04. The change is in the hook registration and un-registration APIs. See the difference in the following:
 ```
 // Hook registration:
 nf_register_hook(&nfho);                 // For Ubuntu 16.04 VM
 nf_register_net_hook(&init_net, &nfho);  // For Ubuntu 20.04 VM
 
 // Hook unregistration:
-
-
 nf_unregister_hook(&nfho);                // For Ubuntu 16.04 VM
 nf_unregister_net_hook(&init_net, &nfho); // For Ubuntu 20.04 VM
 ```
-**Hook functions.** We give an example of hook function below. It only prints out the packet information.
-When `netfilter` invokes a hook function, it passes three arguments to the function, including a pointer
-to the actual packet (`skb`). In the following code, Line shows how to retrieve the hook number from the
-`state` argument. In LineÀ, we use `iphdr()` function to get the pointer for the IP header, and then use
-the `%pI4` format string specifier to print out the source and destination IP addresses in LineÃ.
+**Hook functions.** We give an example of hook function below. It only prints out the packet information. When `netfilter` invokes a hook function, it passes three arguments to the function, including a pointer to the actual packet (`skb`). In the following code, Line  ➊ shows how to retrieve the hook number from the `state` argument. In Line  ➋, we use `iphdr()` function to get the pointer for the IP header, and then use the `%pI4` format string specifier to print out the source and destination IP addresses in Line ➌.
 
-Listing 3: An example of hook function
+&emsp; &emsp; &emsp; &emsp;  &emsp; &emsp;  &emsp; &emsp;  Listing 3: An example of hook function
 ```
 unsigned int printInfo(void *priv, struct sk_buff *skb,
                         const struct nf_hook_state *state)
@@ -223,32 +199,27 @@ unsigned int printInfo(void *priv, struct sk_buff *skb,
     struct iphdr *iph;
     char *hook;
 
-    switch (state->hook){
+    switch (state->hook){                ➊
         case NF_INET_LOCAL_IN:
             printk("*** LOCAL_IN"); break;
         .. (code omitted) ...
     }
 
-    iph = ip_hdr(skb); À
-    printk(" %pI4 --> %pI4\n", &(iph->saddr), &(iph->daddr)); Ã
+    iph = ip_hdr(skb);                   ➋
+    printk(" %pI4 --> %pI4\n", &(iph->saddr), &(iph->daddr));     ➌
     return NF_ACCEPT;
 }
 ```
-If you need to get the headers for other protocols, you can use the following functions defined in various
-header files. The structure definition of these headers can be found inside the `/lib/modules/5.4.
-0-54-generic/build/include/uapi/linux` folder, where the version number in the path is the
-result of "`uname -r`", so it may be different if the kernel version is different.
+&emsp; If you need to get the headers for other protocols, you can use the following functions defined in various header files. The structure definition of these headers can be found inside the `/lib/modules/5.4.0-54-generic/build/include/uapi/linux` folder, where the version number in the path is the result of "`uname -r`", so it may be different if the kernel version is different.
 ```
 struct  iphdr   *iph    = ip_hdr(skb)     // (need to include <linux/ip.h>)
 struct  tcphdr  *tcph   = tcp_hdr(skb)   // (need to include <linux/tcp.h>)
 struct  udphdr  *udph   = udp_hdr(skb)   // (need to include <linux/udp.h>)
 struct  icmphdr *icmph  = icmp_hdr(skb)  // (need to include <linux/icmp.h>)
 ```
-**Blocking packets.** We also provide a hook function example to show how to block a packet, if it satisfies
-the specified condition. The following example blocks the UDP packets if their destination IP is `8.8.8.8.`
-and the destination port is `53`. This means blocking the DNS query to the nameserver `8.8.8.8.
+**Blocking packets.** We also provide a hook function example to show how to block a packet, if it satisfies the specified condition. The following example blocks the UDP packets if their destination IP is `8.8.8.8.` and the destination port is `53`. This means blocking the DNS query to the nameserver `8.8.8.8`.
 
-Listing 4: Code example: blocking UDP
+&emsp; &emsp; &emsp; &emsp;  &emsp; &emsp;  &emsp; &emsp; Listing 4: Code example: blocking UDP
 ```
 unsigned int blockUDP(void *priv, struct sk_buff *skb,
                         const struct nf_hook_state *state)
@@ -259,41 +230,30 @@ unsigned int blockUDP(void *priv, struct sk_buff *skb,
     char ip[16] = "8.8.8.8";
 
     // Convert the IPv4 address from dotted decimal to a 32-bit number
-    in4_pton(ip, -1, (u8*)&ip_addr, ’\0’, NULL);
+    in4_pton(ip, -1, (u8*)&ip_addr, ’\0’, NULL);                   ➊
 
     iph = ip_hdr(skb);
     if (iph->protocol == IPPROTO_UDP) {
         udph = udp_hdr(skb);
-        if (iph->daddr == ip_addr && ntohs(udph->dest) == 53){ À
+        if (iph->daddr == ip_addr && ntohs(udph->dest) == 53){     ➋
             printk(KERN_DEBUG "****Dropping %pI4 (UDP), port %d\n",
                                 &(iph->daddr), port);
-            return NF_DROP; Ã
+            return NF_DROP;                                        ➌
         }
     }
-    return NF_ACCEPT; Õ
+    return NF_ACCEPT;                                              ➍   
 }
 ```
-In the code above, Line shows, inside the kernel, how to convert an IP address in the dotted decimal
-format (i.e., a string, such as `1.2.3.4`) to a 32-bit binary (`0x01020304`), so it can be compared with the
-binary number stored inside packets. LineÀcompares the destination IP address and port number with the
-values in our specified rule. If they match the rule, the `NF_DROP` will be returned to `netfilter`, which
-will drop the packet. Otherwise, the `NF_ACCEPT` will be returned, and `netfilter` will let the packet
-continue its journey (`NF_ACCEPT` only means that the packet is accepted by this hook function; it may still
-be dropped by other hook functions).
+&emsp; In the code above, Line ➊ shows, inside the kernel, how to convert an IP address in the dotted decimal format (i.e., a string, such as `1.2.3.4`) to a 32-bit binary (`0x01020304`), so it can be compared with the binary number stored inside packets. LineÀcompares the destination IP address and port number with the values in our specified rule. If they match the rule, the `NF_DROP` will be returned to `netfilter`, which will drop the packet. Otherwise, the `NF_ACCEPT` will be returned, and `netfilter` will let the packet continue its journey (`NF_ACCEPT` only means that the packet is accepted by this hook function; it may still be dropped by other hook functions).
 
-**Tasks.** The complete sample code is called `seedFilter.c`, which is included in the lab setup files
-(inside the `Files/packet_filter` folder). Please do the following tasks (do each of them separately):
+**Tasks.** The complete sample code is called `seedFilter.c`, which is included in the lab setup files (inside the `Files/packet_filter` folder). Please do the following tasks (do each of them separately):
 
-1. Compile the sample code using the provided `Makefile`. Load it into the kernel, and demonstrate
-    that the firewall is working as expected. You can use the following command to generate UDP packets
-    to `8.8.8.8`, which is Google’s DNS server. If your firewall works, your request will be blocked;
-    otherwise, you will get a response.
+1. Compile the sample code using the provided `Makefile`. Load it into the kernel, and demonstrate that the firewall is working as expected. You can use the following command to generate UDP packets to `8.8.8.8`, which is Google’s DNS server. If your firewall works, your request will be blocked; otherwise, you will get a response.
     ```
     dig @8.8.8.8 http://www.example.com
     ```
-2. Hook the `printInfo` function to all of the `netfilter` hooks. Here are the macros of the hook
-    numbers. Using your experiment results to help explain at what condition will each of the hook
-    function be invoked.
+
+2. Hook the `printInfo` function to all of the `netfilter` hooks. Here are the macros of the hook numbers. Using your experiment results to help explain at what condition will each of the hook function be invoked.
     ```
     NF_INET_PRE_ROUTING
     NF_INET_LOCAL_IN
@@ -301,21 +261,12 @@ be dropped by other hook functions).
     NF_INET_LOCAL_OUT
     NF_INET_POST_ROUTING
     ```
-3. Implement two more hooks to achieve the following: (1) preventing other computers to ping the
-    VM, and (2) preventing other computers to telnet into the VM. Please implement two different hook
-    functions, but register them to the same `netfilter` hook. You should decide what hook to use.
-    Telnet’s default port is TCP port `23`. To test it, you can start the containers, go to `10.9.0.5`, run the
-    following commands (`10.9.0.1` is the IP address assigned to the VM; for the sake of simplicity,
-    you can hardcode this IP address in your firewall rules):
+3. Implement two more hooks to achieve the following: (1) preventing other computers to ping the VM, and (2) preventing other computers to telnet into the VM. Please implement two different hook functions, but register them to the same `netfilter` hook. You should decide what hook to use. Telnet’s default port is TCP port `23`. To test it, you can start the containers, go to `10.9.0.5`, run the following commands (`10.9.0.1` is the IP address assigned to the VM; for the sake of simplicity, you can hardcode this IP address in your firewall rules):
     ```
-    ping 10.9.0.
-    telnet 10.9.0.
+    ping 10.9.0.1
+    telnet 10.9.0.1
     ```
-**Important note:** Since we make changes to the kernel, there is a high chance that you would crash the
-kernel. Make sure you back up your files frequently, so you don’t lose them. One of the common reasons
-for system crash is that you forget to unregister hooks. When a module is removed, these hooks will still
-be triggered, but the module is no longer present in the kernel. That will cause system crash. To avoid this,
-make sure for each hook you add to your module, add a line in `removeFilter` to unregister it, so when
+**Important note:** Since we make changes to the kernel, there is a high chance that you would crash the kernel. Make sure you back up your files frequently, so you don’t lose them. One of the common reasons for system crash is that you forget to unregister hooks. When a module is removed, these hooks will still be triggered, but the module is no longer present in the kernel. That will cause system crash. To avoid this, make sure for each hook you add to your module, add a line in `removeFilter` to unregister it, so when
 the module is removed, those hooks are also removed.
 
 ## 4 Task 2: Experimenting with Stateless Firewall Rules
