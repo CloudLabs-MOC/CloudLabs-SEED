@@ -166,79 +166,39 @@ ARP gratuitous packet is a special ARP request packet. It is used when a host ma
 
 ## 4 Task 2: MITM Attack on Telnet using ARP Cache Poisoning
 
-Hosts A and B are communicating using Telnet, and Host M wants to intercept their communication, so it
-can make changes to the data sent between A and B. The setup is depicted in Figure 2. We have already
-created an account called "`seed`" inside the container, the password is "`dees`" . You can telnet into this
-account.
+Hosts A and B are communicating using Telnet, and Host M wants to intercept their communication, so it can make changes to the data sent between A and B. The setup is depicted in Figure 2. We have already created an account called "`seed`" inside the container, the password is "`dees`" . You can telnet into this account.
 
-**Step 1 (Launch the ARP cache poisoning attack).** First, Host M conducts an ARP cache poisoning
-attack on both A and B, such that in A’s ARP cache, B’s IP address maps to M’s MAC address, and in B’s
-ARP cache, A’s IP address also maps to M’s MAC address. After this step, packets sent between A and B
-will all be sent to M. We will use the ARP cache poisoning attack from Task 1 to achieve this goal. It is
+**Step 1 (Launch the ARP cache poisoning attack).** First, Host M conducts an ARP cache poisoning attack on both A and B, such that in A’s ARP cache, B’s IP address maps to M’s MAC address, and in B’s ARP cache, A’s IP address also maps to M’s MAC address. After this step, packets sent between A and B will all be sent to M. We will use the ARP cache poisoning attack from Task 1 to achieve this goal. It is
 
+![Attack against telnet](../media/net-sec-arp-caching.png)
 
-```
-A: Telnet Client B: Telnet Server
-```
-```
-M: Attacker
-```
-```
-s
-```
-```
-Telnet packet
-```
-```
-s Z
-```
-```
-Z
-```
-```
-Change packet payload
-```
-```
-Figure 2: Man-In-The-Middle Attack against telnet
-```
-better that you send out the spoofed packets constantly (e.g. every 5 seconds); otherwise, the fake entries
-may be replaced by the real ones.
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;   Figure 2: Man-In-The-Middle Attack against telnet
 
-**Step 2 (Testing)**. After the attack is successful, please try to ping each other between Hosts A and B, and
-report your observation. Please show Wireshark results in your report. Before doing this step, please make
-sure that the IP forwarding on Host M is turned off. You can do that with the following command:
+better that you send out the spoofed packets constantly (e.g. every 5 seconds); otherwise, the fake entries may be replaced by the real ones.
+
+**Step 2 (Testing)**. After the attack is successful, please try to ping each other between Hosts A and B, and report your observation. Please show Wireshark results in your report. Before doing this step, please make sure that the IP forwarding on Host M is turned off. You can do that with the following command:
 ```
-# sysctl net.ipv4.ip_forward=
+# sysctl net.ipv4.ip_forward=0
 ```
-**Step 3 (Turn on IP forwarding)**. Now we turn on the IP forwarding on Host M, so it will forward the
-packets between A and B. Please run the following command and repeat Step 2. Please describe your
-observation.
+
+**Step 3 (Turn on IP forwarding)**. Now we turn on the IP forwarding on Host M, so it will forward the packets between A and B. Please run the following command and repeat Step 2. Please describe your observation.
 ```
-# sysctl net.ipv4.ip_forward=
+# sysctl net.ipv4.ip_forward=1
 ```
-**Step 4 (Launch the MITM attack)**. We are ready to make changes to the Telnet data between A and B.
-Assume that A is the Telnet client and B is the Telnet server. After A has connected to the Telnet server on
-B, for every key stroke typed in A’s Telnet window, a TCP packet is generated and sent to B. We would like
-to intercept the TCP packet, and replace each typed character with a fixed character (say Z). This way, it
+
+**Step 4 (Launch the MITM attack)**. We are ready to make changes to the Telnet data between A and B. Assume that A is the Telnet client and B is the Telnet server. After A has connected to the Telnet server on B, for every key stroke typed in A’s Telnet window, a TCP packet is generated and sent to B. We would like to intercept the TCP packet, and replace each typed character with a fixed character (say Z). This way, it
 does not matter what the user types on A, Telnet will always display Z.
-From the previous steps, we are able to redirect the TCP packets to Host M, but instead of forwarding
-them, we would like to replace them with a spoofed packet. We will write a sniff-and-spoof program to
-accomplish this goal. In particular, we would like to do the following:
+&emsp; From the previous steps, we are able to redirect the TCP packets to Host M, but instead of forwarding them, we would like to replace them with a spoofed packet. We will write a sniff-and-spoof program to accomplish this goal. In particular, we would like to do the following:
 
-- We first keep the IP forwarding on, so we can successfully create a Telnet connection between A to
-    B. Once the connection is established, we turn off the IP forwarding using the following command.
+- We first keep the IP forwarding on, so we can successfully create a Telnet connection between A to B. Once the connection is established, we turn off the IP forwarding using the following command.
     Please type something on A’s Telnet window, and report your observation:
     ```
-    # sysctl net.ipv4.ip_forward=
+    # sysctl net.ipv4.ip_forward=0
     ```
 
-- We run our sniff-and-spoof program on Host M, such that for the captured packets sent from A to B,
-    we spoof a packet but with TCP different data. For packets from B to A (Telnet response), we do not
-    make any change, so the spoofed packet is exactly the same as the original one.
+- We run our sniff-and-spoof program on Host M, such that for the captured packets sent from A to B, we spoof a packet but with TCP different data. For packets from B to A (Telnet response), we do not make any change, so the spoofed packet is exactly the same as the original one.
 
-To help students get started, we provide a skeleton sniff-and-spoof program below. The program captures
-all the TCP packets, and then for packets from A to B, it makes some changes (the modification part is not
-included, because that is part of the task). For packets from B to A, the program does not make any change.
+&emsp; To help students get started, we provide a skeleton sniff-and-spoof program below. The program captures all the TCP packets, and then for packets from A to B, it makes some changes (the modification part is not included, because that is part of the task). For packets from B to A, the program does not make any change.
 ```
 #!/usr/bin/env python
 from scapy.all import *
@@ -283,22 +243,13 @@ elif pkt[IP].src == IP_B and pkt[IP].dst == IP_A:
     del(newpkt[TCP].chksum)
     send(newpkt)
 
-    f = ’tcp’
-    pkt = sniff(iface=’eth0’, filter=f, prn=spoof_pkt)
+f = ’tcp’
+pkt = sniff(iface=’eth0’, filter=f, prn=spoof_pkt)
 ```
-It should be noted that the code above captures all the TCP packets, including the one generated by the
-program itself. That is undesirable, as it will affect the performance. Students need to change the filter, so it
-does not capture its own packets.
+ &emsp; It should be noted that the code above captures all the TCP packets, including the one generated by the program itself. That is undesirable, as it will affect the performance. Students need to change the filter, so it does not capture its own packets.
 
-**Behavior of Telnet**. In Telnet, typically, every character we type in the Telnet window triggers an individ-
-ual TCP packet, but if you type very fast, some characters may be sent together in the same packet. That is
-why in a typical Telnet packet from client to server, the payload only contains one character. The character
-sent to the server will be echoed back by the server, and the client will then display the character in its
-window. Therefore, what we see in the client window is not the direct result of the typing; whatever we type
-in the client window takes a round trip before it is displayed. If the network is disconnected, whatever we
-typed on the client window will not displayed, until the network is recovered. Similarly, if attackers change
-the character to Z during the round trip, Z will be displayed at the Telnet client window, even though that is
-not what you have typed.
+**Behavior of Telnet**. In Telnet, typically, every character we type in the Telnet window triggers an individual TCP packet, but if you type very fast, some characters may be sent together in the same packet. That is why in a typical Telnet packet from client to server, the payload only contains one character. The character sent to the server will be echoed back by the server, and the client will then display the character in its
+window. Therefore, what we see in the client window is not the direct result of the typing; whatever we type in the client window takes a round trip before it is displayed. If the network is disconnected, whatever we typed on the client window will not displayed, until the network is recovered. Similarly, if attackers change the character to Z during the round trip, Z will be displayed at the Telnet client window, even though that is not what you have typed.
 
 ## 5 Task 3: MITM Attack on Netcat using ARP Cache Poisoning
 
