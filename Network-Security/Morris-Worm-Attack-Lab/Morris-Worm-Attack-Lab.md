@@ -93,7 +93,7 @@ root@9652715c8e0a:/#
 
 ![Capturing and replaying events](../media/net-sec-morris-worm-events.png)
 
-&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 2: Capturing and replaying events
+<p align="center">Figure 2: Capturing and replaying events</p>
 
 &emsp; Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in `tcpdump`; actually, the filter is directly fed into the `tcpdump` program running on all nodes. When a node sees the packets that satisfy the filter, it sends an event to the map, which will highlight the node briefly on the map.
 <Br>
@@ -112,7 +112,7 @@ will be given in Task 6.
 
 ![Capturing and replaying events](../media/net-sec-morris-worm-nano-internet.png)
 
-&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 3: The nano internet
+<p align="center">Figure 3: The nano internet </p>
 
 return). The machine running the `ping` command will flash. We will use this mechanism to visualize which hosts are infected by the worm: once a host is infected, we run "`ping 1.2.3.4`" , so the node corresponding to the host can flash on the map.
 
@@ -136,7 +136,8 @@ We provide a skeleton code in the `Labsetup/worm` folder. We will complete this 
 <Br>
 &emsp; To help visualize the attack, we let the worm run a ping command in the background once it successfully gets into a victim host (see Line ➁). This command sends out an ICMP echo message to a non-existing machine every 2 seconds. Our Map application will flash the node after seeing its ICMP messages. That is just one way to visualize the compromised hosts.
 
-&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  Listing 1: The attack code: `worm.py`
+<p align="center">Listing 1: The attack code: `worm.py`</p>
+
 ```
 shellcode= (
     ... code omitted (will be discussed later) ...
