@@ -374,37 +374,24 @@ iptables -A FORWARD -i eth0 -p tcp --sport 5000 -j ACCEPT
 
 ## 5 Task 3: Connection Tracking and Stateful Firewall
 
-In the previous task, we have only set up stateless firewalls, which inspect each packet independently. How-
-ever, packets are usually not independent; they may be part of a TCP connection, or they may be ICMP
-packets triggered by other packets. Treating them independently does not take into consideration the con-
-text of the packets, and can thus lead to inaccurate, unsafe, or complicated firewall rules. For example, if
-we would like to allow TCP packets to get into our network only if a connection was made first, we can-
-not achieve that easily using stateless packet filters, because when the firewall examines each individual
-TCP packet, it has no idea whether the packet belongs to an existing connection or not, unless the firewall
-maintains some state information for each connection. If it does that, it becomes a stateful firewall.
+In the previous task, we have only set up stateless firewalls, which inspect each packet independently. However, packets are usually not independent; they may be part of a TCP connection, or they may be ICMP packets triggered by other packets. Treating them independently does not take into consideration the context of the packets, and can thus lead to inaccurate, unsafe, or complicated firewall rules. For example, if we would like to allow TCP packets to get into our network only if a connection was made first, we can-
+not achieve that easily using stateless packet filters, because when the firewall examines each individual TCP packet, it has no idea whether the packet belongs to an existing connection or not, unless the firewall maintains some state information for each connection. If it does that, it becomes a stateful firewall.
 
 ### 5.1 Task 3.A: Experiment with the Connection Tracking
 
-To support stateful firewalls, we need to be able to track connections. This is achieved by the `conntrack`
-mechanism inside the kernel. In this task, we will conduct experiments related to this module, and get
-familiar with the connection tracking mechanism. In our experiment, we will check the connection tracking
-information on the router container. This can be done using the following command:
+To support stateful firewalls, we need to be able to track connections. This is achieved by the `conntrack` mechanism inside the kernel. In this task, we will conduct experiments related to this module, and get familiar with the connection tracking mechanism. In our experiment, we will check the connection tracking information on the router container. This can be done using the following command:
 ```
 # conntrack -L
 ```
-The goal of the task is to use a series of experiments to help students understand the connection concept
-in this tracking mechanism, especially for the ICMP and UDP protocols, because unlike TCP, they do not
-have connections. Please conduct the following experiments. For each experiment, please describe your
-observation, along with your explanation.
+&emsp; The goal of the task is to use a series of experiments to help students understand the connection concept in this tracking mechanism, especially for the ICMP and UDP protocols, because unlike TCP, they do not have connections. Please conduct the following experiments. For each experiment, please describe your observation, along with your explanation.
 
-- ICMP experiment: Run the following command and check the connection tracking information on
-    the router. Describe your observation. How long is the ICMP connection state be kept?
+- ICMP experiment: Run the following command and check the connection tracking information on the router. Describe your observation. How long is the ICMP connection state be kept?
     ```
     // On 10.9.0.5, send out ICMP packets
-    # ping 192.168.60.
+    # ping 192.168.60.5
     ```
-- UDP experiment: Run the following command and check the connection tracking information on the
-    router. Describe your observation. How long is the UDP connection state be kept?
+
+- UDP experiment: Run the following command and check the connection tracking information on the router. Describe your observation. How long is the UDP connection state be kept?
     ```
     // On 192.168.60.5, start a netcat UDP server
     # nc -lu 9090
@@ -413,8 +400,8 @@ observation, along with your explanation.
     # nc -u 192.168.60.5 9090
     <type something, then hit return>
     ```
-- TCP experiment: Run the following command and check the connection tracking information on the
-    router. Describe your observation. How long is the TCP connection state be kept?
+
+- TCP experiment: Run the following command and check the connection tracking information on the router. Describe your observation. How long is the TCP connection state be kept?
     ```
     // On 192.168.60.5, start a netcat TCP server
     # nc -l 9090
@@ -423,36 +410,24 @@ observation, along with your explanation.
     # nc 192.168.60.5 9090
     <type something, then hit return>
     ```
+
 ### 5.2 Task 3.B: Setting Up a Stateful Firewall
 
-Now we are ready to set up firewall rules based on connections. In the following example, the "`-m
-conntrack`" option indicates that we are using the `conntrack` module, which is a very important mod-
-ule for `iptables`; it tracks connections, and `iptables` replies on the tracking information to build
-stateful firewalls. The `--ctsate ESTABLISHED,RELATED` indicates that whether a packet belongs
-to an `ESTABLISHED` or` RELATED `connection. The rule allows TCP packets belonging to an existing
-connection to pass through.
+Now we are ready to set up firewall rules based on connections. In the following example, the "`-m conntrack`" option indicates that we are using the `conntrack` module, which is a very important module for `iptables`; it tracks connections, and `iptables` replies on the tracking information to build stateful firewalls. The `--ctsate ESTABLISHED,RELATED` indicates that whether a packet belongs to an `ESTABLISHED` or `RELATED` connection. The rule allows TCP packets belonging to an existing connection to pass through.
 ```
-iptables -A FORWARD -p tcp -m conntrack \
+iptables -A FORWARD -p tcp -m conntrack     \
          --ctstate ESTABLISHED,RELATED -j ACCEPT
 ```
-The rule above does not cover the SYN packets, which do not belong to any established connection.
-Without it, we will not be able to create a connection in the first place. Therefore, we need to add a rule to
-accept incoming SYN packet:
+&emsp; The rule above does not cover the SYN packets, which do not belong to any established connection. Without it, we will not be able to create a connection in the first place. Therefore, we need to add a rule to accept incoming SYN packet:
 ```
-iptables -A FORWARD -p tcp -i eth0 --dport 8080 --syn \
+iptables -A FORWARD -p tcp -i eth0 --dport 8080 --syn     \
          -m conntrack --ctstate NEW -j ACCEPT
 ```
-Finally, we will set the default policy on FORWARD to drop everything. This way, if a packet is not
-accepted by the two rules above, they will be dropped.
+&emsp; Finally, we will set the default policy on FORWARD to drop everything. This way, if a packet is not accepted by the two rules above, they will be dropped.
 ```
 iptables -P FORWARD DROP
 ```
-Please rewrite the firewall rules in Task 2.C, but this time,**we will add a rule allowing internal hosts to
-visit any external server**(this was not allowed in Task 2.C). After you write the rules using the connection
-tracking mechanism, think about how to do it without using the connection tracking mechanism (you do not
-need to actually implement them). Based on these two sets of rules, compare these two different approaches,
-and explain the advantage and disadvantage of each approach. When you are done with this task, remember
-to clear all the rules.
+&emsp; Please rewrite the firewall rules in Task 2.C, but this time, **we will add a rule allowing internal hosts to visit any external server** (this was not allowed in Task 2.C). After you write the rules using the connection tracking mechanism, think about how to do it without using the connection tracking mechanism (you do not need to actually implement them). Based on these two sets of rules, compare these two different approaches, and explain the advantage and disadvantage of each approach. When you are done with this task, remember to clear all the rules.
 
 
 ## 6 Task 4: Limiting Network Traffic
