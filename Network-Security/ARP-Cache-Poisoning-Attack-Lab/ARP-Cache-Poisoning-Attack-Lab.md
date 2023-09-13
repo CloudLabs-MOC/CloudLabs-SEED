@@ -107,11 +107,7 @@ Being able to sniff packets is very important in this lab, because if things do 
 
 ## 3 Task 1: ARP Cache Poisoning
 
-The objective of this task is to use packet spoofing to launch an ARP cache poisoning attack on a target,
-such that when two victim machines A and B try to communicate with each other, their packets will be
-intercepted by the attacker, who can make changes to the packets, and can thus become the man in the
-middle between A and B. This is called Man-In-The-Middle (MITM) attack. In this task, we focus on the
-ARP cache poisoning part. The following code skeleton shows how to construct an ARP packet using Scapy.
+The objective of this task is to use packet spoofing to launch an ARP cache poisoning attack on a target, such that when two victim machines A and B try to communicate with each other, their packets will be intercepted by the attacker, who can make changes to the packets, and can thus become the man in the middle between A and B. This is called Man-In-The-Middle (MITM) attack. In this task, we focus on the ARP cache poisoning part. The following code skeleton shows how to construct an ARP packet using Scapy.
 ```
 #!/usr/bin/env python
 from scapy.all import *
@@ -123,9 +119,7 @@ A.op = 1        # 1 for ARP request; 2 for ARP reply
 pkt = E/A
 sendp(pkt)
 ```
-The above program constructs and sends an ARP packet. Please set necessary attribute names/values to
-define your own ARP packet. We can use `ls(ARP)`and `ls(Ether)`to see the attribute names of the `ARP`
-and `Ether` classes. If a field is not set, a default value will be used (see the third column of the output):
+&emsp; The above program constructs and sends an ARP packet. Please set necessary attribute names/values to define your own ARP packet. We can use `ls(ARP)` and `ls(Ether)` to see the attribute names of the `ARP` and `Ether` classes. If a field is not set, a default value will be used (see the third column of the output):
 ```
 $ python
 >>> from scapy.all import *
@@ -147,37 +141,27 @@ hwdst           : MACField              = (’00:00:00:00:00:00’)
 pdst            : IPField               = (’0.0.0.0’)
 ```
 
-In this task, we have three machines (containers), A, B, and M. We use M as the attacker machine. We
-would like to cause A to add a fake entry to its ARP cache, such that B’s IP address is mapped to M’s MAC
-address. We can check a computer’s ARP cache using the following command. If you want to look at the
-ARP cache associated with a specific interface, you can use the `-i `option.
+&emsp; In this task, we have three machines (containers), A, B, and M. We use M as the attacker machine. We would like to cause A to add a fake entry to its ARP cache, such that B’s IP address is mapped to M’s MAC address. We can check a computer’s ARP cache using the following command. If you want to look at the ARP cache associated with a specific interface, you can use the `-i `option.
 ```
 $ arp -n
 Address     HWtype      HWaddress           Flags Mask   Iface
 10.0.2.1    ether       52:54:00:12:35:00   C            enp0s
 10.0.2.3    ether       08:00:27:48:f4:0b   C            enp0s
 ```
-There are many ways to conduct ARP cache poisoning attack. Students need to try the following three
-methods, and report whether each method works or not.
+&emsp; There are many ways to conduct ARP cache poisoning attack. Students need to try the following three methods, and report whether each method works or not.
 
-- **Task 1.A (using ARP request)**.On host M, construct an ARP request packet to map B’s IP address
-    to M’s MAC address. Send the packet to A and check whether the attack is successful or not.
-- **Task 1.B (using ARP reply)**. On host M, construct an ARP reply packet to map B’s IP address to
-    M’s MAC address. Send the packet to A and check whether the attack is successful or not. Try the
-    attack under the following two scenarios, and report the results of your attack:
+- **Task 1.A (using ARP request)**. On host M, construct an ARP request packet to map B’s IP address to M’s MAC address. Send the packet to A and check whether the attack is successful or not.
+
+- **Task 1.B (using ARP reply)**. On host M, construct an ARP reply packet to map B’s IP address to M’s MAC address. Send the packet to A and check whether the attack is successful or not. Try the attack under the following two scenarios, and report the results of your attack:
        - Scenario 1: B’s IP is already in A’s cache.
-       - Scenario 2: B’s IP is not in A’s cache. You can use the command "`arp -d a.b.c.d`" to
-          remove the ARP cache entry for the IP address `a.b.c.d`.
-- **Task 1.C (using ARP gratuitous message)**.On host M, construct an ARP gratuitous packet, and use
-    it to map B’s IP address to M’s MAC address. Please launch the attack under the same two scenarios
-    as those described in Task 1.B.
-    ARP gratuitous packet is a special ARP request packet. It is used when a host machine needs to
-    update outdated information on all the other machine’s ARP cache. The gratuitous ARP packet has
-    the following characteristics:
-    - The source and destination IP addresses are the same, and they are the IP address of the host
-          issuing the gratuitous ARP.
-    - The destination MAC addresses in both ARP header and Ethernet header are the broadcast MAC
-          address (`ff:ff:ff:ff:ff:ff`).
+       - Scenario 2: B’s IP is not in A’s cache. You can use the command "`arp -d a.b.c.d`" to remove the ARP cache entry for the IP address `a.b.c.d`.
+
+- **Task 1.C (using ARP gratuitous message)**. On host M, construct an ARP gratuitous packet, and use it to map B’s IP address to M’s MAC address. Please launch the attack under the same two scenarios as those described in Task 1.B.
+<Br><Br>
+ARP gratuitous packet is a special ARP request packet. It is used when a host machine needs to update outdated information on all the other machine’s ARP cache. The gratuitous ARP packet has the following characteristics:
+   
+    - The source and destination IP addresses are the same, and they are the IP address of the host issuing the gratuitous ARP.
+    - The destination MAC addresses in both ARP header and Ethernet header are the broadcast MAC address (`ff:ff:ff:ff:ff:ff`).
     - No reply is expected.
 
 ## 4 Task 2: MITM Attack on Telnet using ARP Cache Poisoning
