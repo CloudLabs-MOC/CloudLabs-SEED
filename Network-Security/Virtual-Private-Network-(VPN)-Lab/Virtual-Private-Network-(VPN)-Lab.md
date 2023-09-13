@@ -608,9 +608,12 @@ in-person demo, this checklist is still quite useful.
 `(a) An Example of packet flow from telnet client to server in Host-to-Gateway Tunnel`
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a6fd97f1-e05c-4efe-9699-ff35a87b904e)
+
 `(b) An Example of packet flow from telnet server to client in Host-to-Gateway Tunnel`
+
 `Figure 5: An Example of Packet Flow in VPN.`
 
 `Table 1: Checklist for VPN demonstration`
+
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/e8d695bc-51e3-426a-8d48-d631d30779b2)
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a8831a5e-b82b-46a6-a6be-a13bcd59b7ca)
