@@ -153,36 +153,20 @@ AS-155 is a stub AS, which has one network ( `10.155.0.0/24`) and one BGP router
 ```
 ### 3.2 Task 1.b: Observing BGP UPDATE Messages
 
-The objective of this task is to understand the BGP UPDATE messages. Run `tcpdump `on AS-150’s
-BGP router, use it to monitor the BGP traffic. This command will save the captured BGP packets into
-`/tmp/bgp.pcap`.
+The objective of this task is to understand the BGP UPDATE messages. Run `tcpdump `on AS-150’s BGP router, use it to monitor the BGP traffic. This command will save the captured BGP packets into `/tmp/bgp.pcap`.
 ```
 # tcpdump -i any -w /tmp/bgp.pcap "tcp port 179"
 ```
-Your job is to do something on AS-155’s BGP router to trigger at least one BGP route withdrawal and
-one BGP route advertisement messages. These UPDATE messages should be captured by the `tcpdump`
-command on AS-150 and stored inside `bgp.pcap`. Copy this file to the host computer using the "`docker
-cp`" command (from the host), and then load it into Wireshark. Pick a route advertisement message and a
-route withdraw message, provide explanation on these two messages. Screenshots should be provided in the
-lab report.
-
+&emsp; Your job is to do something on AS-155’s BGP router to trigger at least one BGP route withdrawal and one BGP route advertisement messages. These UPDATE messages should be captured by the `tcpdump` command on AS-150 and stored inside `bgp.pcap`. Copy this file to the host computer using the "`docker cp`" command (from the host), and then load it into Wireshark. Pick a route advertisement message and a route withdraw message, provide explanation on these two messages. Screenshots should be provided in the lab report.
 
 ### 3.3 Task 1.c: Experimenting with Large Communities
 
-When a BGP router sends routes to its peers, they do not send all the routes they know. What routes are
-sent depends on many factors, such as the region of the peers, the business relationship between the peers,
-and policies. To help BGP routers make such decisions, additional information needs to be attached to each
-route, as the predefined set of route attributes cannot capture such information. The BGP Large Communities
-are created to serve this goal. The objective of this task is to learn how it is used in the emulator to reflect
-the business relationship among peers.
-Let us assume that due to some technical issue, the connection between AS-4 and AS-156 is broken.
-We can emulate this by disabling the peering between AS-4 and AS-156. Since AS-4 is the only service
-provider for AS-156, this essentially disconnects AS-156 from the Internet. If we ping another host from
-one of the hosts in AS-156, we can see the following results (please do not run ping from the BGP router;
-only run it from a host):
+When a BGP router sends routes to its peers, they do not send all the routes they know. What routes are sent depends on many factors, such as the region of the peers, the business relationship between the peers, and policies. To help BGP routers make such decisions, additional information needs to be attached to each route, as the predefined set of route attributes cannot capture such information. The BGP Large Communities are created to serve this goal. The objective of this task is to learn how it is used in the emulator to reflect the business relationship among peers.
+<Br>
+&emsp; Let us assume that due to some technical issue, the connection between AS-4 and AS-156 is broken. We can emulate this by disabling the peering between AS-4 and AS-156. Since AS-4 is the only service provider for AS-156, this essentially disconnects AS-156 from the Internet. If we ping another host from one of the hosts in AS-156, we can see the following results (please do not run ping from the BGP router; only run it from a host):
 ```
-// On 10.156.0.
-# ping 10.155.0.
+// On 10.156.0.72
+# ping 10.155.0.71
 PING 10.155.0.71 (10.155.0.71) 56(84) bytes of data.
 64 bytes from 10.155.0.71: icmp_seq=1 ttl=62 time=14.6 ms
 64 bytes from 10.155.0.71: icmp_seq=2 ttl=62 time=0.363 ms
@@ -193,56 +177,37 @@ From 10.156.0.254 icmp_seq=1 Destination Net Unreachable
 From 10.156.0.254 icmp_seq=2 Destination Net Unreachable
 From 10.156.0.254 icmp_seq=3 Destination Net Unreachable
 ```
-We can see that `10.155.0.71 `is still reachable, because it belongs to AS-155, which is still peered
-with AS-156. However,`10.161.0.71 `(belonging to AS-161) cannot be reached, because nobody will
-route the packet for AS-156. The question is, AS-156 still peers with AS-155, which is connected to the
-Internet, so why is AS-156 not able to connect to the Internet? This is because whether an AS forwards
-traffic for another AS depends on their business relationship.
-While AS-156 and AS-4 are trying to solve the problem, AS-156 holds an emergency meeting with AS-
-155, agreeing to pay AS-155, so its traffic can temporarily go through AS-155 to reach the Internet. This
-requires some changes on AS-155’s BGP router. Please make such changes, so AS-155 can temporarily
-provide a transit service to AS-156. Please read Section 9 before working on this task. After making the
-changes, please make sure run the following command to reload the BIRD configuration.
+&emsp; We can see that `10.155.0.71 `is still reachable, because it belongs to AS-155, which is still peered with AS-156. However,`10.161.0.71 `(belonging to AS-161) cannot be reached, because nobody will route the packet for AS-156. The question is, AS-156 still peers with AS-155, which is connected to the Internet, so why is AS-156 not able to connect to the Internet? This is because whether an AS forwards traffic for another AS depends on their business relationship.
+<Br>
+&emsp; While AS-156 and AS-4 are trying to solve the problem, AS-156 holds an emergency meeting with AS-155, agreeing to pay AS-155, so its traffic can temporarily go through AS-155 to reach the Internet. This requires some changes on AS-155’s BGP router. Please make such changes, so AS-155 can temporarily provide a transit service to AS-156. Please read Section 9 before working on this task. After making the changes, please make sure run the following command to reload the BIRD configuration.
 ```
 # birdc configure
 BIRD 2.0.7 ready.
 Reading configuration from /etc/bird/bird.conf
 Reconfigured
 ```
+
 ### 3.4 Task 1.d: Configuring AS-
 
-AS-180 is already included in the emulator. It connects to the IX-105 Internet exchange (Houston), but it
-does not peer with anybody, so it is not connected to the Internet. In this task, students need to complete the
-configuration of AS-180’s BGP router and all the related BGP routers, so the following goals are achieved:
+AS-180 is already included in the emulator. It connects to the IX-105 Internet exchange (Houston), but it does not peer with anybody, so it is not connected to the Internet. In this task, students need to complete the configuration of AS-180’s BGP router and all the related BGP routers, so the following goals are achieved:
 
 - Peer AS-180 with AS-171, so they can directly reach each other.
-- Peer AS-180 with the AS-2 and AS-3 transit autonomous systems, so they can reach other destination
-    via these transits.
+- Peer AS-180 with the AS-2 and AS-3 transit autonomous systems, so they can reach other destination via these transits.
 
+**Shell script.** In this task, we need to modify several BIRD configuration files. Instead of going to each container to make changes, we can copy all the BIRD configuration files from the containers to the host VM, make changes, and then copy them back to the containers. We have included two shell scripts in the `task1 `folder to facilitate the process:
 
-**Shell script.** In this task, we need to modify several BIRD configuration files. Instead of going to each
-container to make changes, we can copy all the BIRD configuration files from the containers to the host
-VM, make changes, and then copy them back to the containers. We have included two shell scripts in the
- `task1 `folder to facilitate the process:
-
-- `importbirdconf.sh`: get all the needed BIRD configuration files from the containers. If a
-    configuration file already exists in the current folder, the file will not be overwritten.
+- `importbirdconf.sh`: get all the needed BIRD configuration files from the containers. If a configuration file already exists in the current folder, the file will not be overwritten.
 - `exportbirdconf.sh`: copy the BIRD configuration files to the containers and run "`birdc
     configure`" to reload the configuration.
 
-**Debugging.** If the result is not what you have expected, you may need to debug to find out what has gone
-wrong. In particular, you want to know where your packets go. For example, if you run `ping`, but you do
-not get a reply, you want to know where the problem is. You can use the filter option in the map client, and
-visualize the traffic flow. The syntax of the filter is the same as that in `tcpdump`. We give a few examples
+**Debugging.** If the result is not what you have expected, you may need to debug to find out what has gone wrong. In particular, you want to know where your packets go. For example, if you run `ping`, but you do not get a reply, you want to know where the problem is. You can use the filter option in the map client, and visualize the traffic flow. The syntax of the filter is the same as that in `tcpdump`. We give a few examples
 in the following.
 ```
-"icmp" Ÿ                        **show all icmp traffic**
-"icmp and src 10.180.0.71" Ÿ    **show icmp traffic from 10.180.0.**
-"icmp and dst 10.180.0.71" Ÿ    **show icmp traffic to 10.180.0.**
+"icmp"                        <---- show all icmp traffic
+"icmp and src 10.180.0.71"    <---- show icmp traffic from 10.180.0.71
+"icmp and dst 10.180.0.71"    <---- show icmp traffic to 10.180.0.71
 ```
-**Lab report.** In your lab report, please include the content that you add to the BIRD configuration files,
-and provide proper explanation. Please also include screenshots (such as traceroute) to demonstrate that
-your task is successful.
+**Lab report.** In your lab report, please include the content that you add to the BIRD configuration files, and provide proper explanation. Please also include screenshots (such as traceroute) to demonstrate that your task is successful.
 
 ## 4 Task 2: Transit Autonomous System
 
