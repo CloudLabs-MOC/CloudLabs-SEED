@@ -310,111 +310,73 @@ $ sudo apt update && sudo apt install htop
 ```
 ## 7 Task 5: Preventing Self Infection
 
-It was believed that the Morris worm did not intend to cause real harms to the target computers, but a bug
-in its code caused a denial-of-service attack on the targets. The main reason was that the worm failed to
-prevent self infection. Once a computer is compromised, an instance of the worm will run in a separate
-process. If this computer gets compromised again, a new instance of the worm will start running. If the
-worm does not have a mechanism to check whether a computer has already been infected or not, many new
-instances of the worms will be spawn, consuming more and more resources, and eventually bring the target
-machines to their knees or, in many cases, crash them. The Morris worm does have a checking mechanism,
-but there was a bug in the code.
-In this task, students need to add such a checking mechanism to their worm code to ensure that only one
-instance of the worm can run on a compromised computer. Once this is implemented, during the attack, the
-
-
-CPU usage will unlikely reach the 100 percent. Please provide the evidence in your lab report.
+It was believed that the Morris worm did not intend to cause real harms to the target computers, but a bug in its code caused a denial-of-service attack on the targets. The main reason was that the worm failed to prevent self infection. Once a computer is compromised, an instance of the worm will run in a separate process. If this computer gets compromised again, a new instance of the worm will start running. If the worm does not have a mechanism to check whether a computer has already been infected or not, many new instances of the worms will be spawn, consuming more and more resources, and eventually bring the target machines to their knees or, in many cases, crash them. The Morris worm does have a checking mechanism, but there was a bug in the code.
+<Br>
+&emsp; In this task, students need to add such a checking mechanism to their worm code to ensure that only one instance of the worm can run on a compromised computer. Once this is implemented, during the attack, the CPU usage will unlikely reach the 100 percent. Please provide the evidence in your lab report.
 
 ## 8 Task 6: Releasing the Worm on the Mini Internet
 
-In this task, we will switch to a larger internet, the mini internet. This task is more for enhanced satisfaction,
-as seeing how the worm spread in a more realistic emulated internet is more satisfactory.
-For this setup, at least 8GB of RAM and 2 cores are required for the VM; otherwise, the emulator will
-be very slow. Go to your VM’s settings from VirtualBox, make changes accordingly (the VM needs to be
-shutdown before these changes can be made).
+In this task, we will switch to a larger internet, the mini internet. This task is more for enhanced satisfaction, as seeing how the worm spread in a more realistic emulated internet is more satisfactory. 
+<Br>
+&emsp; For this setup, at least 8GB of RAM and 2 cores are required for the VM; otherwise, the emulator will be very slow. Go to your VM’s settings from VirtualBox, make changes accordingly (the VM needs to be shutdown before these changes can be made).
 
-**Note for students and instructors:** If students’ machines are not powerful enough, they should discuss
-with their instructors to find an alternative, such as using a public machine or a cloud machine. In our class at
-the Syracuse University, we did encounter this situation. We just asked these students (only a small number)
-to submit their code, and we (the TA or instructor) tested the attack code against our own emulator to see
-the result. Students can still use the nano internet setup to do their preliminary testing.
+**Note for students and instructors:** If students’ machines are not powerful enough, they should discuss with their instructors to find an alternative, such as using a public machine or a cloud machine. In our class at the Syracuse University, we did encounter this situation. We just asked these students (only a small number) to submit their code, and we (the TA or instructor) tested the attack code against our own emulator to see the result. Students can still use the nano internet setup to do their preliminary testing.
 
 ### 8.1 Start the Mini-Internet Emulator
 
-The container files for this emulator are stored in the `Labsetup/internet-mini` folder. Go to this
-folder, run the following commands to build containers and start them.
+The container files for this emulator are stored in the `Labsetup/internet-mini` folder. Go to this folder, run the following commands to build containers and start them.
 ```
 $ dcbuild   # alias for "docker-compose build"
 $ ./z_start.sh
 ```
-Due to a bug in the `docker-compose` program, simultaneously bringing up these 200+ containers
-using "`docker-compose up`" will fail. Using the command in `zstart.sh`, we bring up the con-
-tainers 10 at a time to avoid the problem. Please do not add any file or folder in the `internet-mini/`
-folder, or the command will fail. If you do want to add files/folders in this folder, you can modify the `grep`
-command in `zstart.sh` to exclude them. Once the emulator starts running, we can see its networks
-using the browser (see Figure 4).
-Using this method, we have to bring up the containers in the detached mode (the purpose of the `-d`
-option). Therefore, we will not be able see the logs printed out by each container. To see the logs, we can
-use the following command (use `Ctrl-c` to exit without stopping the container):
+&emsp; Due to a bug in the `docker-compose` program, simultaneously bringing up these 200+ containers using "`docker-compose up`" will fail. Using the command in `zstart.sh`, we bring up the containers 10 at a time to avoid the problem. Please do not add any file or folder in the `internet-mini/` folder, or the command will fail. If you do want to add files/folders in this folder, you can modify the `grep` command in `zstart.sh` to exclude them. Once the emulator starts running, we can see its networks using the browser (see Figure 4).
+&emsp; Using this method, we have to bring up the containers in the detached mode (the purpose of the `-d` option). Therefore, we will not be able see the logs printed out by each container. To see the logs, we can use the following command (use `Ctrl-c` to exit without stopping the container):
 ```
 $ docker logs -f <container ID>
 ```
-Due to the large number of containers, interacting with the containers using the Map is slow. It is better
-to directly interact with the containers using the docker command. The following command lists all the
-containers in the AS-153 autonomous system. For the sake of convenience, we include the autonomous
-system number and the IP address in the container name.
+ &emsp; Due to the large number of containers, interacting with the containers using the Map is slow. It is better to directly interact with the containers using the docker command. The following command lists all the containers in the AS-153 autonomous system. For the sake of convenience, we include the autonomous system number and the IP address in the container name.
 ```
 $ dockps | grep as
-9869c5085bf7 as153h-host_0-10.153.0.
-843a920c60f5 as153h-host_10-10.153.0.
-286d97c102dc as153h-host_1-10.153.0.
+9869c5085bf7 as153h-host_0-10.153.0.71
+843a920c60f5 as153h-host_10-10.153.0.81
+286d97c102dc as153h-host_1-10.153.0.72
 ...
 ```
 
-```
-Figure 4: The mini internet
-```
+![Mini internet](../media/net-sec-morris-worm-mini-internet.png)
+
+<p align="center">Figure 4: The mini internet</p>
+
 ### 8.2 Launch the Attack
 
-The attack code used on the nano internet should be able to work directly in the mini internet, although
-students may need to change their random number generation to cover the IP addresses in a larger range.
-The following facts can be used:
+The attack code used on the nano internet should be able to work directly in the mini internet, although students may need to change their random number generation to cover the IP addresses in a larger range. The following facts can be used:
 
-    The IP addresses of all the hosts in the emulator have the following pattern: `10.X.0.Y`, where
-    Xranges from `151` to `180` , and `Y` ranges from `70` to `100`.
+<Br>
+&emsp; The IP addresses of all the hosts in the emulator have the following pattern: `10.X.0.Y`, where Xranges from `151` to `180` , and `Y` ranges from `70` to `100`.
+<Br><Br>
 
-**You should only release the worm on one of the nodes, instead of keep attacking the other nodes
-from your attack machine.** The worm is supposed to spread across the Internet automatically. You do need
-to provide evidences to show this behavior.
-By typing the "`icmp and dst 1.2.3.4`" in the filter box, we can visualize which machines are
+**You should only release the worm on one of the nodes, instead of keep attacking the other nodes from your attack machine.** The worm is supposed to spread across the Internet automatically. You do need to provide evidences to show this behavior.
+<Br>
+&emsp; By typing the "`icmp and dst 1.2.3.4`" in the filter box, we can visualize which machines are
 infected by the worm. If you have implemented everything correctly, the spreading rate will be exponential.
-A demonstration video of the attack can be found from this linkon YouTube.
-For this task, students should record a short demonstration video, similar to the provided sample video.
-During the demo, the map should be used to visualize the spreading of the worm. Students should submit
-this video (unless the instructor says the otherwise).
+<Br>
+A demonstration video of the attack can be found from [this link](https://youtu.be/2VZV-aFoVjk) on YouTube.
+<Br>
+&emsp; For this task, students should record a short demonstration video, similar to the provided sample video. During the demo, the map should be used to visualize the spreading of the worm. Students should submit this video (unless the instructor says the otherwise).
 
 ## 9 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-
-
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits. For Task 6, as indicated in the task, a short demonstrate video should
-also be submitted.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising.
+Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits. For Task 6, as indicated in the task, a short demonstrate video should also be submitted.
 
 ## Acknowledgment
 
-This lab was developed with the help of several students in my *Computer Security (CSE643)* class at the
-Syracuse University in Fall 2021. The SEED project was funded in part by the grants from the US National
-Science Foundation and Syracuse University.
+This lab was developed with the help of several students in my *Computer Security (CSE643)* class at the Syracuse University in Fall 2021. The SEED project was funded in part by the grants from the US National Science Foundation and Syracuse University.
 
 ## References
 
-```
-[1] Wikipedia contributors, “Morris worm — Wikipedia, The Free Encyclopedia”, `https://en.
-wikipedia.org/w/index.php?title=Morris_worm&oldid=1059312237`
-```
-```
-[2] Spafford, Eugene, “An analysis of the worm”, December 8, 1988, Purdue University.
-```
+
+[1] Wikipedia contributors, “Morris worm — Wikipedia, The Free Encyclopedia”, `https://en.wikipedia.org/w/index.php?title=Morris_worm&oldid=1059312237`
+<Br> [2] Spafford, Eugene, “An analysis of the worm”, December 8, 1988, Purdue University.
+
 
