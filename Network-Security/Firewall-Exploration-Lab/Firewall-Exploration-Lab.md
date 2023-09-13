@@ -271,66 +271,35 @@ the module is removed, those hooks are also removed.
 
 ## 4 Task 2: Experimenting with Stateless Firewall Rules
 
-In the previous task, we had a chance to build a simple firewall using `netfilter`. Actually,`Linux`
-already has a built-in firewall, also based on `netfilter`. This firewall is called` iptables`. Technically,
-the kernel part implementation of the firewall is called `Xtables`, while `iptables` is a user-space program
-to configure the firewall. However,`iptables` is often used to refer to both the kernel-part implementation
+In the previous task, we had a chance to build a simple firewall using `netfilter`. Actually,`Linux` already has a built-in firewall, also based on `netfilter`. This firewall is called `iptables`. Technically, the kernel part implementation of the firewall is called `Xtables`, while `iptables` is a user-space program to configure the firewall. However,`iptables` is often used to refer to both the kernel-part implementation
 and the user-space program.
 
 ### 4.1 Background of iptables
 
-In this task, we will use `iptables` to set up a firewall. The` iptables` firewall is designed not only
-to filter packets, but also to make changes to packets. To help manage these firewall rules for different
-purposes,`iptables` organizes all rules using a hierarchical structure: table, chain, and rules. There are
-several tables, each specifying the main purpose of the rules as shown in Table 1. For example, rules for
-packet filtering should be placed in the `filter` table, while rules for making changes to packets should be
-placed in the `nat` or `mangle` tables.
-Each table contains several chains, each of which corresponds to a `netfilter` hook. Basically, each
-chain indicates where its rules are enforced. For example, rules on the `FORWARD` chain are enforced at the
-`NFINETFORWARD` hook, and rules on the `INPUT` chain are enforced at the `NFINETLOCALIN` hook.
-Each chain contains a set of firewall rules that will be enforced. When we set up firewalls, we add rules
-to these chains. For example, if we would like to block all incoming `telnet` traffic, we would add a rule
-to the `INPUT` chain of the `filter` table. If we would like to redirect all incoming `telnet` traffic to a
-different port on a different host, basically doing port forwarding, we can add a rule to the `INPUT` chain of
-the `mangle` table, as we need to make changes to packets.
+In this task, we will use `iptables` to set up a firewall. The` iptables` firewall is designed not only to filter packets, but also to make changes to packets. To help manage these firewall rules for different purposes, `iptables` organizes all rules using a hierarchical structure: table, chain, and rules. There are several tables, each specifying the main purpose of the rules as shown in Table 1. For example, rules for
+packet filtering should be placed in the `filter` table, while rules for making changes to packets should be placed in the `nat` or `mangle` tables.
+<Br>
+&emsp; Each table contains several chains, each of which corresponds to a `netfilter` hook. Basically, each chain indicates where its rules are enforced. For example, rules on the `FORWARD` chain are enforced at the `NF_INET_FORWARD` hook, and rules on the `INPUT` chain are enforced at the `NF_INET_LOCALIN` hook.
+<Br>
+&emsp; Each chain contains a set of firewall rules that will be enforced. When we set up firewalls, we add rules to these chains. For example, if we would like to block all incoming `telnet` traffic, we would add a rule to the `INPUT` chain of the `filter` table. If we would like to redirect all incoming `telnet` traffic to a different port on a different host, basically doing port forwarding, we can add a rule to the `INPUT` chain of the `mangle` table, as we need to make changes to packets.
 
 ### 4.2 Using iptables
 
-To add rules to the chains in each table, we use the `iptables`` command, which is a quite powerful
-command. Students can find the manual of `iptables` by typing "`man iptables`"or easily find many
-tutorials from online. What makes `iptables` complicated is the many command-line arguments that we
-need to provide when using the command. However, if we understand the structure of these command-line
-arguments, we will find out that the command is not that complicated.
-In a typical `iptables` command, we add a rule to or remove a rule from one of the chains in one of
-the tables, so we need to specify a table name (the default is `filter`), a chain name, and an operation on
-the chain. After that, we specify the rule, which is basically a pattern that will be matched with each of
-the packets passing through. If there is a match, an action will be performed on this packet. The general
+To add rules to the chains in each table, we use the `iptables` command, which is a quite powerful command. Students can find the manual of `iptables` by typing "`man iptables`" or easily find many tutorials from online. What makes `iptables` complicated is the many command-line arguments that we need to provide when using the command. However, if we understand the structure of these command-line arguments, we will find out that the command is not that complicated.
+<Br>
+&emsp; In a typical `iptables` command, we add a rule to or remove a rule from one of the chains in one of the tables, so we need to specify a table name (the default is `filter`), a chain name, and an operation on the chain. After that, we specify the rule, which is basically a pattern that will be matched with each of the packets passing through. If there is a match, an action will be performed on this packet. The general
 structure of the command is depicted in the following:
 
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  &emsp; &emsp; Table 1: `iptables` Tables and Chains
 
-```
-Table 1:iptablesTables and Chains
-Table Chain Functionality
-filter INPUT Packet filtering
-FORWARD
-OUTPUT
-nat PREROUTING Modifying source or destination
-INPUT network addresses
-OUTPUT
-POSTROUTING
-mangle PREROUTING Packet content modification
-INPUT
-FORWARD
-OUTPUT
-POSTROUTING
-```
+![iptables Tables and Chains](../media/net-sec-firewall-exploration-iptables-chains.png)
+
 ```
 iptables -t <table> -<operation> <chain>  <rule>  -j <target>
          ----------  -------------------- ------- -----------
            Table       Chain               Rule     Action
 ```
-The rule is the most complicated part of theiptablescommand. We will provide additional informa-
-tion later when we use specific rules. In the following, we list some commonly used commands:
+&emsp; The rule is the most complicated part of theiptablescommand. We will provide additional information later when we use specific rules. In the following, we list some commonly used commands:
 ```
 // List all the rules in a table (without line number)
 iptables -t nat -L -n
@@ -344,87 +313,64 @@ iptables -t filter -D INPUT 2
 // Drop all the incoming packets that satisfy the <rule>
 iptables -t filter -A INPUT <rule> -j DROP
 ```
-**Note.** Docker relies on `iptables` to manage the networks it creates, so it adds many rules to the `nat`
-table. When we manipulate `iptables` rules, we should be careful not to remove Docker rules. For
-example, it will be quite dangerous to run the "`iptables -t nat -F`" command, because it removes
-all the rules in thenattable, including many of the Docker rules. That will cause trouble to Docker
-containers. Doing this for the `filter` table is fine, because Docker does not touch this table.
+**Note.** Docker relies on `iptables` to manage the networks it creates, so it adds many rules to the `nat` table. When we manipulate `iptables` rules, we should be careful not to remove Docker rules. For example, it will be quite dangerous to run the "`iptables -t nat -F`" command, because it removes all the rules in thenattable, including many of the Docker rules. That will cause trouble to Docker containers. Doing this for the `filter` table is fine, because Docker does not touch this table.
 
 ### 4.3 Task 2.A: Protecting the Router
 
-In this task, we will set up rules to prevent outside machines from accessing the router machine, except ping.
-Please execute the follow `ingiptables` command on the router container, and then try to access it from
- `10.9.0.5`. (1) Can you ping the router? (2) Can you telnet into the router (a telnet server is running on
-all the containers; an account called `seed` was created on them with a password `dees`). Please report your
+In this task, we will set up rules to prevent outside machines from accessing the router machine, except ping. Please execute the follow `ingiptables` command on the router container, and then try to access it from `10.9.0.5`. (1) Can you ping the router? (2) Can you telnet into the router (a telnet server is running on all the containers; an account called `seed` was created on them with a password `dees`). Please report your
 observation and explain the purpose for each rule.
 
-```
+<pre>
 iptables -A INPUT  -p icmp --icmp-type echo-request -j ACCEPT
 iptables -A OUTPUT -p icmp --icmp-type echo-reply   -j ACCEPT
-iptables -P OUTPUT DROP Ÿ  **Set default rule for OUTPUT**
-iptables -P INPUT  DROP Ÿ  **Set default rule for INPUT**
-```
-**Cleanup.** Before moving on to the next task, please restore the `filter` table to its original state by
-running the following commands:
+iptables -P OUTPUT DROP <b>  <---- Set default rule for OUTPUT </b>
+iptables -P INPUT  DROP <b>  <---- Set default rule for INPUT </b>
+</pre>
+
+**Cleanup.** Before moving on to the next task, please restore the `filter` table to its original state by running the following commands:
 ```
 iptables -F
 iptables -P OUTPUT ACCEPT
 iptables -P INPUT ACCEPT
 ```
-Another way to restore the states of all the tables is to restart the container. You can do it using the
-following command (you need to find the container’s ID first):
+&emsp; Another way to restore the states of all the tables is to restart the container. You can do it using the following command (you need to find the container’s ID first):
 ```
 $ docker restart <Container ID>
 ```
 ### 4.4 Task 2.B: Protecting the Internal Network
 
-In this task, we will set up firewall rules on the router to protect the internal network `192.168.60.0/24`.
-We need to use the FORWARD chain for this purpose.
-The directions of packets in the INPUT and OUTPUT chains are clear: packets are either coming
-into (for INPUT) or going out (for OUTPUT). This is not true for the FORWARD chain, because it is
-bi-directional: packets going into the internal network or going out to the external network all go through
-this chain. To specify the direction, we can add the interface options using "`-i xyz`" (coming in from the
-`xyz` interface) and/or "`-o xyz`" (going out from the `xyz` interface). The interfaces for the internal and
-external networks are different. You can find out the interface names via the "`ip addr`" command.
-In this task, we want to implement a firewall to protect the internal network. More specifically, we need
-to enforce the following restrictions on the ICMP traffic:
+In this task, we will set up firewall rules on the router to protect the internal network `192.168.60.0/24`. We need to use the FORWARD chain for this purpose.
+<Br>
+&emsp; The directions of packets in the INPUT and OUTPUT chains are clear: packets are either coming into (for INPUT) or going out (for OUTPUT). This is not true for the FORWARD chain, because it is bi-directional: packets going into the internal network or going out to the external network all go through this chain. To specify the direction, we can add the interface options using "`-i xyz`" (coming in from the `xyz` interface) and/or "`-o xyz`" (going out from the `xyz` interface). The interfaces for the internal and external networks are different. You can find out the interface names via the "`ip addr`" command.
+<Br>
+&emsp; In this task, we want to implement a firewall to protect the internal network. More specifically, we need to enforce the following restrictions on the ICMP traffic:
 
 1. Outside hosts cannot ping internal hosts.
 2. Outside hosts can ping the router.
 3. Internal hosts can ping outside hosts.
 4. All other packets between the internal and external networks should be blocked.
 
-You will need to use the "`-p icmp`" options to specify the match options related to the ICMP protocol.
-You can run "`iptables -p icmp -h`" to find out all the ICMP match options. The following example
-drops the ICMP echo request.
+&emsp; You will need to use the "`-p icmp`" options to specify the match options related to the ICMP protocol. You can run "`iptables -p icmp -h`" to find out all the ICMP match options. The following example drops the ICMP echo request.
 ```
 iptables -A FORWARD -p icmp --icmp-type echo-request -j DROP
 ```
-In your lab report, please include your rules and screenshots to demonstrate that your firewall works
-as expected. When you are done with this task, please remember to clean the table or restart the container
-before moving on to the next task.
+&emsp; In your lab report, please include your rules and screenshots to demonstrate that your firewall works as expected. When you are done with this task, please remember to clean the table or restart the container before moving on to the next task.
 
 ### 4.5 Task 2.C: Protecting Internal Servers
 
-In this task, we want to protect the TCP servers inside the internal network ( `192.168.60.0/24`). More
-specifically, we would like to achieve the following objectives.
+In this task, we want to protect the TCP servers inside the internal network ( `192.168.60.0/24`). More specifically, we would like to achieve the following objectives.
 
-
-1. All the internal hosts run a telnet server (listening to port `23` ). Outside hosts can only access the telnet
-    server on `192.168.60.5`, not the other internal hosts.
+1. All the internal hosts run a telnet server (listening to port `23`). Outside hosts can only access the telnet server on `192.168.60.5`, not the other internal hosts.
 2. Outside hosts cannot access other internal servers.
 3. Internal hosts can access all the internal servers.
 4. Internal hosts cannot access external servers.
 5. In this task, the connection tracking mechanism is not allowed. It will be used in a later task.
 
-You will need to use the "`-p tcp`" options to specify the match options related to the TCP protocol.
-You can run "`iptables -p tcp -h`" to find out all the TCP match options. The following example
-allows the TCP packets coming from the interfaceeth0if their source port is `5000`.
+&emsp; You will need to use the "`-p tcp`" options to specify the match options related to the TCP protocol. You can run "`iptables -p tcp -h`" to find out all the TCP match options. The following example allows the TCP packets coming from the interfaceeth0if their source port is `5000`.
 ```
 iptables -A FORWARD -i eth0 -p tcp --sport 5000 -j ACCEPT
 ```
-When you are done with this task, please remember to clean the table or restart the container before
-moving on to the next task.
+&emsp; When you are done with this task, please remember to clean the table or restart the container before moving on to the next task.
 
 ## 5 Task 3: Connection Tracking and Stateful Firewall
 
