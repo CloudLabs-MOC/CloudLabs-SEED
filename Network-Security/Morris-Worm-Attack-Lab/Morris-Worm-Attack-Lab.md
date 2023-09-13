@@ -274,33 +274,22 @@ $ cat myfile | nc -w5 <server_ip> 8080
 
 ## 6 Task 4: Propagation
 
-After finishing the previous task, we can get the worm to crawl from our computer to the first target, but
-the worm will not keep crawling. Students need to make changes to `worm.py` so the worm can continue
-crawling after it arrives on a newly compromised machine.
-Several places in `worm.py` need to be changed. One of them is the `getNextTarget`(), which hard-
-codes the IP address of the next target. We would like this target addresses to be a new machine. The
-Morris worm uses several strategies to find the next attack candidate. For the sake of simplicity, students
-just need to randomly generate an IP address. To further reduce the attack time, we provide the following
-prior knowledge (intentionally made vague) for students to use when they generate the IP address for the
+After finishing the previous task, we can get the worm to crawl from our computer to the first target, but the worm will not keep crawling. Students need to make changes to `worm.py` so the worm can continue crawling after it arrives on a newly compromised machine.
+<Br>
+&emsp; Several places in `worm.py` need to be changed. One of them is the `getNextTarget` (), which hard-codes the IP address of the next target. We would like this target addresses to be a new machine. The Morris worm uses several strategies to find the next attack candidate. For the sake of simplicity, students just need to randomly generate an IP address. To further reduce the attack time, we provide the following prior knowledge (intentionally made vague) for students to use when they generate the IP address for the
 next target:
 
-- The IP addresses of all the hosts in the emulator have the following pattern: `10.X.0.Y`, where
-Xranges from `151 to 155 `, andYranges from `70 to 80`.
+- The IP addresses of all the hosts in the emulator have the following pattern: `10.X.0.Y`, where Xranges from `151 to 155 `, andYranges from `70 to 80`.
 
-
-**Generating random numbers.** In Python, generating random numbers is quite simple. The following
-code gives an example: it generates a random integer number from 100 to 200.
+**Generating random numbers.** In Python, generating random numbers is quite simple. The following code gives an example: it generates a random integer number from 100 to 200.
 ```
 from random import random
 
 number = randint(100, 200)
 ```
-**Testing whether a machine is alive or not.** Before attacking a randomly selected target, it is better to
-check whether the target is alive or not. There are many ways to do that. One approach is to use the `ping`
-command to send an echo request to the target, and check whether the target has sent back a reply.
-In the following code snippet, we send out one ping packet (`-c1`) to the target `1.2.3.4`, wait one
-second (`-W1`) for the reply, and then check whether the output of the command contains "`1 received`",
-indicating that the reply has been received.
+**Testing whether a machine is alive or not.** Before attacking a randomly selected target, it is better to check whether the target is alive or not. There are many ways to do that. One approach is to use the `ping` command to send an echo request to the target, and check whether the target has sent back a reply.
+<Br>
+&emsp; In the following code snippet, we send out one ping packet (`-c1`) to the target `1.2.3.4`, wait one second (`-W1`) for the reply, and then check whether the output of the command contains "`1 received`", indicating that the reply has been received.
 ```
 ipaddr = ’1.2.3.4’
 output = subprocess.check_output(f"ping -q -c1 -W1 {ipaddr}", shell=True)
@@ -311,15 +300,11 @@ if result == -1:
 else:
     print(f"*** {ipaddr} is alive, launch the attack", flush=True)
 ```
-**Lab tasks.** After finishing this step, students need to demonstrate that their worms can spread from one
-computer to another, and eventually reach the entire nano internet. In your initial attack, you should only
-release the worm on one of the nodes, instead of keep attacking the other nodes from your attack machine.
-We want the worm to attack others automatically.
-Let the attack continue for some time, and keep a close eye on the CPU and memory usages. Once
-the CPU usage hits 100 percent, shut down the nano internet (using `dcdown` or "`docker-compose
-down`" ). If you wait too long, your VM may freeze, i.e., you have successfully brought down the internet.
-You can use the `htop` command to observe the resource usages. If your machine does not have this
-command, you can easily install it using the following command:
+**Lab tasks.** After finishing this step, students need to demonstrate that their worms can spread from one computer to another, and eventually reach the entire nano internet. In your initial attack, you should only release the worm on one of the nodes, instead of keep attacking the other nodes from your attack machine. We want the worm to attack others automatically.
+<Br>
+&emsp; Let the attack continue for some time, and keep a close eye on the CPU and memory usages. Once the CPU usage hits 100 percent, shut down the nano internet (using `dcdown` or "`docker-compose down`" ). If you wait too long, your VM may freeze, i.e., you have successfully brought down the internet.
+<Br>
+&emsp; You can use the `htop` command to observe the resource usages. If your machine does not have this command, you can easily install it using the following command:
 ```
 $ sudo apt update && sudo apt install htop
 ```
