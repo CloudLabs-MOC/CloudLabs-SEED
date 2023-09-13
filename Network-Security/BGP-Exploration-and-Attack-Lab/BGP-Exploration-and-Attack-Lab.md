@@ -88,9 +88,7 @@ Reconfigured
 
 ### 2.3 Convention used in the Emulator
 
-To make it easy to identify the roles of each node in the emulator, we have created a set of conventions when
-assigning various numbers to nodes. These conventions are only for the emulator, and they do not hold in
-the real world.
+To make it easy to identify the roles of each node in the emulator, we have created a set of conventions when assigning various numbers to nodes. These conventions are only for the emulator, and they do not hold in the real world.
 
 - Autonomous System Number (ASN) assignment:
     - ASN `2 - 9 `:for large transit ASes (e.g., national backbone).
@@ -99,85 +97,59 @@ the real world.
     - ASN `150 - 199` :for stub ASes.
 - Network prefixes and IP addresses:
 
+![Interact with a node](../media/net-sec-bgp-exploration-interact-node.png)
 
-```
-Disable/Enable
-BGP sessions
-```
-```
-Get a console on
-this machine
-```
-```
-Information of
-the machine
-```
-```
-Figure 2: Interact with a node
-```
-- For an autonomous system N, its first internal network’s prefix is `10.N.0.0/24`, the second
-    internal network is `10.N.1.0/24`, and so on.
-- In each network, the address `200` to `255` are for routers. For hosts (non-router), their IP
-    address start from `71`. For example, in AS-155, `10.155.0.255 `is a BGP router, while
-    `10.155.0.71 `is a host.
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  &emsp; &emsp;  &emsp; &emsp; Figure 2: Interact with a node
+
+- For an autonomous system N, its first internal network’s prefix is `10.N.0.0/24`, the second internal network is `10.N.1.0/24`, and so on.
+
+- In each network, the address `200` to `255` are for routers. For hosts (non-router), their IP address start from `71`. For example, in AS-155, `10.155.0.255 `is a BGP router, while `10.155.0.71 `is a host.
 
 ## 3 Task 1: Stub Autonomous System
 
-An autonomous system (AS) is a collection of connected Internet Protocol (IP) routing prefixes under the
-control of one or more network operators on behalf of a single administrative entity or domain. It is a basic
-unit in BGP. A stub AS the type of AS that does not provide transit service to others. Most of end users are
-stub ASes, including universities, organization, and most companies. Another type of AS is called transit
-AS. They provide transit services for other ASes, and they are Internet service providers.
-In this task, we focus on stub ASes, see how it peers with others. For this type of ASes, we will gain a
-glimpse of how BGP works. Students should read Sections 1- 7 before working on this task.
+An autonomous system (AS) is a collection of connected Internet Protocol (IP) routing prefixes under the control of one or more network operators on behalf of a single administrative entity or domain. It is a basic unit in BGP. A stub AS the type of AS that does not provide transit service to others. Most of end users are stub ASes, including universities, organization, and most companies. Another type of AS is called transit AS. They provide transit services for other ASes, and they are Internet service providers.
+<BR>
+&emsp; In this task, we focus on stub ASes, see how it peers with others. For this type of ASes, we will gain a glimpse of how BGP works. Students should read Sections 1- 7 before working on this task.
 
 ### 3.1 Task 1.a: Understanding AS-155’s BGP Configuration
 
-AS-155 is a stub AS, which has one network ( `10.155.0.0/24`) and one BGP router (`10.155.0.254`).
-Please get a terminal on the container of this router, study its BGP configuration in`/etc/bird/bird.
-conf`, and then do the following tasks.
+AS-155 is a stub AS, which has one network ( `10.155.0.0/24`) and one BGP router (`10.155.0.254`). Please get a terminal on the container of this router, study its BGP configuration in`/etc/bird/bird.conf`, and then do the following tasks.
 
-- **Task 1.a.1:** From the BGP configuration file, identify who AS-155 peers with. You can ignore the
-    filtering part of the configuration for now. Here is one of the BGP entries in the configuration file. See
-    Section 6 of the provided BGP tutorial for the explanation of each entry.
+- **Task 1.a.1:** From the BGP configuration file, identify who AS-155 peers with. You can ignore the filtering part of the configuration for now. Here is one of the BGP entries in the configuration file. See Section 6 of the provided BGP tutorial for the explanation of each entry.
 ```
-**protocol bgp** u_as2 {
-    ipv4 {
-          table t_bgp;
-          import filter {
-          bgp_large_community.add(PROVIDER_COMM);
-          bgp_local_pref = 10;
-          accept;
+    protocol bgp u_as2 {
+        ipv4 {
+              table t_bgp;
+              import filter {
+              bgp_large_community.add(PROVIDER_COMM);
+              bgp_local_pref = 10;
+              accept;
+            };
+            export where bgp_large_community ̃ [LOCAL_COMM, CUSTOMER_COMM];
+            next hop self;
         };
-        export where bgp_large_community ̃ [LOCAL_COMM, CUSTOMER_COMM];
-        next hop self;
-    };
-    local 10.102.0.155 as 155;
-    neighbor 10.102.0.2 as 2;
-}
+        local 10.102.0.155 as 155;
+        neighbor 10.102.0.2 as 2;
+    }
 ```
-- **Task 1.a.2:** AS-155 peers with several ASes, so if AS-155 loses the connection with one of them,
-    it can still connect to the Internet. Please design an experiment to demonstrate this. You can en-
-    able/disable BGP sessions either from the graph (see Figure 2) or using the `birdc `command (see the
-    following examples). In your experiment, please show how the routing table changes when a partic-
-    ular BGP session is disabled/enabled (you can use the "`ip route`" to see the content of a routing
-    table).
+
+- **Task 1.a.2:** AS-155 peers with several ASes, so if AS-155 loses the connection with one of them, it can still connect to the Internet. Please design an experiment to demonstrate this. You can enable/disable BGP sessions either from the graph (see Figure 2) or using the `birdc` command (see the following examples). In your experiment, please show how the routing table changes when a particular BGP session is disabled/enabled (you can use the "`ip route`" to see the content of a routing table).
 ```
-root@0c97d3ade85a / # birdc show protocols
-BIRD 2.0.7 ready.
-Name    Proto   Table   State   Since           Info
-u_as2   BGP     ---     **up**  14:51:40.447    Established
-u_as4   BGP     ---       up    14:51:39.500    Established
-
-root@0c97d3ade85a / # birdc disable u_as2 Ÿ Disable peering with AS-
-BIRD 2.0.7 ready.
-u_as2: disabled
-
-root@0c97d3ade85a / # birdc show protocols
-BIRD 2.0.7 ready.
-Name    Proto   Table   State   Since           Info
-u_as2   BGP     ---     down    16:32:14.
-u_as4   BGP     ---     up      14:51:39.500    Established
+    root@0c97d3ade85a / # birdc show protocols
+    BIRD 2.0.7 ready.
+    Name    Proto   Table   State   Since           Info
+    u_as2   BGP     ---       up  14:51:40.447    Established
+    u_as4   BGP     ---       up    14:51:39.500    Established
+    
+    root@0c97d3ade85a / # birdc disable u_as2     <---- Disable peering with AS-
+    BIRD 2.0.7 ready.
+    u_as2: disabled
+    
+    root@0c97d3ade85a / # birdc show protocols
+    BIRD 2.0.7 ready.
+    Name    Proto   Table   State   Since           Info
+    u_as2   BGP     ---     down    16:32:14.
+    u_as4   BGP     ---     up      14:51:39.500    Established
 ```
 ### 3.2 Task 1.b: Observing BGP UPDATE Messages
 
