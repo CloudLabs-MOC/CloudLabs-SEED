@@ -432,10 +432,7 @@ iptables -P FORWARD DROP
 
 ## 6 Task 4: Limiting Network Traffic
 
-In addition to blocking packets, we can also limit the number of packets that can pass through the firewall.
-This can be done using the `limit` module of `iptables`. In this task, we will use this module to limit how
-many packets from `10.9.0.5` are allowed to get into the internal network. You can use "`iptables -m
-limit -h`" to see the manual. 
+In addition to blocking packets, we can also limit the number of packets that can pass through the firewall. This can be done using the `limit` module of `iptables`. In this task, we will use this module to limit how many packets from `10.9.0.5` are allowed to get into the internal network. You can use "`iptables -m limit -h`" to see the manual. 
 ```
 $ iptables -m limit -h
 limit match options:
@@ -444,9 +441,7 @@ limit match options:
                      /sec /minute /hour /day postfixes]
 --limit-burst number number to match in a burst, default 5
 ```
-Please run the following commands on router, and then ping `192.168.60.5` from `10.9.0.5`. De-
-scribe your observation. Please conduct the experiment with and without the second rule, and then explain
-whether the second rule is needed or not, and why.
+&emsp; Please run the following commands on router, and then ping `192.168.60.5` from `10.9.0.5`. Describe your observation. Please conduct the experiment with and without the second rule, and then explain whether the second rule is needed or not, and why.
 ```
 iptables -A FORWARD -s 10.9.0.5 -m limit \
          --limit 10/minute --limit-burst 5 -j ACCEPT
@@ -455,17 +450,11 @@ iptables -A FORWARD -s 10.9.0.5 -j DROP
 ```
 ## 7 Task 5: Load Balancing
 
-The `iptables` is very powerful. In addition to firewalls, it has many other applications. We will not be
-able to cover all its applications in this lab, but we will experimenting with one of the applications, load
-balancing. In this task, we will use it to load balance three UDP servers running in the internal network.
-Let’s first start the server on each of the hosts: `192.168.60.5,192.168.60.6`, and `192.168.60`.
-(the `-k` option indicates that the server can receive UDP datagrams from multiple hosts):
+The `iptables` is very powerful. In addition to firewalls, it has many other applications. We will not be able to cover all its applications in this lab, but we will experimenting with one of the applications, load balancing. In this task, we will use it to load balance three UDP servers running in the internal network. Let’s first start the server on each of the hosts: `192.168.60.5,192.168.60.6`, and `192.168.60`. (the `-k` option indicates that the server can receive UDP datagrams from multiple hosts):
 ```
 nc -luk 8080
 ```
-We can use the `statistic` module to achieve load balancing. You can type the following command
-to get its manual. You can see there are two modes: `random` and `nth`. We will conduct experiments using
-both of them.
+&emsp; We can use the `statistic` module to achieve load balancing. You can type the following command to get its manual. You can see there are two modes: `random` and `nth`. We will conduct experiments using both of them.
 ```
 $ iptables -m statistic -h
 statistic match options:
@@ -476,45 +465,30 @@ nth mode:
 [!] --every n        Match every nth packet
 --packet p           Initial counter value (0 <= p <= n-1, default 0)
 ```
-**Using the nth mode (round-robin).** On the router container, we set the following rule, which applies to
-all the UDP packets going to port `8080`. The `nth` mode of the `statistic` module is used; it implements
-a round-robin load balancing policy: for every three packets, pick the packet 0 (i.e., the first one), change its
-
-
-destination IP address and port number to `192.168.60.5` and `8080` , respectively. The modified packets
-will continue on its journey.
+**Using the nth mode (round-robin).** On the router container, we set the following rule, which applies to all the UDP packets going to port `8080`. The `nth` mode of the `statistic` module is used; it implements a round-robin load balancing policy: for every three packets, pick the packet 0 (i.e., the first one), change its destination IP address and port number to `192.168.60.5` and `8080`, respectively. The modified packets will continue on its journey.
 ```
 iptables -t nat -A PREROUTING -p udp --dport 8080 \
          -m statistic --mode nth --every 3 --packet 0 \
-         -j DNAT --to-destination 192.168.60.5:
+         -j DNAT --to-destination 192.168.60.5:8080
 ```
-It should be noted that those packets that do not match the rule will continue on their journeys; they will
-not be modified or blocked. With this rule in place, if you send a UDP packet to the router’s `8080` port, you
-will see that one out of three packets gets to `192.168.60.5`.
+&emsp; It should be noted that those packets that do not match the rule will continue on their journeys; they will not be modified or blocked. With this rule in place, if you send a UDP packet to the router’s `8080` port, you will see that one out of three packets gets to `192.168.60.5`.
 ```
-// On 10.9.0.
+// On 10.9.0.5
 echo hello | nc -u 10.9.0.11 8080
 <hit Ctrl-C>
 ```
-Please add more rules to the router container, so all the three internal hosts get the equal number of
-packets. Please provide some explanation for the rules.
+&emsp; Please add more rules to the router container, so all the three internal hosts get the equal number of packets. Please provide some explanation for the rules.
 
-**Using the random mode.** Let’s use a different mode to achieve the load balancing. The following rule
-will select a matching packet with the probability `P`. You need to replace `P` with a probability number.
+**Using the random mode.** Let’s use a different mode to achieve the load balancing. The following rule will select a matching packet with the probability `P`. You need to replace `P` with a probability number.
 ```
 iptables -t nat -A PREROUTING -p udp --dport 8080 \
 -m statistic --mode random --probability P \
--j DNAT --to-destination 192.168.60.5:
+-j DNAT --to-destination 192.168.60.5:8080
 ```
-Please use this mode to implement your load balancing rules, so each internal server get roughly the
-same amount of traffic (it may not be exactly the same, but should be close when the total number of packets
-is large). Please provide some explanation for the rules.
+&emsp; Please use this mode to implement your load balancing rules, so each internal server get roughly the same amount of traffic (it may not be exactly the same, but should be close when the total number of packets is large). Please provide some explanation for the rules.
 
 ## 8 Submission and Demonstration
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
