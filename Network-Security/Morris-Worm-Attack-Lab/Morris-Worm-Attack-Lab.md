@@ -220,7 +220,7 @@ $ ./worm.py
 The malicious code that we would like to run on the target server is called shellcode, which is typically written using the assembly language and then converted to the binary machine code. In this lab, we only provide the binary version of a generic shellcode, without explaining how it works, because it is non-trivial. If students are interested in how exactly shellcode works and want to write a shellcode from scratch, they can learn that from a separate SEED lab called *Shellcode Lab.*
 
 <Br>
-&emsp; The provided shellcode (listed below) executes "`/bin/bash -c commands`", where `commands` are the commands put inside Lines ➀, ➁, and ➂. Students can put whatever shell commands they want in these spaces (commands should be separated by semicolons or `&&`). We provide enough space (180 bytes) as students may need to run a long list of commands in the subsequent tasks.
+&emsp; The provided shellcode (listed below) executes "/bin/bash -c commands", where `commands` are the commands put inside Lines ➀, ➁, and ➂. Students can put whatever shell commands they want in these spaces (commands should be separated by semicolons or `&&`). We provide enough space (180 bytes) as students may need to run a long list of commands in the subsequent tasks.
 <Br>
 &emsp; When putting commands in these three lines, make sure never change their length, or the shellcode may not work. Each line is exactly 60 characters long (see the ruler in Line ➃). When the shellcode runs, the * character at the end of Line ➂ will be replaced by a binary zero to mark the end of the command string. The offset of the * character is hardcoded in the binary code, so if the commands are longer than 180 bytes, they will be cut off.
 ```
@@ -239,39 +239,20 @@ shellcode= (
 
 ## 5 Task 3: Self Duplication
 
-A malicious program can be calledwormif it can spread from one place to another place automatically.
-To do that, the worm must be able to copy itself from one machine to another machine. This is called self
-duplication, which is the focus of this task. There are two typical strategies used by worms to achieve self
-duplication.
+A malicious program can be calledwormif it can spread from one place to another place automatically. To do that, the worm must be able to copy itself from one machine to another machine. This is called self duplication, which is the focus of this task. There are two typical strategies used by worms to achieve self duplication.
 
-- Approach 1: Put all the code inside the malicious payload (i.e., the shellcode). Using this approach,
-    the self-duplication part needs to be included in the shellcode. Since the shellcode is typically written
-    using the assembly language, implementing sophisticated functionalities may be quite challenging.
-- Approach 2: Divide the attack code into two parts, a small payload that contains a simple pilot code,
-    and a larger payload that contains more sophisticated code. The pilot code is the shellcode included
-    in the malicious payload in the buffer-overflow attack. Once the attack is successful and the pilot
-    code runs a shell on the target, it can use shell commands to fetch the larger payload from the attacker
-    machine, completing the self duplication. The more sophisticated program can be written using any
-    language, such as C, Python, or shell script.
+- Approach 1: Put all the code inside the malicious payload (i.e., the shellcode). Using this approach, the self-duplication part needs to be included in the shellcode. Since the shellcode is typically written using the assembly language, implementing sophisticated functionalities may be quite challenging.
 
-The Morris worm uses the second approach. We do encourage students to try both both approaches, but
-only one is required. Instructors may choose to grant bonus points at their own discretion for students who
-have implemented both, so check with your instructors.
-To use the second approach, we need to find a way to send files from one computer to another. There
-are many ways to do that, and students are encouraged to explore and find their own solutions. Worms
-should not download the files from a central place (such as a website), because its creates a single point of
+- Approach 2: Divide the attack code into two parts, a small payload that contains a simple pilot code, and a larger payload that contains more sophisticated code. The pilot code is the shellcode included in the malicious payload in the buffer-overflow attack. Once the attack is successful and the pilot code runs a shell on the target, it can use shell commands to fetch the larger payload from the attacker machine, completing the self duplication. The more sophisticated program can be written using any language, such as C, Python, or shell script.
 
-
-failure for the worm; once this central place is shut down, the worm will stop crawling. A worm typically
-downloads the needed files from its direct predecessor. Namely, if a worm crawls from A to B, and then
+&emsp; The Morris worm uses the second approach. We do encourage students to try both both approaches, but only one is required. Instructors may choose to grant bonus points at their own discretion for students who have implemented both, so check with your instructors.
+<Br>
+&emsp; To use the second approach, we need to find a way to send files from one computer to another. There are many ways to do that, and students are encouraged to explore and find their own solutions. Worms should not download the files from a central place (such as a website), because its creates a single point of failure for the worm; once this central place is shut down, the worm will stop crawling. A worm typically downloads the needed files from its direct predecessor. Namely, if a worm crawls from A to B, and then
 from B to C, once it arrives at C, it should copy the files only from C.
-To get files from another computer, we need to have a client and a server program. On our emulators,
-many client/server programs have already been installed. Students can choose to use whatever are available
-on the hosts. In the following, we show how to use the `nc`(or `netcat`) command to download files. It can
-be used to start a TCP client and server.
-In the following example, we start the server on one computer, and start the client on another computer.
-The server gets its input from `myfile`, and send the content to the client. The client saves whatever is
-received from the server to file `myfile`. This completes the file transfer.
+<Br>
+&emsp; To get files from another computer, we need to have a client and a server program. On our emulators, many client/server programs have already been installed. Students can choose to use whatever are available on the hosts. In the following, we show how to use the `nc`(or `netcat`) command to download files. It can be used to start a TCP client and server.
+<Br>
+&emsp; In the following example, we start the server on one computer, and start the client on another computer. The server gets its input from `myfile`, and send the content to the client. The client saves whatever is received from the server to file `myfile`. This completes the file transfer.
 ```
 // Server provides the file
 $ nc -lnv 8080 < myfile
@@ -279,12 +260,9 @@ $ nc -lnv 8080 < myfile
 // Client gets the file from the server
 $ nc -w5 <server_ip> 8080 > myfile
 ```
-Typically, we need to start the server first, and then run the client program. However, we can start the
-client before running the server. We just need to use the `-w5` option on the client. With this option, the
-client will try to make a connection with the server for 5 seconds. As long as the server can be started within
-this time window, the connection will go through.
-In the example above, the server sends a file to the client. We can send files in the opposite direction,
-i.e., the client sends a file to the server.
+&emsp; Typically, we need to start the server first, and then run the client program. However, we can start the client before running the server. We just need to use the `-w5` option on the client. With this option, the client will try to make a connection with the server for 5 seconds. As long as the server can be started within this time window, the connection will go through.
+<Br>
+&emsp; In the example above, the server sends a file to the client. We can send files in the opposite direction, i.e., the client sends a file to the server.
 ```
 // Server gets the file from client
 $ nc -lnv 8080 > myfile
@@ -292,9 +270,7 @@ $ nc -lnv 8080 > myfile
 // Client provides the file
 $ cat myfile | nc -w5 <server_ip> 8080
 ```
-**Lab task.** Add the self-duplication feature to your worm, so when the buffer-overflow attack is successful,
-a copy of the worm, i.e., `worm.py` is copied to the victim machine. You can get a shell on the victim
-container, and check whether a copy is created there or not.
+**Lab task.** Add the self-duplication feature to your worm, so when the buffer-overflow attack is successful, a copy of the worm, i.e., `worm.py` is copied to the victim machine. You can get a shell on the victim container, and check whether a copy is created there or not.
 
 ## 6 Task 4: Propagation
 
