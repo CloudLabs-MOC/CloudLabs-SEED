@@ -604,103 +604,13 @@ video file. To help them conduct a self-guided demo, we provide a checklist in T
 in-person demo, this checklist is still quite useful.
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/0e84312c-432e-4af2-9291-a4607ca67ff4)
-```
-(a) An Example of packet flow from telnet client to server in Host-to-Gateway Tunnel
-```
+
+`(a) An Example of packet flow from telnet client to server in Host-to-Gateway Tunnel`
+
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a6fd97f1-e05c-4efe-9699-ff35a87b904e)
-```
-(b) An Example of packet flow from telnet server to client in Host-to-Gateway Tunnel
-```
-```
-Figure 5: An Example of Packet Flow in VPN.
-```
+`(b) An Example of packet flow from telnet server to client in Host-to-Gateway Tunnel`
+`Figure 5: An Example of Packet Flow in VPN.`
 
-```
-Table 1: Checklist for VPN demonstration
-```
-### Requirements Details
-
-Initial State • Rebooting all three VMs. Start recording after the VMs are rebooted. You should
-
-```
-start demo immediately after rebooting. If you wait too long, you will have to do
-the rebooting again.
-```
-- Type"last reboot; date"in a terminal to show the rebooting time and cur-
-    rent time on all three VMs. The difference between these two times should not be
-    more than 5 minute.
-- Display the routing tables on all three VMs.
-
-Pre-Tunnel Test • Before VPN is set up,pingHostVfrom HostUand explain your observation.
-
-Tunnel Creation • Start vpn client and vpn server programs.
-
-- You need to type passwords to authenticate yourself to the server, the password
-    should not be visible (10 points will be deducted if we see your passwords).
-    You can usegetpass()to achieve that (type “man getpass” to see its
-    manual).
-- Passwords cannot be hardcoded in your program. If you do this, 50 points will
-    be deducted.
-- Perform configuration on all VMs. Although you can put the configuration com-
-mands in a script, you do need to show the script and explain the commands in your
-script.
-- Show routing tables on all three VMs after the configuration.
-
-Ping Test • On HostU:pingHostV.
-
-- Use Wireshark to prove that your VPN works correctly.
-- Show us the proof that the tunnel is indeed encrypted.
-
-Telnet Test • On HostU:telnetto HostV.
-
-- Use Wireshark to prove that your VPN works correctly.
-
-
-Tunnel-Breaking
-Test
-
-- On HostU, telnet to HostV. While keeping the telnet connection alive, break the
-    VPN tunnel by stopping the vpn client and/or vpn server programs. Then type
-    something in the telnet window. Do you see what you type? What happens to the
-    TCP connection? Is the connection broken?
-- Let us now reconnect the VPN tunnel (do not wait for too long). Run the client and
-    server programs again, and conduct the necessary configuration (no need to explain
-    or show commands). Once the tunnel is re-established, what is going to happen to
-    the telnet connection? Please describe and explain your observation.
-
-Large Packet Test • Send a large packet (size>3000) from HostUto HostV. You can use"ping -s"
-
-```
-to do that.
-```
-- Use Wireshark to describe and explain your observations.
-
-TLS Setup • Show us how you set up your TLS on both client and server sides.
-
-- Show us where you place the server certificates and self-signed certificate.
-- Show us which lines of code load those certificates.
-
-MITM Test • Demonstrate that your system can successfully defeat MITM attacks. You need
-
-```
-to set up a simulated MITM attack, and demonstrate that your client program can
-defeat it.
-```
-Code Explanation 1 Which lines of code are responsible for the following:
-
-- verifying that the server certificate is valid
-- verifying that the server is the owner of the certificate
-- verifying that the server is the intended server
-
-Code Explanation 2 Which line of code in the client forces TLS handshake to stop if the server certificate
-verification fails?
-
-Code Explanation 3 Which line(s) of code do the following?
-
-- sending username and password to the server
-- getting account information from the shadow file
-
-Ending Time Type"last reboot; date"commands to display the time before ending your
-demo.
-
-
+`Table 1: Checklist for VPN demonstration`
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/e8d695bc-51e3-426a-8d48-d631d30779b2)
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a8831a5e-b82b-46a6-a6be-a13bcd59b7ca)
