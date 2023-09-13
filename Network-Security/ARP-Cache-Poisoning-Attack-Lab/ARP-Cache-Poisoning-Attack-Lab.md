@@ -2,24 +2,14 @@
 
 ```
 Copyright © 2019 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-The Address Resolution Protocol (ARP) is a communication protocol used for discovering the link layer
-address, such as the MAC address, given an IP address. The ARP protocol is a very simple protocol, and
-it does not implement any security measure. The ARP cache poisoning attack is a common attack against
-the ARP protocol. Using such an attack, attackers can fool the victim into accepting forged IP-to-MAC
-mappings. This can cause the victim’s packets to be redirected to the computer with the forged MAC
-address, leading to potential man-in-the-middle attacks.
-The objective of this lab is for students to gain the first-hand experience on the ARP cache poisoning
-attack, and learn what damages can be caused by such an attack. In particular, students will use the ARP
-attack to launch a man-in-the-middle attack, where the attacker can intercept and modify the packets between
-the two victims A and B. Another objective of this lab is for students to practice packet sniffing and spoofing
-skills, as these are essential skills in network security, and they are the building blocks for many network
-attack and defense tools. Students will use Scapy to conduct lab tasks. This lab covers the following topics:
+The Address Resolution Protocol (ARP) is a communication protocol used for discovering the link layer address, such as the MAC address, given an IP address. The ARP protocol is a very simple protocol, and it does not implement any security measure. The ARP cache poisoning attack is a common attack against the ARP protocol. Using such an attack, attackers can fool the victim into accepting forged IP-to-MAC mappings. This can cause the victim’s packets to be redirected to the computer with the forged MAC address, leading to potential man-in-the-middle attacks.
+<BR>
+&emsp; The objective of this lab is for students to gain the first-hand experience on the ARP cache poisoning attack, and learn what damages can be caused by such an attack. In particular, students will use the ARP attack to launch a man-in-the-middle attack, where the attacker can intercept and modify the packets between the two victims A and B. Another objective of this lab is for students to practice packet sniffing and spoofing
+skills, as these are essential skills in network security, and they are the building blocks for many network attack and defense tools. Students will use Scapy to conduct lab tasks. This lab covers the following topics:
 
 - The ARP protocol
 - The ARP cache poisoning attack
@@ -29,11 +19,7 @@ attack and defense tools. Students will use Scapy to conduct lab tasks. This lab
 **Videos.** Detailed coverage of the ARP protocol and attacks can be found in the following:
 
 - Section 3 of the SEED Lecture at Udemy,Internet Security: A Hands-on Approach, by Wenliang Du.
-<<<<<<< HEAD
-    See details at `https://www.handsonsecurity.net/video.html`.
-=======
-    See details at [https://www.handsonsecurity.net/video.html(https://www.handsonsecurity.net/video.htm).
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
+  See details at `https://www.handsonsecurity.net/video.html`.
 
 **Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
 image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
@@ -48,24 +34,18 @@ $ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/ARP_Attack/Labsetup.zi
 $ sudo unzip Labsetup.zip
 ```
 
-In this lab, we need three machines. We use containers to set up the lab environment, which is depicted in
-Figure 1. In this setup, we have an attacker machine (Host M), which is used to launch attacks against the
-other two machines, Host A and Host B. These three machines must be on the same LAN, because the ARP
-cache poisoning attack is limited to LAN. We use containers to set up the lab environment.
+In this lab, we need three machines. We use containers to set up the lab environment, which is depicted in Figure 1. In this setup, we have an attacker machine (Host M), which is used to launch attacks against the other two machines, Host A and Host B. These three machines must be on the same LAN, because the ARP cache poisoning attack is limited to LAN. We use containers to set up the lab environment.
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/5b5773e3-e6b7-4787-a1e7-8340e86d1c77)
 
+&emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp; **Figure 1:** Lab environment setup
+
 ### 2.1 Container Setup and Commands
 
-<<<<<<< HEAD
-Please download the `Labsetup.zip `file to your VM from the lab’s website, unzip it, enter the `Labsetup`
-folder, and use the `docker-compose.yml `file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved `Dockerfile `can be found from the user manual, which is linked
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
+Please download the `Labsetup.zip `file to your VM from the lab’s website, unzip it, enter the `Labsetup` folder, and use the `docker-compose.yml `file to set up the lab environment. Detailed explanation of the content in this file and all the involved `Dockerfile `can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the `.bashrc`file
-(in our provided SEEDUbuntu 20.04 VM).
+<BR>
+&emsp; In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file (in our provided SEEDUbuntu 20.04 VM).
 ```
 $ docker-compose build  # Build the container image
 $ docker-compose up     # Start the container
@@ -76,43 +56,11 @@ $ dcbuild       # Alias for: docker-compose build
 $ dcup          # Alias for: docker-compose up
 $ dcdown        # Alias for: docker-compose down
 ```
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of
-the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for
-them in the `.bashrc `file.
-```
-$ dockps        // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id>   // Alias for: docker exec -it <id> /bin/bash
-=======
-Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
-very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file
-(in our provided SEEDUbuntu 20.04 VM).
-
-```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
-
-// Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
-```
-
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the `"docker ps"` command to find out the ID of
-the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the `.bashrc` file.
+&emsp;  All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for them in the `.bashrc` file.
 
 ```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
 
 // The following example shows how to get a shell inside hostC
 $ dockps
@@ -122,22 +70,12 @@ b1004832e275 hostA-10.9.0.5
 
 $ docksh 96
 root@9652715c8e0a:/#
-```
 
-```
 // Note: If a docker command requires a container ID, you do not need to
-<<<<<<< HEAD
 //       type the entire ID string. Typing the first few characters will
 //       be sufficient, as long as they are unique among all the containers.
 ```
-=======
-// type the entire ID string. Typing the first few characters will
-// be sufficient, as long as they are unique among all the containers.
-```
-
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+ &emsp; If you encounter problems when setting up the lab environment, please read the “Common Problems” section of the manual for potential solutions.
 
 ### 2.2 About the Attacker Container
 
