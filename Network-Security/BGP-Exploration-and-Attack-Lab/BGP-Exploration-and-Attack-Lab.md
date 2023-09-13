@@ -277,44 +277,24 @@ The transit autonomous system AS-5 is already included in the emulator. It conne
 
 ## 5 Task 3: Path Selection
 
-BGP routers typically receive multiple routes to the same network. All these routes will be kept, but BGP
-will run a best route selection algorithm to choose one route as the current best route. This route will be the
-one announced to the peers; it is also the one given to the kernel routing table, so routing is based on this
-selected route. When the best route is retracted, BGP router re-runs the best route selection algorithm to find
+BGP routers typically receive multiple routes to the same network. All these routes will be kept, but BGP will run a best route selection algorithm to choose one route as the current best route. This route will be the one announced to the peers; it is also the one given to the kernel routing table, so routing is based on this selected route. When the best route is retracted, BGP router re-runs the best route selection algorithm to find
 the current best route.
-The top-2 criteria used by BIRD is the following: (1) prefer route with the highest Local Preference
-attribute, (2) prefer route with the shortest AS path. In this task, we will experiment with these two criteria,
-and see how they affect the path selection. Students should read Section 8 of the tutorials before working on
-this task.
+<Br>
+&emsp; The top-2 criteria used by BIRD is the following: (1) prefer route with the highest Local Preference attribute, (2) prefer route with the shortest AS path. In this task, we will experiment with these two criteria, and see how they affect the path selection. Students should read Section 8 of the tutorials before working on this task.
 
-**Task 3.a.** The "`birdc show route all > all-routes`" command can list all the BGP routes
-(the output is quite long, so it is better to save the output to a file). The "`ip route`" command can list all
-the entries in the kernel routing table.
-Go to AS-150’s BGP router, and show all the BGP routes. Find a network prefix that has more than one
-routes. Explain their differences. Compare these routes to the entries in the kernel routing table, and identify
-which route is selected as the best route, and explain why this route is selected?
+**Task 3.a.** The "`birdc show route all > all-routes`" command can list all the BGP routes (the output is quite long, so it is better to save the output to a file). The "`ip route`" command can list all the entries in the kernel routing table.
+<Br>
+&emsp; Go to AS-150’s BGP router, and show all the BGP routes. Find a network prefix that has more than one routes. Explain their differences. Compare these routes to the entries in the kernel routing table, and identify which route is selected as the best route, and explain why this route is selected?
 
-**Task 3.b.** AS-150 peers with both AS-2 and AS-3, which provide the Internet services to AS-150. How-
-ever, because the link to AS-2 is slower than the link to AS-3, AS-150 wants to use AS-2 only as the backup
-upstream link, i.e., AS-150’s inbound and outbound traffic should always use AS-3, unless the link is broken.
-Please modify AS-150’s BGP configuration to achieve this goal.
-
+**Task 3.b.** AS-150 peers with both AS-2 and AS-3, which provide the Internet services to AS-150. However, because the link to AS-2 is slower than the link to AS-3, AS-150 wants to use AS-2 only as the backup upstream link, i.e., AS-150’s inbound and outbound traffic should always use AS-3, unless the link is broken. Please modify AS-150’s BGP configuration to achieve this goal.
 
 ## 6 Task 4: IP Anycast
 
-IP Anycast is a network addressing and routing methodology in which a single IP address is shared by
-multiple machines (usually in different locations). When we send a packet to this IP address, one of the
-computers will get the packet. Exactly which one will get it is hard to tell, because it depends on the routing.
-IP anycast is naturally supported by BGP. One of the well-known applications of IP anycast is DNS, as all
-13 root servers A–M exist in multiple locations.
-On the emulator map, type `190` in the search box, you will find out that AS-190 has two networks,
-but they are disconnected. One network is connected to IX-100, and the other is connected to IX-105.
-A closer look at these two networks will reveal that these two networks have the identical network prefix
-`10.190.0.0/24.` The only hosts on these two networks have the identical IP address `10.190.0.100.`
-Please find two different hosts in the emulator, so when you ping `10.190.0.100 `from these two
-hosts, the destinations are different (even though the destination IP address is the same). Please set the filter
-on the map to `icmp `to visualize the packet trace, then look at the BGP routers on the path, and explain why
-the packets reach two different destinations. Students should read Section 11 of the tutorial before working
+IP Anycast is a network addressing and routing methodology in which a single IP address is shared by multiple machines (usually in different locations). When we send a packet to this IP address, one of the computers will get the packet. Exactly which one will get it is hard to tell, because it depends on the routing. IP anycast is naturally supported by BGP. One of the well-known applications of IP anycast is DNS, as all 13 root servers A–M exist in multiple locations.
+<Br>
+&emsp; On the emulator map, type `190` in the search box, you will find out that AS-190 has two networks, but they are disconnected. One network is connected to IX-100, and the other is connected to IX-105. A closer look at these two networks will reveal that these two networks have the identical network prefix `10.190.0.0/24`. The only hosts on these two networks have the identical IP address `10.190.0.100`.
+<Br>
+&emsp; Please find two different hosts in the emulator, so when you ping `10.190.0.100 `from these two hosts, the destinations are different (even though the destination IP address is the same). Please set the filter on the map to `icmp` to visualize the packet trace, then look at the BGP routers on the path, and explain why the packets reach two different destinations. Students should read Section 11 of the tutorial before working
 on this task.
 
 ## 7 Task 5: BGP Prefix Attack
