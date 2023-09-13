@@ -79,25 +79,15 @@ root@9652715c8e0a:/#
 
 ### 2.2 About the Attacker Container
 
-In this lab, we can either use the VM or the attacker container as the attacker machine. If you look at
-the Docker Compose file, you will see that the attacker container is configured differently from the other
-containers. Here are the differences:
+In this lab, we can either use the VM or the attacker container as the attacker machine. If you look at the Docker Compose file, you will see that the attacker container is configured differently from the other containers. Here are the differences:
 
-- *Shared folder*.When we use the attacker container to launch attacks, we need to put the attacking code
-    inside the container. Code editing is more convenient inside the VM than in containers, because we
-    can use our favorite editors. In order for the VM and container to share files, we have created a shared
-    folder between the VM and the container using the Docker `volumes`. If you look at the Docker
-    Compose file, you will find out that we have added the following entry to some of the containers.
-    It indicates mounting the `./volumes `folder on the host machine (i.e., the VM) to the `/volumes`
-    folder inside the container. We will write our code in the `./volumes `folder (on the VM), so they
-    can be used inside the containers.
+- *Shared folder*. When we use the attacker container to launch attacks, we need to put the attacking code inside the container. Code editing is more convenient inside the VM than in containers, because we can use our favorite editors. In order for the VM and container to share files, we have created a shared folder between the VM and the container using the Docker `volumes`. If you look at the Docker Compose file, you will find out that we have added the following entry to some of the containers. It indicates mounting the `./volumes `folder on the host machine (i.e., the VM) to the `/volumes`
+folder inside the container. We will write our code in the `./volumes `folder (on the VM), so they can be used inside the containers.
     ```
     volumes:
              - ./volumes:/volumes
     ```
-- *Privileged mode*.To be able to modify kernel parameters at runtime (using `sysctl`), such as enabling
-    IP forwarding, a container needs to be privileged. This is achieved by including the following entry
-    in the Docker Compose file for the container.
+- *Privileged mode*. To be able to modify kernel parameters at runtime (using `sysctl`), such as enabling IP forwarding, a container needs to be privileged. This is achieved by including the following entry in the Docker Compose file for the container.
     ```
     privileged: true
     ```
