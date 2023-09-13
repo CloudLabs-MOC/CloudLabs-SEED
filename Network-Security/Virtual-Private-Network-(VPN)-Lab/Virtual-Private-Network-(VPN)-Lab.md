@@ -62,36 +62,7 @@ access a private network via the gateway. We need at least three VMs: VPN client
 U), VPN server (the gateway), and a host in the private network (Host V). The network setup is depicted in
 Figure 1.
 
-#### `
-
-#### `
-
-```
-192.168.60.
-```
-```
-User
-```
-#### VPN Client
-
-#### Gateway
-
-#### (VPN Server)
-
-```
-192.168.60.
-```
-#### Host U
-
-#### Host V
-
-#### “NAT Network” Adapter
-
-#### “Internal Network” Adapter
-
-```
-10.0.2.7 10.0.2.
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/c2090d71-93ca-4d1b-bc85-22b63849e106)
 ```
 Figure 1: VM setup for this lab
 ```
@@ -114,7 +85,7 @@ After you have selected the right connection to edit, pick the"ipv4 Settings"tab
 "Manual"method, instead of the default"Automatic (DHCP)". Click the"Add"button to set up
 the new IP address for the VM. See Figure 2 for details.
 
-
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/42558dc0-85ab-4659-8d98-367e10714059)
 ```
 Figure 2: Manually set up the IP address for the"Internal Network"adaptor on VPN Server.
 ```
@@ -133,7 +104,7 @@ virtual network interface.
 When a program is attached to a TUN/TAP interface, the IP packets that the computer sends to this
 interface will be piped into the program; on the other hand, the IP packets that the program sends to the
 interface will be piped into the computer, as if they came from the outside through this virtual network
-interface. The program can use the standardread()andwrite()system calls to receive packets from
+interface. The program can use the standard read() and write() system calls to receive packets from
 or send packets to the virtual interface.
 We have created a sample VPN client program (vpnclient) and a server program (vpnserver),
 both of which can be downloaded from this lab’s web site. The programs are explained in details in Chapter
@@ -146,53 +117,9 @@ for the VPN tunnel. The VPN client and server programs connect to the hosting sy
 through which they do two things: (1) get IP packets from the hosting system, so the packets can be sent
 through the tunnel, (2) get IP packets from the tunnel, and then forward it to the hosting system, which will
 forward the packet to its final destination. The following procedure describes how to create a VPN tunnel
-using thevpnclientandvpnserverprograms.
+using the vpnclient and vpnserver programs.
 
-
-```
-192.168.53.
-```
-##### `
-
-```
-192.168.53.
-```
-##### VPN
-
-```
-Client Program
-```
-##### VPN
-
-```
-Server Program
-```
-## Internet
-
-```
-socket socket
-```
-```
-tun0 tun
-```
-```
-VPN Tunnel (TCP or UDP)
-```
-##### VPN
-
-```
-Client
-VM
-```
-##### VPN
-
-```
-Server
-VM
-```
-```
-10.0.2.7 10.0.2.
-```
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/03696127-f913-4a9b-bc3d-d2ac5df0b3b1)
 ```
 Figure 3: VPN client and server
 ```
@@ -205,17 +132,21 @@ Run the following commands. The first command will start the server program, and
 assigns an IP address to thetun0interface and then activates it. It should be noted that the first command
 will block and wait for connections, so we need to find another window run the second command.
 
+```
 $ sudo ./vpnserver
 
 Run the following command in another window:
 $ sudo ifconfig tun0 192.168.53.1/24 up
+```
 
 Unless specifically configured, a computer will only act as a host, not as a gateway. The VPN Server
 needs to forward packets between the private network and the tunnel, so it needs to function as a gateway.
 We need to enable the IP forwarding for a computer to behave like a gateway. IP forwarding can be enabled
 using the following command:
 
-$ sudo sysctl net.ipv4.ip_forward=
+```
+$ sudo sysctl net.ipv4.ip_forward=1
+```
 
 Step 2: Run VPN Client. We now run the VPN client program on the Client VM. We run the following
 commands on this machine. The first command will connect to the VPN server program (the server’s IP
@@ -223,27 +154,30 @@ address is hardcoded inside the program, and you need to change it accordingly).
 as well, so we need to find another window to configure thetun0interface created by the VPN client
 program. We assign IP address192.168.53.5to thetun0interface.
 
+```
 On VPN Client VM:
 $ sudo ./vpnclient
 
 Run the following command in a different window
 $ sudo ifconfig tun0 192.168.53.5/24 up
-
+```
 
 Step 3: Set Up Routing on Client and Server VMs: After the above two steps, the tunnel will be
 established. Before we can use the tunnel, we need to set up routing paths on both client and server machines
 to direct the intended traffic through the tunnel. On the client machine, we need to direct all the packets going
-to the private network (192.168.60.0/24) towards thetun0interface, from where the packets can be
+to the private network (192.168.60.0/24) towards the tun0 interface, from where the packets can be
 forwarded through the VPN tunnel. Without this setup, we will not be able to access the private network at
-all. We can use theroutecommand to add an routing entry. The following example shows how to route
+all. We can use the route command to add an routing entry. The following example shows how to route
 the10.20.30.0/24-bound packets to the interfaceeth0.
 
-$ sudo route add -net 10.20.30.0/24 eth
+```
+$ sudo route add -net 10.20.30.0/24 eth0
+```
 
 On both client and server machines, we also need to set up a routing entry so all the traffic going to the
-192.168.53.0/24network are directed to thetun0interface. This entry will usually be automatically
-added when we assign192.169.53.Xto thetun0interface. If for some reasons it is not added, we can
-use theroutecommand to add it.
+192.168.53.0/24 network are directed to the tun0 interface. This entry will usually be automatically
+added when we assign 192.169.53.X to the tun0 interface. If for some reasons it is not added, we can
+use the route command to add it.
 
 Step 4: Set Up Routing on Host V. When Host V replies to a packet sent from Host U, it needs to route
 the packets to the VPN Server VM, from where, it can be fed into the VPN tunnel toward the other end.
@@ -258,13 +192,15 @@ tunnel. Please conduct the following tests usingpingandtelnet; please report you
 use Wireshark to capture the network traffics on all the interfaces on the client VM, and pinpoint which
 packets are part of the tunnel traffic, and which packets are not the tunnel traffic.
 
+```
 On Host U:
-$ ping 192.168.60.
-$ telnet 192.168.60.
+$ ping 192.168.60.101
+$ telnet 192.168.60.101
+```
 
-Step 6: Tunnel-Breaking Test. On Host U,telnettoHost V. While keeping thetelnetconnection
-alive, we break the VPN tunnel. We then type something in thetelnetwindow, and report what you
-observe. We then reconnect the VPN tunnel. What is going to happen to thetelnetconnection? Will it
+Step 6: Tunnel-Breaking Test. On Host U,telnet to Host V. While keeping the telnet connection
+alive, we break the VPN tunnel. We then type something in the telnet window, and report what you
+observe. We then reconnect the VPN tunnel. What is going to happen to the telnet connection? Will it
 be broken or resumed? Please describe and explain your observations.
 
 #### 2.3 Task 3: Encrypting the Tunnel
@@ -322,14 +258,13 @@ server’s certificate (the hostname of the server isvpnlabserver.com), and the 
 sues Google’s certificate. Therefore, the sample TLS client program can talk to our own server, as well as
 Google’s HTTPS server:
 
+```
 $ ./tlsclient vpnlabserver.com 4433
-$ ./tlsclient [http://www.google.com](http://www.google.com) 443
+$ ./tlsclient www.google.com 443
+```
 
 It should be notedthat students should not usevpnlabserver.comfrom the sample code as their
-VPN server name; instead,they should include their last namein the server name. Students should gen-
-
-
-erate their own CA in order to create server certificates. The objective of this requirement is to differentiate
+VPN server name; instead,they should include their last namein the server name. Students should generate their own CA in order to create server certificates. The objective of this requirement is to differentiate
 student’s work.
 To use our client to talk to an HTTPS server, we need to get its CA’s certificate, save the certificate in
 the./caclientfolder, and create a symbolic link to it (or rename it) using the hash value generated
@@ -337,15 +272,17 @@ from its subject field. For example, to enable our client to talk to Google, who
 CA called “GeoTrust Global CA”, we get this root CA’s certificate (GeoTrustGlobalCA.pem) from the
 Firefox browser, and run the following command to get its hash and then set up the symbolic link:
 
+```
 $ openssl x509 -in GeoTrustGlobalCA.pem -noout -subject_hash
-**2c543cd**
+**2c543cd1**
 
-$ ln -s GeoTrustGlobalCA.pem **2c543cd1.**
+$ ln -s GeoTrustGlobalCA.pem **2c543cd1.0**
 $ ls -l
 lrwxrwxrwx 1 ... 2c543cd1.0 -> GeoTrustGlobalCA.pem
 lrwxrwxrwx 1 ... 9b58639a.0 -> cacert.pem
 -rw-r--r-- 1 ... cacert.pem
 -rw-r--r-- 1 ... GeoTrustGlobalCA.pem
+```
 
 #### 2.5 Task 5: Authenticating the VPN Client
 
@@ -378,49 +315,7 @@ pipes for IPC.
 Child processes need to monitor this pipe interface, and read data from it if there are data. Since child
 processes also need to watch out for data coming from the socket interface, they need to simultaneously
 
-
-```
-tun
-```
-```
-Process 
-```
-```
-Process 
-```
-```
-Process 
-```
-```
-Tunnel 
-```
-```
-Tunnel 
-```
-```
-Tunnel 
-```
-```
-Client 
-```
-```
-Client 
-```
-```
-Client 
-```
-#### `
-
-#### `
-
-#### `
-
-```
-Which  Packets
-way?
-```
-#### Parent Process
-
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/2923ba5e-05a7-46d9-a057-facfd130b7c3)
 ```
 Figure 4: Supporting multiple VPN clients
 ```
@@ -433,7 +328,7 @@ monitor multiple interfaces. Section 3.5 shows how to achieve that.
 Wireshark identifies TLS/SSL traffic based on port numbers. It knows 443 is the default port number for
 HTTPS, but our VPN server listens to a different and non-standard port number. We need to let Wireshark
 know that; otherwise, Wireshark will not label our traffic as SSL/TLS traffic. Here is what we can do:
-go to theEditmenu in Wireshark, and clickPreferences,Protocols,HTTP, and then find the
+go to theEditmenu in Wireshark, and click Preferences , Protocols,HTTP, and then find the
 "SSL/TLS Ports"entry. Add your SSL server port. For example, we can change the content of the
 entry to443,4433, where 4433 is the port used by our SSL server.
 
@@ -448,20 +343,21 @@ the following:
 Click Edit -> Preferences -> Protocols -> SSL
 Find the "RSA key list", and click the Edit button
 Provide the required information about the server, see this example:
-IP Address: 10.0.2.
-Port: 4433
-Protocol: ssl
-Key File: /home/seed/vpn/server-key.pem (privat key file)
-Password: deesdees
+    IP Address: 10.0.2.65
+    Port: 4433
+    Protocol: ssl
+    Key File: /home/seed/vpn/server-key.pem (privat key file)
+    Password: deesdees
 ```
 
 #### 3.2 Getting IP Address from Hostname
 
-Given a hostname, we can get the IP address for this name. In our sampletlsclientprogram, we use
-thegethostbyname()function to get the IP address. However, this function is obsolete because it does
-not support IPV6. Applications should usegetaddrinfo()instead. The following example shows to
+Given a hostname, we can get the IP address for this name. In our sample tls client program, we use
+the gethostbyname() function to get the IP address. However, this function is obsolete because it does
+not support IPV6. Applications should use getaddrinfo() instead. The following example shows to
 how to use this function to get IP addresses.
 
+```
 #include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
@@ -473,25 +369,22 @@ struct addrinfo hints, *result;
 
 int main() {
 
-```
-hints.ai_family = AF_INET; // AF_INET means IPv4 only addresses
-```
-```
-int error = getaddrinfo("www.example.com", NULL, &hints, &result);
-if (error) {
-fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
-exit(1);
+    hints.ai_family = AF_INET; // AF_INET means IPv4 only addresses
+    
+    int error = getaddrinfo("www.example.com", NULL, &hints, &result);
+    if (error) {
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
+    exit(1);
+    }
+    
+    // The result may contain a list of IP address; we take the first one.
+    struct sockaddr_in* ip = (struct sockaddr_in *) result->ai_addr;
+    printf("IP Address: %s\n", (char *)inet_ntoa(ip->sin_addr));
+    
+    freeaddrinfo(result);
+    return0
 }
 ```
-```
-// The result may contain a list of IP address; we take the first one.
-struct sockaddr_in* ip = (struct sockaddr_in *) result->ai_addr;
-printf("IP Address: %s\n", (char *)inet_ntoa(ip->sin_addr));
-```
-freeaddrinfo(result);
-return 0;
-}
-
 #### 3.3 Authentication Using the Shadow File
 
 The following program shows how to authenticate a user using the account information stored in the shadow
@@ -500,62 +393,62 @@ including the hashed password. It then usescrypt()to hash a given password and s
 matches with the values fetched from the shadow file. If so, the user name and the password match, and the
 authentication is successful.
 
+```
 #include <stdio.h>
 #include <string.h>
 #include <shadow.h>
 #include <crypt.h>
 
-int login(char *user, char*passwd)
+int login(char *user, char *passwd)
 {
-struct spwd *pw;
-char *epasswd;
+    struct spwd *pw;
+    char *epasswd;
 
+    pw = getspnam(user);
+    if (pw == NULL) {
+    return -1;
+    }
 
-```
-pw = getspnam(user);
-if (pw == NULL) {
-return -1;
-}
-```
-```
-printf("Login name: %s\n", pw->sp_namp);
-printf("Passwd : %s\n", pw->sp_pwdp);
-```
-```
-epasswd = crypt(passwd, pw->sp_pwdp);
-if (strcmp(epasswd, pw->sp_pwdp)) {
-return -1;
-}
-```
-return 1;
+    printf("Login name: %s\n", pw->sp_namp);
+    printf("Passwd : %s\n", pw->sp_pwdp);
+    
+    epasswd = crypt(passwd, pw->sp_pwdp);
+    if (strcmp(epasswd, pw->sp_pwdp)) {
+    return -1;
+    }
+    
+    return 1;
 }
 
 void main(int argc, char** argv)
 {
-if (argc < 3) {
-printf("Please provide a user name and a password\n");
-return;
+    if (argc < 3) {
+    printf("Please provide a user name and a password\n");
+    return;
+    }
+    
+    int r = login(argv[1], argv[2]);
+    printf("Result: %d\n", r);
 }
-
-int r = login(argv[1], argv[2]);
-printf("Result: %d\n", r);
-}
+```
 
 We can compile the code above and run it with a user name and a password. It should be noted that the
 root privilege is needed when reading from the shadow file. See the following commands for compilation
 and execution.
 
+```
 $ gcc login.c -lcrypt
 $ sudo ./a.out seed dees
+```
 
 It should be noted that we use-lcryptin the above compilation; we used-lcryptowhen compiling
-our TLS programs. Thecryptandcryptoare two different libraries, so this is not a typo.
+our TLS programs. The crypt and crypto are two different libraries, so this is not a typo.
 
 #### 3.4 Inter-Process Communication Using Pipe
 
 The following program shows how a parent process sends data to its child process using pipe. The parent
 process creates a pipe usingpipe()in Line¿. Each pipe has two ends: the input end’s file descriptor is
-fd[0], and the output end’s file descriptor isfd[1].
+fd[0], and the output end’s file descriptor is fd[1].
 After the pipe is created, a child process is spawned usingfork(). Both parent and child processes
 have the file descriptors associated with the pipe. They can send data to each other using the the pipe, which
 is bi-directional. However, we will only use this pipe to send data from the parent process to the child
@@ -563,9 +456,9 @@ process, and the parent will not read anything from the pipe, so we close the in
 process. Similarly, the child does not send anything via the pipe, so it closes the output endfd[1]. At
 this point, we have established a uni-directional pipe from the parent process to the child process. To send
 data via the pipe, the parent process writes tofd[1](see Line¡); to receive data from the pipe, the child
-process reads fromfd[0](see Line¬).
+process reads fromfd[0](see Line➂).
 
-
+```
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -573,38 +466,35 @@ process reads fromfd[0](see Line¬).
 
 int main(void)
 {
-int fd[2], nbytes;
-pid_t pid;
-char string[] = "Hello, world!\n";
-char readbuffer[80];
-
-```
-pipe(fd); ¿
-```
-```
-if((pid = fork()) == -1) {
-perror("fork");
-exit(1);
+    int fd[2], nbytes;
+    pid_t pid;
+    char string[] = "Hello, world!\n";
+    char readbuffer[80];
+    
+    pipe(fd); ➀
+    
+    if((pid = fork()) == -1) {
+    perror("fork");
+    exit(1);
+    }
+    
+    if(pid>0) { //parent process
+    close(fd[0]); // Close the input end of the pipe.
+    
+    // Write data to the pipe.
+    write(fd[1], string, (strlen(string)+1)); ➁
+    exit(0);
+    }
+    else { //child process
+    close(fd[1]); // Close the output end of the pipe.
+    
+    // Read data from the pipe.
+    nbytes = read(fd[0], readbuffer, sizeof(readbuffer)); ➂
+    printf("Child process received string: %s", readbuffer);
+    }
+    return(0);
 }
 ```
-```
-if(pid>0) { //parent process
-close(fd[0]); // Close the input end of the pipe.
-```
-```
-// Write data to the pipe.
-write(fd[1], string, (strlen(string)+1)); ¡
-exit(0);
-}
-else { //child process
-close(fd[1]); // Close the output end of the pipe.
-```
-// Read data from the pipe.
-nbytes = read(fd[0], readbuffer, sizeof(readbuffer)); ¬
-printf("Child process received string: %s", readbuffer);
-}
-return(0);
-}
 
 #### 3.5 Using select to Monitor Multiple Input Interfaces
 
@@ -627,13 +517,14 @@ which will block the process until data are available on one of the file descrip
 theFDISSETmacro to figure out which file descriptor has received data. In the following code example,
 we useselect()to monitor aTUNand a socket file descriptor.
 
+```
 fd_set readFDSet;
 int ret, sockfd, tunfd;
 
-FD_ZERO(&readFDSet);
-FD_SET(sockfd, &readFDSet); ¿
-FD_SET(tunfd, &readFDSet); ¡
-ret = select(FD_SETSIZE, &readFDSet, NULL, NULL, NULL); ¬
+FD_ZERO(&readFDSet); 
+FD_SET(sockfd, &readFDSet);     ➀
+FD_SET(tunfd, &readFDSet);      ➁
+ret = select(FD_SETSIZE, &readFDSet, NULL, NULL, NULL);     ➂
 
 if (FD_ISSET(sockfd, &readFDSet){
 // Read data from sockfd, and do something.
@@ -642,15 +533,14 @@ if (FD_ISSET(sockfd, &readFDSet){
 if (FD_ISSET(tunfd, &readFDSet){
 // Read data from tunfd, and do something.
 }
-
+```
 #### 3.6 An example: usingtelnetin our VPN
 
 To help you fully understand how packets from an application flow to its destination through ourMiniVPN,
-we have drawn two figures to illustrate the complete packet flow path when users runtelnet 10.0.20.
+we have drawn two figures to illustrate the complete packet flow path when users runtelnet 10.0.20.100
 from a host machine, which is the Point A of a host-to-gateway VPN. The other end of the VPN is on a
-gateway, which is connected to the10.0.20.0/24network, where ourtelnetserver10.0.20.
-resides.
-Figure 5(a) shows how a packet flow from thetelnetclient to the server. Figure 5(b) shows how
+gateway, which is connected to the 10.0.20.0/24 network, where ourtelnetserver 10.0.20.100 resides.
+Figure 5(a) shows how a packet flow from the telnet client to the server. Figure 5(b) shows how
 a packet flow from thetelnetserver back to the client. We will only describe the path in Figure 5(a)
 in the following. The return path is self-explained from Figure 5(b) once you have understood the path in
 Figure 5(a).
@@ -667,9 +557,9 @@ Figure 5(a).
 5. The kernel will treat the encrypted IP packet as UDP data, construct a new IP packet, and put the
     entire encrypted IP packet as its UDP payload. The new IP’s destination address will be the other end
     of the tunnel (decided by the VPN program we write); in the figure, the new IP’s destination address
-    is128.230.208.97.
+    is 128.230.208.97.
 6. You need to set up your routing table correctly, so the new packet will be routed through the interaface
-    eth1; therefore, the source IP address of this new packet should be209.164.131.32.
+    eth1; therefore, the source IP address of this new packet should be 209.164.131.32.
 
 
 7. The packet will now flow through the Internet, with the originaltelnetpacket being entirely en-
@@ -681,9 +571,9 @@ Figure 5(a).
 telnetpacket, back to the kernel through the virtual network interfacetun0.
 11. Since it comes through a network interface, the kernel will treat it as an IP packet (it is indeed an IP
 packet), look at its destination IP address, and decide where to route it. Remember, the destination IP
-address of this packet is10.0.20.100. If your routing table is set up correctly, the packet should
-be routed througheth2, because this is the interface that connects to the10.0.20.0/24network.
-12. Thetelnetpacket will now be delivered to its final destination10.0.20.100.
+address of this packet is 10.0.20.100. If your routing table is set up correctly, the packet should
+be routed througheth2, because this is the interface that connects to the 10.0.20.0/24 network.
+12. Thetelnetpacket will now be delivered to its final destination 10.0.20.100.
 
 ### 4 Submission and Demonstration
 
@@ -713,342 +603,17 @@ we decide to experiment with a different approach: asking students to record the
 video file. To help them conduct a self-guided demo, we provide a checklist in Table 1. Even if we do
 in-person demo, this checklist is still quite useful.
 
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/0e84312c-432e-4af2-9291-a4607ca67ff4)
 
-```
-10.0.20.
-```
-```
-Internet
-```
-```
-Telnet Program
-```
-```
-TCP Port
-```
-```
-VPN Program (Point A)
-```
-```
-tun0 UDP Port
-```
-```
-Kernel
-```
-```
-IP
-TCP
-Data
-```
-```
-Routing
-```
-```
-IP
-TCP
-Data
-```
-```
-eth
-```
-```
-IP
-TCP
-Data
-```
-```
-Encrypt
-```
-```
-New IP
-UDP
-IP
-TCP
-Data
-```
-```
-New IP
-UDP
-IP
-TCP
-Data
-```
-```
-VPN Program (Point B)
-IP
-TCP
-Data
-```
-```
-IP
-TCP
-Data
-```
-```
-Decrypt
-```
-```
-eth
-```
-```
-UDP Port tun
-```
-```
-IP
-TCP
-Data
-```
-```
-Telnet 10.0.20.
-```
-```
-Routing
-```
-```
-Kernel
-```
-```
-NIC Card
-```
-```
-` `
-10.0.20.
-```
-```
-eth
-```
-IP: 10.0.4.1=> 10.0.20.
-New IP: 209.164.131.32 => 128.230.208.
+`(a) An Example of packet flow from telnet client to server in Host-to-Gateway Tunnel`
 
-```
-10.0.4.1 10.0.5.
-```
-```
-209.164.131.32 128.230.208.
-```
-```
-How packets flow from client to server when running “telnet 10.0.20.100” using a VPN
-```
-```
-NIC Card NIC Card
-```
-```
-Data
-```
-```
-(a) An Example of packet flow from telnet client to server in Host-to-Gateway Tunnel
-```
-```
-10.0.20.
-```
-```
-Internet
-```
-```
-Telnet Program
-```
-```
-TCP Port
-```
-```
-VPN Program (Point A)
-```
-```
-tun0 UDP Port
-```
-```
-Kernel
-```
-```
-IP
-TCP
-Data
-```
-```
-IP
-TCP
-Data
-```
-```
-eth
-```
-```
-IP
-TCP
-Data
-```
-```
-Decrypt
-```
-```
-New IP
-UDP
-IP
-TCP
-Data
-```
-```
-New IP
-UDP
-IP
-TCP
-Data
-```
-```
-VPN Program (Point B)
-IP
-TCP
-Data
-```
-```
-IP
-TCP
-Data
-```
-```
-Encrypt
-```
-```
-eth
-```
-```
-UDP Port tun
-```
-```
-IP
-TCP
-Data
-```
-```
-Telnet 10.0.20.
-```
-```
-Kernel
-```
-```
-NIC Card
-```
-```
-` `
-10.0.20.
-```
-```
-eth
-```
-IP: 10.0.20.100 => 10.0.4.
-New IP: 128.230.208.97 => 209.164.131.
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a6fd97f1-e05c-4efe-9699-ff35a87b904e)
 
-```
-10.0.4.1 10.0.5.
-```
-```
-209.164.131.32 128.230.208.
-```
-```
-Routing
-```
-```
-Data
-```
-```
-How packets return from server to client when running “telnet 10.0.20.100” using a VPN
-```
-```
-NIC Card NIC Card
-```
-```
-(b) An Example of packet flow from telnet server to client in Host-to-Gateway Tunnel
-```
-```
-Figure 5: An Example of Packet Flow in VPN.
-```
+`(b) An Example of packet flow from telnet server to client in Host-to-Gateway Tunnel`
 
-```
-Table 1: Checklist for VPN demonstration
-```
-### Requirements Details
+`Figure 5: An Example of Packet Flow in VPN.`
 
-Initial State • Rebooting all three VMs. Start recording after the VMs are rebooted. You should
+`Table 1: Checklist for VPN demonstration`
 
-```
-start demo immediately after rebooting. If you wait too long, you will have to do
-the rebooting again.
-```
-- Type"last reboot; date"in a terminal to show the rebooting time and cur-
-    rent time on all three VMs. The difference between these two times should not be
-    more than 5 minute.
-- Display the routing tables on all three VMs.
-
-Pre-Tunnel Test • Before VPN is set up,pingHostVfrom HostUand explain your observation.
-
-Tunnel Creation • Start vpn client and vpn server programs.
-
-- You need to type passwords to authenticate yourself to the server, the password
-    should not be visible (10 points will be deducted if we see your passwords).
-    You can usegetpass()to achieve that (type “man getpass” to see its
-    manual).
-- Passwords cannot be hardcoded in your program. If you do this, 50 points will
-    be deducted.
-- Perform configuration on all VMs. Although you can put the configuration com-
-mands in a script, you do need to show the script and explain the commands in your
-script.
-- Show routing tables on all three VMs after the configuration.
-
-Ping Test • On HostU:pingHostV.
-
-- Use Wireshark to prove that your VPN works correctly.
-- Show us the proof that the tunnel is indeed encrypted.
-
-Telnet Test • On HostU:telnetto HostV.
-
-- Use Wireshark to prove that your VPN works correctly.
-
-
-Tunnel-Breaking
-Test
-
-- On HostU, telnet to HostV. While keeping the telnet connection alive, break the
-    VPN tunnel by stopping the vpn client and/or vpn server programs. Then type
-    something in the telnet window. Do you see what you type? What happens to the
-    TCP connection? Is the connection broken?
-- Let us now reconnect the VPN tunnel (do not wait for too long). Run the client and
-    server programs again, and conduct the necessary configuration (no need to explain
-    or show commands). Once the tunnel is re-established, what is going to happen to
-    the telnet connection? Please describe and explain your observation.
-
-Large Packet Test • Send a large packet (size>3000) from HostUto HostV. You can use"ping -s"
-
-```
-to do that.
-```
-- Use Wireshark to describe and explain your observations.
-
-TLS Setup • Show us how you set up your TLS on both client and server sides.
-
-- Show us where you place the server certificates and self-signed certificate.
-- Show us which lines of code load those certificates.
-
-MITM Test • Demonstrate that your system can successfully defeat MITM attacks. You need
-
-```
-to set up a simulated MITM attack, and demonstrate that your client program can
-defeat it.
-```
-Code Explanation 1 Which lines of code are responsible for the following:
-
-- verifying that the server certificate is valid
-- verifying that the server is the owner of the certificate
-- verifying that the server is the intended server
-
-Code Explanation 2 Which line of code in the client forces TLS handshake to stop if the server certificate
-verification fails?
-
-Code Explanation 3 Which line(s) of code do the following?
-
-- sending username and password to the server
-- getting account information from the shadow file
-
-Ending Time Type"last reboot; date"commands to display the time before ending your
-demo.
-
-
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/e8d695bc-51e3-426a-8d48-d631d30779b2)
+![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/a8831a5e-b82b-46a6-a6be-a13bcd59b7ca)
