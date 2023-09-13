@@ -29,7 +29,7 @@ Readings and Videos. Detailed coverage of sniffing and spoofing can be found in 
 - Chapter 15 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
     by Wenliang Du. See details at https://www.handsonsecurity.net.
 - Section 2 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
-    a thttps://www.handsonsecurity.net/video.html.
+    at https://www.handsonsecurity.net/video.html.
 
 Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
 image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
