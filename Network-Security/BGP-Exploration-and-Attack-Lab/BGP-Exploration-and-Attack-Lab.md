@@ -67,6 +67,7 @@ and run the following docker commands to build and start the containers. We reco
 emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating
 system should not have any problem, as long as the docker software is installed. Readers can find the docker
 manual from this link.
+
 ```
 $ docker-compose build
 $ docker-compose up
@@ -92,6 +93,7 @@ We need to modify the BGP configuration file in several tasks. We can do that by
 configuration file inside a container. Anther way is to copy the file into the host VM, do the editing from
 the host VM, and then copy it back. Let us see an example (assuming that we want to modify the BGP
 configuration file of AS-180):
+
 ```
 // Find out the IP of the AS-180’s BGP router container
 $ dockps | grep 180
@@ -101,8 +103,6 @@ $ dockps | grep 180
 
 // Copy the configuration file from the container to the host machine
 $ docker cp 2967:/etc/bird/bird.conf ./as180_bird.conf
-
-
 ```
 Get a terminal on a
 selected node
