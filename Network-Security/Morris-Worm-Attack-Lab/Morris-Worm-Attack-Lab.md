@@ -2,77 +2,44 @@
 
 ```
 Copyright © 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-The Morris worm (November 1988) was one of the oldest computer worms distributed via the Internet, and
-the first to gain significant mainstream media attention [1]. While it is old, the techniques used by most
-worms today are still the same, such as the WannaCry ransomware in 2017. They involve two main parts:
-attack and self-duplication. The attack part exploits a vulnerability (or a few of them), so a worm can get
-entry to another computer. The self-duplication part is to send a copy of itself to the compromised machine,
-and then launch the attack from there. A detailed analysis of the Morris worm was given by Spafford [2].
-The goal of this lab is to help students gain a better understanding of the behavior of worms, by writing
-a simple worm and testing it in a contained environment (an Internet emulator). Although the title of this lab
-is called Morris worm, the underneath technique used is quite generic. We have broken down the technique
-into several tasks, so students can build the worm incrementally. For testing, we built two emulated Internets,
-a small one and a larger one. Students can release their worms in each of these Internets, and see how their
-worms spread across the entire emulated Internet. The lab covers the following topics:
+The Morris worm (November 1988) was one of the oldest computer worms distributed via the Internet, and the first to gain significant mainstream media attention [1]. While it is old, the techniques used by most worms today are still the same, such as the WannaCry ransomware in 2017. They involve two main parts: attack and self-duplication. The attack part exploits a vulnerability (or a few of them), so a worm can get entry to another computer. The self-duplication part is to send a copy of itself to the compromised machine, and then launch the attack from there. A detailed analysis of the Morris worm was given by Spafford [2].
+<Br>
+&emsp; The goal of this lab is to help students gain a better understanding of the behavior of worms, by writing a simple worm and testing it in a contained environment (an Internet emulator). Although the title of this lab is called Morris worm, the underneath technique used is quite generic. We have broken down the technique into several tasks, so students can build the worm incrementally. For testing, we built two emulated Internets,
+a small one and a larger one. Students can release their worms in each of these Internets, and see how their worms spread across the entire emulated Internet. The lab covers the following topics:
 
 - Buffer-overflow attack
 - Worm’s self-duplication and propagation behavior
 - The SEED Internet emulator
 - Network tools
 
-**Prerequisite.** There are several parts in this lab, including attacking, self duplication, and propagation.
-The attacking part exploits the buffer-overflow vulnerability of a server program. This vulnerable server
-is the same as the one used in the Level-1 task of the buffer-overflow attack lab (the server version). We
-suggest that students work on the buffer-overflow lab first before working on this lab, so they can focus on
-the worm part in this lab.
+**Prerequisite.** There are several parts in this lab, including attacking, self duplication, and propagation. The attacking part exploits the buffer-overflow vulnerability of a server program. This vulnerable server is the same as the one used in the Level-1 task of the buffer-overflow attack lab (the server version). We suggest that students work on the buffer-overflow lab first before working on this lab, so they can focus on the worm part in this lab.
 
-**Lab environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+**Lab environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded from the SEED website. Since we use containers to set up the lab environment, this lab does not depend much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
 
 ## 2 The Lab Setup and the SEED Internet Emulator
 
-This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document).
-If this is the first time you use the emulator, it is important that you read this section. We recommend
-instructors to provide a lab session to help students get familiar with the emulator.
+This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document). If this is the first time you use the emulator, it is important that you read this section. We recommend instructors to provide a lab session to help students get familiar with the emulator.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Morris_Worm/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Morris_Worm/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
-
 
 ### 2.1 The Internet Emulator
 
-We provide a pre-built emulator in two different forms: Python code and container files. The container
-files are generated from the Python code, but students need to install the SEED Emulator source code from
-the GitHub to run the Python code. The container files can be directly used without the emulator source
-code. Instructors who would like to customize the emulator can modify the Python code, generate their own
-container files, and then provide the files to students, replacing the ones included in the lab setup file. See
-the `README.md `file for instructions.
+We provide a pre-built emulator in two different forms: Python code and container files. The container files are generated from the Python code, but students need to install the SEED Emulator source code from the GitHub to run the Python code. The container files can be directly used without the emulator source code. Instructors who would like to customize the emulator can modify the Python code, generate their own container files, and then provide the files to students, replacing the ones included in the lab setup file. See the `README.md` file for instructions.
 
-**Download the emulator files.** Please download the `Labsetup.zip` file from the web page, and unzip
-it. The files inside the container folder are the actual emulation files (container files); they are generated by
-the Python code. The name of the container folder is called `output/` for most labs, but if a lab has multiple
-emulators, it will use different folder names. The actual names will be given in the lab task.
+**Download the emulator files.** Please download the `Labsetup.zip` file from the web page, and unzip it. The files inside the container folder are the actual emulation files (container files); they are generated by the Python code. The name of the container folder is called `output/` for most labs, but if a lab has multiple emulators, it will use different folder names. The actual names will be given in the lab task.
 
-**Start the emulation.** We will directly use the files in the container folder. Go to this folder, and run the
-docker commands to build and start the containers. We recommend that you run the emulator inside the
-provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating system should not have
-any problem, as long as the docker software is installed. Readers can find the docker manual from this link.
-If this is the first time you set up a SEED lab environment using containers, it is very important that you
-read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file
-(in our provided SEEDUbuntu 20.04 VM).
+**Start the emulation.** We will directly use the files in the container folder. Go to this folder, and run the docker commands to build and start the containers. We recommend that you run the emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating system should not have any problem, as long as the docker software is installed. Readers can find the docker manual from [this link](https://github.com/seed-labs/seed-labs/blob/master/manuals/docker/SEEDManual-Container.md). If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual.
+<Br>
+&emsp; In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file (in our provided SEEDUbuntu 20.04 VM).
 
 ```
 $ docker-compose build      # Build the container images
@@ -86,90 +53,51 @@ $ dcup          # Alias for: docker-compose up
 $ dcdown        # Alias for: docker-compose down
 ```
 
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of
-the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for
-them in the `.bashrc` file.
+&emsp; All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for them in the `.bashrc` file.
 ```
 $ dockps        // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id>  // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
-b1004832e275 hostA-10.9.0.
-0af4ea7a3e2e hostB-10.9.0.
-9652715c8e0a hostC-10.9.0.
+b1004832e275 hostA-10.9.0.5
+0af4ea7a3e2e hostB-10.9.0.6
+9652715c8e0a hostC-10.9.0.7
 
 $ docksh 96
 root@9652715c8e0a:/#
-
 
 // Note: If a docker command requires a container ID, you do not need to
 //       type the entire ID string. Typing the first few characters will
 //       be sufficient, as long as they are unique among all the containers.
 ```
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+&emsp; If you encounter problems when setting up the lab environment, please read the “Common Problems” section of the manual for potential solutions.
 
-**Set the terminal title.** We may need to get into several containers using the terminal. We will likely
-create several terminal tabs, and switch back and forth among these tabs. We can easily get lost, because it
-is difficult to know which tab runs which container. To solve this problem, once we are inside a container,
-we can set the terminal title using one of the following commands (it sets the title to "`New Title`" ).
-```
+**Set the terminal title.** We may need to get into several containers using the terminal. We will likely create several terminal tabs, and switch back and forth among these tabs. We can easily get lost, because it is difficult to know which tab runs which container. To solve this problem, once we are inside a container, we can set the terminal title using one of the following commands (it sets the title to "`New Title`").
+<pre>
 # set_title New Title
-# st New Title          Ÿ **st** is an alias of settitle
-```
+# st New Title          <b> <---- st </b> is an alias of set_title
+</pre>
+
 ### 2.2 The Map of the Emulated Internet
 
-```
-Get a terminal on a
-selected node
-```
-```
-Set filter for Click on a node
-packet trace
-visulization
-```
-```
-Figure 1: The map of the emulated Internet
-```
-Each computer (hosts or routers) running inside the emulator is a docker container. Users can access
-these computers using docker commands, such as getting a shell inside a container. The emulator also
-comes with a web application, which visualizes all the hosts, routers, and networks. After the emulator
-starts, the map can be accessed from this URL: `http://localhost:8080/map.html`. See Figure 1.
-To zoom in/out, use the mouse middle scroll. Click on any node, the detailed information of that node will
-be displayed on the side panel, from where, users can get a console on that node (container).
+![Emulated Internet](../media/net-sec-morris-worm-emulated-internet.png)
 
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 1: The map of the emulated Internet
 
-**Note:** At this point, we are still actively improving the Map application, so the map container is not
-included in the internet emulator folder. Instead, it is included in a separate folder, the `Labsetup/map`
-folder. Please go to this folder, run `dcbuild` and`dcup `to build and start the Map container. Then you can
-access the Map using the URL mentioned above.
+&emsp; Each computer (hosts or routers) running inside the emulator is a docker container. Users can access these computers using docker commands, such as getting a shell inside a container. The emulator also comes with a web application, which visualizes all the hosts, routers, and networks. After the emulator starts, the map can be accessed from this URL: `http://localhost:8080/map.html`. See Figure 1. To zoom in/out, use the mouse middle scroll. Click on any node, the detailed information of that node will be displayed on the side panel, from where, users can get a console on that node (container).
+
+**Note:** At this point, we are still actively improving the Map application, so the map container is not included in the internet emulator folder. Instead, it is included in a separate folder, the `Labsetup/map` folder. Please go to this folder, run `dcbuild` and `dcup` to build and start the Map container. Then you can access the Map using the URL mentioned above.
 
 ### 2.3 Filtering and Replying
 
-```
-Set the tcpdump packet filter.
-Nodes seeing the specified
-packets will report the event to
-the map, which will highlight
-the node in real time.
-```
-```
-The map will record the
-received events, and replay the
-highlighting.
-```
-```
-Figure 2: Capturing and replaying events
-```
-Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in
-`tcpdump` ; actually, the filter is directly fed into the `tcpdump` program running on all nodes. When a node
-sees the packets that satisfy the filter, it sends an event to the map, which will highlight the node briefly on
-the map.
-Sometimes, a sequence of events happen too fast to see the actual order among them. In this case, we
-can use the Replay panel (see Figure 2) to record the events and then replay them at a slower pace. The
-speed of replaying can be adjusted by changing the event interval.
+![Capturing and replaying events](../media/net-sec-morris-worm-events.png)
+
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 2: Capturing and replaying events
+
+&emsp; Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in `tcpdump`; actually, the filter is directly fed into the `tcpdump` program running on all nodes. When a node sees the packets that satisfy the filter, it sends an event to the map, which will highlight the node briefly on the map.
+<Br>
+&emsp; Sometimes, a sequence of events happen too fast to see the actual order among them. In this case, we can use the Replay panel (see Figure 2) to record the events and then replay them at a slower pace. The speed of replaying can be adjusted by changing the event interval.
 
 ## 3 Task 1: Get Familiar with the Lab Setup
 
