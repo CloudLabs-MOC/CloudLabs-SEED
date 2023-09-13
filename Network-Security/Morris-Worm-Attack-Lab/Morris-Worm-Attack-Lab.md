@@ -101,30 +101,20 @@ root@9652715c8e0a:/#
 
 ## 3 Task 1: Get Familiar with the Lab Setup
 
-We provide two setups for this lab, one with 275 containers (called mini internet) and the other with 15
-containers (called nano internet). The larger one is used for the final task (Task 6). For all others, we will
-use the smaller one, as it is much quicker to set up. When everything works, we will switch to the mini
-internet setup. In this task, we will only start the nano internet. Instructions on how to start the mini internet
+We provide two setups for this lab, one with 275 containers (called mini internet) and the other with 15 containers (called nano internet). The larger one is used for the final task (Task 6). For all others, we will use the smaller one, as it is much quicker to set up. When everything works, we will switch to the mini internet setup. In this task, we will only start the nano internet. Instructions on how to start the mini internet
 will be given in Task 6.
-The nano internet has three autonomous systems (ASes), which peer with one another at a single Internet
-exchange. Each AS has one internal network, and its network prefix is `10.X.0.0/24`, where `X` is `151` ,
-`152` , and `153`. Each network has five hosts, with the host IDs ranging from `71` to `75`.
-Go to the `Labsetup/internet-nano` folder, follow the instruction in Section 2 to start the con-
-tainers (i.e. use `dcbuild` to build and `dcup` to start). This will start the nano internet emulator. We have
-also implemented a visualization tool to help visualize the networks in the emulator. The tool is installed
-in a separate container inside the `Labsetup/map` folder. Go to this folder, run `dcbuild` and `dcup` to
-bring it up. Once the emulator and the Map have been started, point the browser to `http://localhost:
-8080/map.html`, and you can see the network diagram (see Figure 3).
-Get a terminal on one of the host containers, type "`ping 1.2.3.4`" on the container, and then type
-"`icmp and dst 1.2.3.4`" in the filter box of the Map (without the quotations; do not forget to press
+<Br>
+&emsp; The nano internet has three autonomous systems (ASes), which peer with one another at a single Internet exchange. Each AS has one internal network, and its network prefix is `10.X.0.0/24`, where `X` is `151` , `152` , and `153`. Each network has five hosts, with the host IDs ranging from `71` to `75`.
+<Br>
+&emsp; Go to the `Labsetup/internet-nano` folder, follow the instruction in Section 2 to start the containers (i.e. use `dcbuild` to build and `dcup` to start). This will start the nano internet emulator. We have also implemented a visualization tool to help visualize the networks in the emulator. The tool is installed in a separate container inside the `Labsetup/map` folder. Go to this folder, run `dcbuild` and `dcup` to bring it up. Once the emulator and the Map have been started, point the browser to `http://localhost:8080/map.html`, and you can see the network diagram (see Figure 3).
+<Br>
+&emsp; Get a terminal on one of the host containers, type "`ping 1.2.3.4`" on the container, and then type "`icmp and dst 1.2.3.4`" in the filter box of the Map (without the quotations; do not forget to press
 
+![Capturing and replaying events](../media/net-sec-morris-worm-nano-internet.png)
 
-```
-Figure 3: The nano internet
-```
-return). The machine running the `ping` command will flash. We will use this mechanism to visualize
-which hosts are infected by the worm: once a host is infected, we run "`ping 1.2.3.4`" , so the node
-corresponding to the host can flash on the map.
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 3: The nano internet
+
+return). The machine running the `ping` command will flash. We will use this mechanism to visualize which hosts are infected by the worm: once a host is infected, we run "`ping 1.2.3.4`" , so the node corresponding to the host can flash on the map.
 
 ## 4 Task 2: Attack the First Target
 
