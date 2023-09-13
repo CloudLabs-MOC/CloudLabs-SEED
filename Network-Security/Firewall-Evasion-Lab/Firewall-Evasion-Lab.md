@@ -65,12 +65,7 @@ iptables -A FORWARD -i eth1 -d 93.184.216.0/24 -j DROP
 
 ## 3 Task 1: Static Port Forwarding
 
-The firewall in the lab setup prevents outside machines from connecting to any TCP server on the internal
-network, other than the SSH server. In this task, we would like to use static port forwarding to evade this
-restriction. More specifically, we will usesshto create a static port forwarding tunnel between host A (on
-the external network) and host B (on the internal network), so whatever data received on A’s port X will be
-sent to B, from where the data is forwarded to the target T’s port Y. In the following command, we usessh
-to create such a tunnel.
+The firewall in the lab setup prevents outside machines from connecting to any TCP server on the internal network, other than the SSH server. In this task, we would like to use static port forwarding to evade this restriction. More specifically, we will use `ssh` to create a static port forwarding tunnel between host A (on the external network) and host B (on the internal network), so whatever data received on A’s port X will be sent to B, from where the data is forwarded to the target T’s port Y. In the following command, we use `ssh` to create such a tunnel.
 ```
 $ ssh -4NT -L <A’s IP>:<A’s port X>:<T’s IP>:<T’s port Y> <user id>@<B’s IP>
 
@@ -78,52 +73,31 @@ $ ssh -4NT -L <A’s IP>:<A’s port X>:<T’s IP>:<T’s port Y> <user id>@<B�
 // -N: do not execute a remote command.
 // -T: disable pseudo-terminal allocation (save resources).
 ```
-Regarding A’s IP, typically we use `0.0.0.0`, indicating that our port forwarding will listen to the
-connection from all the interfaces on A. If want to limit the connection from a particular interface, we should
-use that interface’s IP address. For example, if we want to limit the connection to the loopback interface,
-so only the program on the local host can use this port forwarding, we can use `127.0.0.1:<port>` or
+&emsp; Regarding A’s IP, typically we use `0.0.0.0`, indicating that our port forwarding will listen to the connection from all the interfaces on A. If want to limit the connection from a particular interface, we should use that interface’s IP address. For example, if we want to limit the connection to the loopback interface, so only the program on the local host can use this port forwarding, we can use `127.0.0.1:<port>` or
 simply omit the IP address (the default IP address is `127.0.0.1`).
 
-**Lab task.** Please use static port forwarding to create a tunnel between the external network and the internal
-network, so we can telnet into the server on `B1`. Please demonstrate that you can do such telnet from hosts `A,
-A1 `and `A2`. Moreover, please answer the following questions: (1) How many TCP connections are involved
-in this entire process. You should run wireshark or `tcpdump` to capture the network traffic, and then point
-out all the involved TCP connections from the captured traffic. (2) Why can this tunnel successfully help
-users evade the firewall rule specified in the lab setup?
+**Lab task.** Please use static port forwarding to create a tunnel between the external network and the internal network, so we can telnet into the server on `B1`. Please demonstrate that you can do such telnet from hosts `A, A1 `and `A2`. Moreover, please answer the following questions: (1) How many TCP connections are involved in this entire process. You should run wireshark or `tcpdump` to capture the network traffic, and then point out all the involved TCP connections from the captured traffic. (2) Why can this tunnel successfully help users evade the firewall rule specified in the lab setup?
 
 ## 4 Task 2: Dynamic Port Forwarding
 
-In the static port forwarding, each port-forwarding tunnel forwards the data to a particular destination. If we
-want to forward data to multiple destinations, we need to set up multiple tunnels. For example, using port
-forwarding, we can successfully visit the blocked `example.com `website , but what if the firewall blocks
-many other sites, how do we avoid tediously establishing one SSH tunnel for each site? We can use dynamic
-port forwarding to solve this problem.
-In the lab setup, the router already blocks `example.com`, so hosts on the internal network cannot
-access the `example.com `website. Please add firewall rules to the router, so two more websites are blocked.
-
-
-The choice of the websites is up to individual students. Please provide evidences to show that the websites
-are indeed blocked.
+In the static port forwarding, each port-forwarding tunnel forwards the data to a particular destination. If we want to forward data to multiple destinations, we need to set up multiple tunnels. For example, using port forwarding, we can successfully visit the blocked `example.com` website , but what if the firewall blocks many other sites, how do we avoid tediously establishing one SSH tunnel for each site? We can use dynamic port forwarding to solve this problem.
+<Br>
+&emsp; In the lab setup, the router already blocks `example.com`, so hosts on the internal network cannot access the `example.com `website. Please add firewall rules to the router, so two more websites are blocked.
+<BR><BR>
+The choice of the websites is up to individual students. Please provide evidences to show that the websites are indeed blocked.
 
 #### 4.1 Task 2.1: Setting Up Dynamic Port Forwarding
 
-We can use `ssh `to create a dynamic port-forwarding tunnel between `B` and `A`. We run the following com-
-mand on host `B`. In dynamic port forwarding, `B `is often called proxy.
+We can use `ssh `to create a dynamic port-forwarding tunnel between `B` and `A`. We run the following command on host `B`. In dynamic port forwarding, `B `is often called proxy.
 ```
 $ ssh -4NT -D   <B’s IP>:<B’s port X>     <user id>@<A’s IP>
 ```
-Regarding B’s IP, typically we use `0.0.0.0`, indicating that our port forwarding will listen to the
-connection from all the interfaces on B. After the tunnel is set up, we can test it using the `curl` command.
-We specify a proxy option, so `curl` will send its HTTP request to the proxy B, which listens on port `X`. The
-proxy forwards the data received on this port to the other end of the tunnel (host A), from where the data
-will be further forwarded to the target website. The type of proxy is called SOCKS version 5, so that is why
-we specify `socks5h`.
+&emsp; Regarding B’s IP, typically we use `0.0.0.0`, indicating that our port forwarding will listen to the connection from all the interfaces on B. After the tunnel is set up, we can test it using the `curl` command. We specify a proxy option, so `curl` will send its HTTP request to the proxy B, which listens on port `X`. The proxy forwards the data received on this port to the other end of the tunnel (host A), from where the data
+will be further forwarded to the target website. The type of proxy is called SOCKS version 5, so that is why we specify `socks5h`.
 ```
 $ curl --proxy socks5h://<B’s IP>:<B’s port>  <blocked URL>
 ```
-**Lab task.** Please demonstrate that you can visit all the blocked websites using `curl` from hosts `B,B1`, and
-`B2 `on the internal network. Please also answer the following questions: (1) Which computer establishes the
-actual connection with the intended web server? (2) How does this computer know which server it should
+**Lab task.** Please demonstrate that you can visit all the blocked websites using `curl` from hosts `B, B1`, and `B2 `on the internal network. Please also answer the following questions: (1) Which computer establishes the actual connection with the intended web server? (2) How does this computer know which server it should
 connect to?
 
 #### 4.2 Task 2.2: Testing the Tunnel Using Browser
