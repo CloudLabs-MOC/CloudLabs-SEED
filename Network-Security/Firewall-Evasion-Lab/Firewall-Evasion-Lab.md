@@ -2,134 +2,53 @@
 
 ```
 Copyright © 2022 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-There are situations where firewalls are too restrictive, making it inconvenient for users. For example, many
-companies and schools enforce egress filtering, which blocks users inside of their networks from reaching
-out to certain websites or Internet services, such as game and social network sites. There are many ways
-to evade firewalls. A typical approach is to use the tunneling technique, which hides the real purposes
-of network traffic. There are a number of ways to establish tunnels. The two most common tunneling
-techniques are Virtual Private Network (VPN) and port forwarding. The goal of this lab is to help students
-gain hands-on experience on these two tunneling techniques. The lab covers the following topics:
+There are situations where firewalls are too restrictive, making it inconvenient for users. For example, many companies and schools enforce egress filtering, which blocks users inside of their networks from reaching out to certain websites or Internet services, such as game and social network sites. There are many ways to evade firewalls. A typical approach is to use the tunneling technique, which hides the real purposes of network traffic. There are a number of ways to establish tunnels. The two most common tunneling techniques are Virtual Private Network (VPN) and port forwarding. The goal of this lab is to help students gain hands-on experience on these two tunneling techniques. The lab covers the following topics:
 
 - Firewall evasion
 - VPN
 - Port forwarding
 - SSH tunneling
 
-**Readings and videos.** Detailed coverage of the tunneling technology and how to use it to evade firewalls
-can be found in the following:
+**Readings and videos.** Detailed coverage of the tunneling technology and how to use it to evade firewalls can be found in the following:
 
-- Chapter 9 of the SEED Book,Internet Security: A Hands-on Approach, 3rd Edition, by Wenliang Du.
-    See details at `https://www.handsonsecurity.net`.
+- Chapter 9 of the SEED Book,Internet Security: A Hands-on Approach, 3rd Edition, by Wenliang Du. See details at `https://www.handsonsecurity.net`.
 
-**Lab environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+**Lab environment.** This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded from the SEED website. Since we use containers to set up the lab environment, this lab does not depend much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Firewall_Evasion/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Firewall_Evasion/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 ## 2 Task 0: Get Familiar with the Lab Setup
 
-We will conduct a series of experiments in this chapter. These experiments need to use several computers
-in two separate networks. The experiment setup is depicted in Figure 1. We use docker containers for these
-machines. Readers can find the container setup file from the website of this lab. In this lab, the network
- `10.8.0.0/24 `serves as an external network, while `192.168.20.0/24 `serves as the internal network.
-The host `10.8.0.1 `is not a container; this IP address is given to the host machine (i.e., the VM
-in our case). This machine is the gateway to the Internet. To reach the Internet from the hosts in both
- `192.168.20.0/24 `and `10.8.0.0/24 `networks, packets must be routed to `10.8.0.1`. The routing
-has already been set up.
+We will conduct a series of experiments in this chapter. These experiments need to use several computers in two separate networks. The experiment setup is depicted in Figure 1. We use docker containers for these machines. Readers can find the container setup file from the website of this lab. In this lab, the network `10.8.0.0/24` serves as an external network, while `192.168.20.0/24 `serves as the internal network.
+<Br>
+&emsp; The host `10.8.0.1 `is not a container; this IP address is given to the host machine (i.e., the VM in our case). This machine is the gateway to the Internet. To reach the Internet from the hosts in both `192.168.20.0/24 `and `10.8.0.0/24 `networks, packets must be routed to `10.8.0.1`. The routing has already been set up.
 
+![Network setup](../media/net-sec-firewall-evasion-network-setup.png)
 
-```
-192. 168. 20. 5 192. 168. 20. 6
-```
-```
-192. 168. 20. 11 (eth 1 )
-192. 168. 20. 0 / 24
-```
-```
-10. 8. 0. 11 (eth 0 )
-```
-### Router
+ &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 1: Network setup
 
-### 10. 8. 0. 6 (Firewall)
-
+**Router configuration: setting up NAT.** The following `iptables` command is included in the router configuration inside the `docker-compose.yml` file. This command sets up a NAT on the router for the traffic going out from its `eth0 `interface, except for the packets to `10.8.0.0/24`. With this rule, for packets going out to the Internet, their source IP address will be replaced by the router’s IP address `10.8.0.11`. Packets going to `10.8.0.0/24` will not go through NAT.
 ```
-10. 8. 0. 0 / 24
+iptables -t nat -A POSTROUTING! -d 10.8.0.0/24 -j MASQUERADE -o eth0
 ```
-### ` `
-
-```
-192. 168. 20. 99
-```
-### `
-
-### `
-
-```
-B B 1 B 2
-```
-```
-A 2
-```
-```
-10. 8. 0. 1
-```
-### Internet
-
-### `
-
-```
-10. 8. 0. 99
-```
-### `
-
-```
-A
-```
-### `
-
-```
-A 1
-```
-```
-10. 8. 0. 5
-```
-```
-Figure 1: Network setup
-```
-**Router configuration: setting up NAT.** The following `iptables` command is included in the router
-configuration inside the `docker-compose.yml `file. This command sets up a NAT on the router for
-the traffic going out from its `eth0 `interface, except for the packets to `10.8.0.0/24` . With this rule,
-for packets going out to the Internet, their source IP address will be replaced by the router’s IP address
- `10.8.0.11.`  Packets going to `10.8.0.0/24 `will not go through NAT.
-```
-iptables -t nat -A POSTROUTING! -d 10.8.0.0/24 -j MASQUERADE -o eth
-```
-In the above command, we assume that `eth0 `is the name assigned to the interface connecting the router
-to the `10.8.0.0/24` network. This is not guaranteed. The router has two Ethernet interfaces; when the
-router container is created, the name assigned to this interface might be `eth1`. You can find out the correct
-interface name using the following command. If the name is noteth0, you should make a change to the
-command above inside the `docker-compose.yml` file, and then restart the containers.
-```
+&emsp; In the above command, we assume that `eth0 `is the name assigned to the interface connecting the router to the `10.8.0.0/24` network. This is not guaranteed. The router has two Ethernet interfaces; when the router container is created, the name assigned to this interface might be `eth1`. You can find out the correct interface name using the following command. If the name is not `eth0`, you should make a change to the command above inside the `docker-compose.yml` file, and then restart the containers.
+<pre>
 # ip -br address
-lo                  UNKNOWN         127.0.0.1/8
-eth1@if1907         UP              192.168.20.11/24
-**eth0** @if1909    UP              **10.8.0.11/24**
-```
-**Router configuration: Firewall rules.** We have also added the following firewall rules on the router.
-Please make sure that `eth0` is the interface connected to the `10.8.0.0/24` network and that `eth1` is the
-one connected to `192.168.20.0/24`. If not, make changes accordingly.
+lo                      UNKNOWN         127.0.0.1/8
+eth1@if1907             UP              192.168.20.11/24
+<b>eth0</b>@if1909             UP              <b>10.8.0.11/24</b>
+</pre>
+
+**Router configuration: Firewall rules.** We have also added the following firewall rules on the router. Please make sure that `eth0` is the interface connected to the `10.8.0.0/24` network and that `eth1` is the one connected to `192.168.20.0/24`. If not, make changes accordingly.
 ```
 // Ingress filtering: only allows SSH traffic
 iptables -A FORWARD -i eth0 -p tcp -m conntrack \
@@ -140,16 +59,9 @@ iptables -A FORWARD -i eth0 -p tcp -j DROP
 // Egress filtering: block http://www.example.com
 iptables -A FORWARD -i eth1 -d 93.184.216.0/24 -j DROP
 ```
+&emsp; The first rule allows TCP packets to come in if they belong to an established or related connection. This is a stateful firewall rule. The second rule allows SSH, and the third rule drops all other TCP packets if they do not satisfy the first or the second rule. The fourth rule is an egress firewall rule, and it prevents the internal hosts from sending packets to `93.184.216.0/24`, which is the network for `www.example.com`.
 
-The first rule allows TCP packets to come in if they belong to an established or related connection. This
-is a stateful firewall rule. The second rule allows SSH, and the third rule drops all other TCP packets if they
-do not satisfy the first or the second rule. The fourth rule is an egress firewall rule, and it prevents the internal
-hosts from sending packets to `93.184.216.0/24` , which is the network for `www.example.com`.
-
-**Lab task.** Please block two more websites and add the firewall rules to the setup files. The choice of
-websites is up to you. We will use them in one of the tasks. Keep in mind that most popular websites have
-multiple IP addresses that can change from time to time. After adding the rules, start the containers, and
-verify that all the ingress and egress firewall rules are working as expected.
+**Lab task.** Please block two more websites and add the firewall rules to the setup files. The choice of websites is up to you. We will use them in one of the tasks. Keep in mind that most popular websites have multiple IP addresses that can change from time to time. After adding the rules, start the containers, and verify that all the ingress and egress firewall rules are working as expected.
 
 ## 3 Task 1: Static Port Forwarding
 
