@@ -102,45 +102,26 @@ connect to?
 
 #### 4.2 Task 2.2: Testing the Tunnel Using Browser
 
-We can also test the tunnel using a real browser, instead of using `curl`. Although it is hard to run a browser
-inside a container, in the docker setup, by default, the host machine is always attached to any network created
-inside docker, and the first IP address on that network is assigned to the host machine. For example, in our
-setup, the host machine is the SEED VM; its IP address on the internal network `192.168.20.0/24 `is
+We can also test the tunnel using a real browser, instead of using `curl`. Although it is hard to run a browser inside a container, in the docker setup, by default, the host machine is always attached to any network created inside docker, and the first IP address on that network is assigned to the host machine. For example, in our setup, the host machine is the SEED VM; its IP address on the internal network `192.168.20.0/24` is
 `192.168.20.1`.
-To use the dynamic port forwarding, we need to configure Firefox’s proxy setting. To get to the setting
-page, we can type `about:preferences` in the URL field or click the `Preference` menu item. On the
-`General` page, find the "`Network Settings`" section, click the `Settings` button, and a window
-will pop up. Follow Figure 2 to set up the SOCKS proxy.
+<Br>
+&emsp; To use the dynamic port forwarding, we need to configure Firefox’s proxy setting. To get to the setting page, we can type `about:preferences` in the URL field or click the `Preference` menu item. On the `General` page, find the "`Network Settings`" section, click the `Settings` button, and a window will pop up. Follow Figure 2 to set up the SOCKS proxy.
 
-**Lab task.** Once the proxy is configured, we can then browse any website. The requests and replies will
-go through the SSH tunnel. Since the host VM can reach the Internet directly, to make sure that our web
-browsing traffic has gone through the tunnel, you should do the following: (1) run `tcpdump` on the router/-
-firewall, and point out the traffic involved in the entire port forwarding process. (2) Break the SSH tunnel,
-and then try to browse a website. Describe your observation.
+**Lab task.** Once the proxy is configured, we can then browse any website. The requests and replies will go through the SSH tunnel. Since the host VM can reach the Internet directly, to make sure that our web browsing traffic has gone through the tunnel, you should do the following: (1) run `tcpdump` on the router/-firewall, and point out the traffic involved in the entire port forwarding process. (2) Break the SSH tunnel, and then try to browse a website. Describe your observation.
 
-**Cleanup.** After this task, please make sure to remove the proxy setting from Firefox by checking the "`No
-proxy`" option. Without a proper cleanup, future labs may be affected.
+**Cleanup.** After this task, please make sure to remove the proxy setting from Firefox by checking the "`No proxy`" option. Without a proper cleanup, future labs may be affected.
 
+![Network setup](../media/net-sec-firewall-evasion-config-socks-proxy.png)
 
-```
-<proxy’s IP address> <port#>
-```
-```
-Figure 2: Configure the SOCKS Proxy
-```
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 2: Configure the SOCKS Proxy
+
 #### 4.3 Task 2.3: Writing a SOCKS Client Using Python
 
-For port forwarding to work, we need to specify where the data should be forwarded to (the final destination).
-In the static case, this piece of information is provided when we set up the tunnel, i.e., it is hard-wired into
-the tunnel setup. In the dynamic case, the final destination is dynamic, not specified during the setup, so
-how can the proxy know where to forward the data?
-Applications using a dynamic port forwarding proxy must tell the proxy where to forward their data.
-This is done through an additional protocol between the application and the proxy. A common protocol for
-such a purpose is the SOCKS (Socket Secure) protocol, which becomes a de facto proxy standard.
-Since the application needs to interact with the proxy using the SOCKS protocol, the application soft-
-ware must have a native SOCKS support in order to use SOCKS proxies. Both Firefox and `curl` have such
-a support, but we cannot directly use this type of proxy for the telnet program, because it does not provide a
-native SOCKS support. In this task, we implement a very simple SOCKS client program using Python.
+For port forwarding to work, we need to specify where the data should be forwarded to (the final destination). In the static case, this piece of information is provided when we set up the tunnel, i.e., it is hard-wired into the tunnel setup. In the dynamic case, the final destination is dynamic, not specified during the setup, so how can the proxy know where to forward the data?
+<Br>
+&emsp; Applications using a dynamic port forwarding proxy must tell the proxy where to forward their data. This is done through an additional protocol between the application and the proxy. A common protocol for such a purpose is the SOCKS (Socket Secure) protocol, which becomes a de facto proxy standard.
+<Br>
+&emsp; Since the application needs to interact with the proxy using the SOCKS protocol, the application software must have a native SOCKS support in order to use SOCKS proxies. Both Firefox and `curl` have such a support, but we cannot directly use this type of proxy for the telnet program, because it does not provide a native SOCKS support. In this task, we implement a very simple SOCKS client program using Python.
 ```
 #!/bin/env python
 import socks
@@ -158,10 +139,7 @@ while response:
     response = s.recv(2048)
 ```
 
-**Lab task.** Please complete this program, and use it to access `http://www.example.com `from hosts
- `B,B1`, and `B2`. The code given above is only for sending HTTP requests, not HTTPS requests (sending
-HTTPS requests is much more complicated due to the TLS handshake). For this task, students only need to
-send HTTP requests.
+**Lab task.** Please complete this program, and use it to access `http://www.example.com `from hosts `B, B1`, and `B2`. The code given above is only for sending HTTP requests, not HTTPS requests (sending HTTPS requests is much more complicated due to the TLS handshake). For this task, students only need to send HTTP requests.
 
 ## 5 Task 3: Virtual Private Network (VPN)
 
@@ -202,7 +180,7 @@ up. The `RemoteCommand `entry specifies the command running on the VPN server si
 server-side TUN interface. The configuration is incomplete, and further configuration is still needed.
 
 **Lab task.** Please create a VPN tunnel between `A` and `B`, with `B` being the VPN server. Then conduct all
-the necessary configuration. Once everything is set up, please demonstrate that you can telnet to `B`,`B1`, and 
+the necessary configuration. Once everything is set up, please demonstrate that you can telnet to `B`, `B1`, and 
 `B2` from the outside network. Please capture the packets trace, and explain why the packets are not blocked
 by the firewall.
 
