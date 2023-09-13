@@ -2,20 +2,14 @@
 
 ```
 Copyright © 2006 - 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
+
 ## 1 Overview
 
-The learning objective of this lab is two-fold: learning how firewalls work, and setting up a simple firewall
-for a network. Students will first implement a simple stateless packet-filtering firewall, which inspects pack-
-ets, and decides whether to drop or forward a packet based on firewall rules. Through this implementation
-task, students can get the basic ideas on how firewall works.
-Actually, Linux already has a built-in firewall, also based on `netfilter` . This firewall is called
- `iptables`. Students will be given a simple network topology, and are asked to use `iptables `to set up
-firewall rules to protect the network. Students will also be exposed to several other interesting applications
-of `iptables`. This lab covers the following topics:
+The learning objective of this lab is two-fold: learning how firewalls work, and setting up a simple firewall for a network. Students will first implement a simple stateless packet-filtering firewall, which inspects packets, and decides whether to drop or forward a packet based on firewall rules. Through this implementation task, students can get the basic ideas on how firewall works.
+<Br>
+&emsp; Actually, Linux already has a built-in firewall, also based on `netfilter`. This firewall is called `iptables`. Students will be given a simple network topology, and are asked to use `iptables` to set up firewall rules to protect the network. Students will also be exposed to several other interesting applications of `iptables`. This lab covers the following topics:
 
 - Firewall
 - Netfilter
@@ -23,78 +17,34 @@ of `iptables`. This lab covers the following topics:
 - Using `iptables` to set up firewall rules
 - Various applications of `iptables`
 
-Readings and videos. Detailed coverage of firewalls can be found in the following:
+**Readings and videos.** Detailed coverage of firewalls can be found in the following:
 
-- Chapter 17 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details at `https://www.handsonsecurity.net`.
-- Section 9 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details
-    at `https://www.handsonsecurity.net/video.html`.
+- Chapter 17 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by Wenliang Du. See details at `https://www.handsonsecurity.net`.
+- Section 9 of the SEED Lecture,Internet Security: A Hands-on Approach, by Wenliang Du. See details at `https://www.handsonsecurity.net/video.html`.
 
-**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
-image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
-labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
+**Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED labs can be conducted on the cloud, and you can follow our instruction to create a SEED VM on the cloud.
 
 ## 2 Environment Setup Using Containers
 
-In this lab, we need to use multiple machines. Their setup is depicted in Figure 1. We will use containers to
-set up this lab environment.
+In this lab, we need to use multiple machines. Their setup is depicted in Figure 1. We will use containers to set up this lab environment.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Firewall/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Firewall/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 ### 2.1 Container Setup and Commands
 
-Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter the `Labsetup`
-folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
+Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter the `Labsetup` folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
 
+![Lab setup](../media/net-sec-firewall-exploration-lab-setup.png)
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 1: Lab setup
 
-```
-192.168.60.5 192.168.60.6^ 192.168.60.
-```
-#### `
-
-```
-192.168.60.
-```
-#### `
-
-```
-192.168.60.0/
-```
-```
-Attacker
-10.9.0.
-```
-```
-10.9.0.
-```
-#### `
-
-```
-Router
-`
-```
-```
-10.9.0.
-```
-```
-10.9.0.0/
-```
-#### `
-
-```
-Figure 1: Lab setup
-```
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
-very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile
-(in our provided SEEDUbuntu 20.04 VM).
+to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is very important that you read the user manual.
+<Br>
+&emsp; In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the.bashrcfile (in our provided SEEDUbuntu 20.04 VM).
 ```
 $ docker-compose build      # Build the container image
 $ docker-compose up         # Start the container
@@ -105,19 +55,16 @@ $ dcbuild       # Alias for: docker-compose build
 $ dcup          # Alias for: docker-compose up
 $ dcdown        # Alias for: docker-compose down
 ```
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of
-the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for
-them in the ``.bashrc` file.
+&emsp; All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for them in the `.bashrc` file.
 ```
 $ dockps        // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id>  // Alias for: docker exec -it <id> /bin/bash
 
 // The following example shows how to get a shell inside hostC
 $ dockps
-b1004832e275 hostA-10.9.0.
-0af4ea7a3e2e hostB-10.9.0.
-9652715c8e0a hostC-10.9.0.
+b1004832e275 hostA-10.9.0.5
+0af4ea7a3e2e hostB-10.9.0.6
+9652715c8e0a hostC-10.9.0.7
 
 $ docksh 96
 root@9652715c8e0a:/#
@@ -126,7 +73,7 @@ root@9652715c8e0a:/#
 //      type the entire ID string. Typing the first few characters will
 //      be sufficient, as long as they are unique among all the containers.
 ```
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
+&emsp; If you encounter problems when setting up the lab environment, please read the “Common Problems”
 section of the manual for potential solutions.
 
 ## 3 Task 1: Implementing a Simple Firewall
