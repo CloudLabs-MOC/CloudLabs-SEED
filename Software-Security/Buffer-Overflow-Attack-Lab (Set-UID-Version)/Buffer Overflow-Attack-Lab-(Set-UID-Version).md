@@ -313,86 +313,67 @@ In our buffer-overflow attacks, we need to store at least one address in the pay
 
 ## 8 Task 6: Launching Attack on 64-bit Program (Level 4)
 
-The target program (stack-L4) in this task is similar to the one in the Level 2, except that the buffer size
-is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is
-the same: get the root shell by attacking thisSet-UIDprogram. You may encounter additional challenges
-in this attack due to the small buffer size. If that is the case, you need to explain how your have solved those
-challenges in your attack.
+The target program `(stack-L4)` in this task is similar to the one in the Level 2, except that the buffer size is extremely small. We set the buffer size to 10, while in Level 2, the buffer size is much larger. Your goal is the same: get the root shell by attacking this `Set-UID` program. You may encounter additional challenges in this attack due to the small buffer size. If that is the case, you need to explain how your have solved those challenges in your attack.
 
 ## 9 Tasks 7: Defeating dash ’s Countermeasure
 
-Thedashshell in the Ubuntu OS drops privileges when it detects that the effective UID does not equal to
-the real UID (which is the case in aSet-UIDprogram). This is achieved by changing the effective UID
-back to the real UID, essentially, dropping the privilege. In the previous tasks, we let/bin/shpoints
-to another shell calledzsh, which does not have such a countermeasure. In this task, we will change it
-back, and see how we can defeat the countermeasure. Please do the following, so/bin/shpoints back to
-/bin/dash.
-
+The `dash` shell in the Ubuntu OS drops privileges when it detects that the effective UID does not equal to the real UID (which is the case in a `Set-UID` program). This is achieved by changing the effective UID back to the real UID, essentially, dropping the privilege. In the previous tasks, we let `/bin/sh` points to another shell called `zsh`, which does not have such a countermeasure. In this task, we will change it back, and see how we can defeat the countermeasure. Please do the following, so `/bin/sh` points back to `/bin/dash`.
+```
 $ sudo ln -sf /bin/dash /bin/sh
+```
 
 To defeat the countermeasure in buffer-overflow attacks, all we need to do is to change the real UID,
-so it equals the effective UID. When a root-ownedSet-UIDprogram runs, the effective UID is zero, so
-before we invoke the shell program, we just need to change the real UID to zero. We can achieve this by
-invokingsetuid(0)before executingexecve()in the shellcode.
-The following assembly code shows how to invokesetuid(0). The binary code is already put inside
-callshellcode.c. You just need to add it to the beginning of the shellcode.
+so it equals the effective UID. When a root-owned `Set-UID` program runs, the effective UID is zero, so before we invoke the shell program, we just need to change the real UID to zero. We can achieve this by invoking `setuid(0)` before executing `execve()` in the shellcode.
+<Br>
+The following assembly code shows how to invoke `setuid(0)`. The binary code is already put inside
+`call_shellcode.c. You just need to add it to the beginning of the shellcode.
 
+```
 ; Invoke setuid(0): 32-bit
-xor ebx, ebx ; ebx = 0: setuid()’s argument
+xor ebx, ebx         ; ebx = 0: setuid()’s argument
 xor eax, eax
-mov al, 0xd5 ; setuid()’s system call number
-int 0x
+mov al, 0xd5         ; setuid()’s system call number
+int 0x80
 
 ; Invoke setuid(0): 64-bit
-xor rdi, rdi ; rdi = 0: setuid()’s argument
+xor rdi, rdi         ; rdi = 0: setuid()’s argument
 xor rax, rax
-mov al, 0x69 ; setuid()’s system call number
+mov al, 0x69         ; setuid()’s system call number
 syscall
+```
 
-Experiment. Compilecallshellcode.cinto root-owned binary (by typing"make setuid").
-Run the shellcodea32.outanda64.outwith or without thesetuid(0)system call. Please describe
+**Experiment.** Compile `call_shellcode.c` into root-owned binary (by typing "`make setuid`"). Run the shellcode `a32.out` and `a64.out` with or without the `setuid(0)` system call. Please describe
 and explain your observations.
 
-Launching the attack again. Now, using the updated shellcode, we can attempt the attack again on the
-vulnerable program, and this time, with the shell’s countermeasure turned on. Repeat your attack on Level
-1, and see whether you can get the root shell. After getting the root shell, please run the following command
-
-
-to prove that the countermeasure is turned on. Although repeating the attacks on Levels 2 and 3 are not
-required, feel free to do that and see whether they work or not.
-
+**Launching the attack again.** Now, using the updated shellcode, we can attempt the attack again on the vulnerable program, and this time, with the shell’s countermeasure turned on. Repeat your attack on Level 1, and see whether you can get the root shell. After getting the root shell, please run the following command to prove that the countermeasure is turned on. Although repeating the attacks on Levels 2 and 3 are not required, feel free to do that and see whether they work or not.
+```
 # ls -l /bin/sh /bin/zsh /bin/dash
-
+```
 ## 10 Task 8: Defeating Address Randomization
 
-On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have
-219 =524, 288 possibilities. This number is not that high and can be exhausted easily with the brute-force
-approach. In this task, we use such an approach to defeat the address randomization countermeasure on our
-32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command. Then we
-run the same attack againststack-L1. Please describe and explain your observation.
+On 32-bit Linux machines, stacks only have 19 bits of entropy, which means the stack base address can have 2<sup>19</sup>=524,288 possibilities. This number is not that high and can be exhausted easily with the brute-force approach. In this task, we use such an approach to defeat the address randomization countermeasure on our 32-bit VM. First, we turn on the Ubuntu’s address randomization using the following command. Then we run the same attack against `stack-L1`. Please describe and explain your observation.
 
-$ sudo /sbin/sysctl -w kernel.randomize_va_space=
+```
+$ sudo /sbin/sysctl -w kernel.randomize_va_space=2
+```
 
-We then use the brute-force approach to attack the vulnerable program repeatedly, hoping that the ad-
-dress we put in thebadfilecan eventually be correct. We will only try this onstack-L1, which is a
-32-bit program. You can use the following shell script to run the vulnerable program in an infinite loop. If
-your attack succeeds, the script will stop; otherwise, it will keep running. Please be patient, as this may take
-a few minutes, but if you are very unlucky, it may take longer. Please describe your observation.
-
+We then use the brute-force approach to attack the vulnerable program repeatedly, hoping that the address we put in the `badfile` can eventually be correct. We will only try this on `stack-L1`, which is a 32-bit program. You can use the following shell script to run the vulnerable program in an infinite loop. If your attack succeeds, the script will stop; otherwise, it will keep running. Please be patient, as this may take a few minutes, but if you are very unlucky, it may take longer. Please describe your observation.
+```
 #!/bin/bash
 
-SECONDS=
-value=
+SECONDS=0
+value=0
 
 while true; do
-value=$(( $value + 1 ))
-duration=$SECONDS
-min=$(($duration / 60))
-sec=$(($duration % 60))
-echo "$min minutes and $sec seconds elapsed."
-echo "The program has been running $value times so far."
-./stack-L
+    value=$(( $value + 1 ))
+    duration=$SECONDS
+    min=$(($duration / 60))
+    sec=$(($duration % 60))
+    echo "$min minutes and $sec seconds elapsed."
+    echo "The program has been running $value times so far."
+    ./stack-L
 done
+```
 
 Brute-force attacks on 64-bit programs is much harder, because the entropy is much larger. Although
 this is not required, free free to try it just for fun. Let it run overnight. Who knows, you may be very lucky.
@@ -401,43 +382,22 @@ this is not required, free free to try it just for fun. Let it run overnight. Wh
 
 ### 11.1 Task 9.a: Turn on the StackGuard Protection
 
-Many compiler, such asgcc, implements a security mechanism calledStackGuardto prevent buffer over-
-flows. In the presence of this protection, buffer overflow attacks will not work. In our previous tasks, we
-disabled the StackGuard protection mechanism when compiling the programs. In this task, we will turn it
-on and see what will happen.
-First, repeat the Level-1 attack with the StackGuard off, and make sure that the attack is still success-
-ful. Remember to turn off the address randomization, because you have turned it on in the previous task.
-Then, we turn on the StackGuard protection by recompiling the vulnerablestack.cprogram without
-
-
-the-fno-stack-protectorflag. Ingccversion 4.3.3 and above, StackGuard is enabled by default.
-Launch the attack; report and explain your observations.
+Many compiler, such asgcc, implements a security mechanism called *StackGuard* to prevent buffer overflows. In the presence of this protection, buffer overflow attacks will not work. In our previous tasks, we disabled the StackGuard protection mechanism when compiling the programs. In this task, we will turn it on and see what will happen.
+<Br>
+First, repeat the Level-1 attack with the StackGuard off, and make sure that the attack is still successful. Remember to turn off the address randomization, because you have turned it on in the previous task. Then, we turn on the StackGuard protection by recompiling the vulnerable `stack.c` program without the `-fno-stack-protector` flag. In `gcc` version 4.3.3 and above, StackGuard is enabled by default. Launch the attack; report and explain your observations.
 
 ### 11.2 Task 9.b: Turn on the Non-executable Stack Protection
 
 Operating systems used to allow executable stacks, but this has now changed: In Ubuntu OS, the binary
-images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e.,
-they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide
-whether to make the stack of this running program executable or non-executable. This marking is done
-automatically by thegcc, which by default makes stack non-executable. We can specifically make it non-
-executable using the"-z noexecstack"flag in the compilation. In our previous tasks, we used"-z
-execstack"to make stacks executable.
-In this task, we will make the stack non-executable. We will do this experiment in theshellcode
-folder. Thecallshellcodeprogram puts a copy of shellcode on the stack, and then executes the code
-from the stack. Please recompilecallshellcode.cintoa32.outanda64.out, without the"-z
-execstack"option. Run them, describe and explain your observations.
+images of programs (and shared libraries) must declare whether they require executable stacks or not, i.e., they need to mark a field in the program header. Kernel or dynamic linker uses this marking to decide whether to make the stack of this running program executable or non-executable. This marking is done automatically by the `gcc`, which by default makes stack non-executable. We can specifically make it nonexecutable using the "`-z noexecstack`" flag in the compilation. In our previous tasks, we used "`-z execstack`" to make stacks executable.
+<Br>
+In this task, we will make the stack non-executable. We will do this experiment in the `shellcode`
+folder. The `call_shellcode` program puts a copy of shellcode on the stack, and then executes the code from the stack. Please recompile `call_shellcode.c` into `a32.out` and `a64.out`, without the "`-z execstack`" option. Run them, describe and explain your observations.
 
-Defeating the non-executable stack countermeasure. It should be noted that non-executable stack only
-makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because
-there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. Thereturn-to-
-libcattack is an example. We have designed a separate lab for that attack. If you are interested, please see
-our Return-to-Libc Attack Lab for details.
+**Defeating the non-executable stack countermeasure.** It should be noted that non-executable stack only makes it impossible to run shellcode on the stack, but it does not prevent buffer-overflow attacks, because there are other ways to run malicious code after exploiting a buffer-overflow vulnerability. The *return-to-libc* attack is an example. We have designed a separate lab for that attack. If you are interested, please see our Return-to-Libc Attack Lab for details.
 
 ## 12 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 

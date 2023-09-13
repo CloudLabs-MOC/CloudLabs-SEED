@@ -11,7 +11,7 @@ reproduced in a way that is reasonable to the medium in which the work is being 
 The learning objective of this lab is for students to get a hands-on experience on an interesting attack on
 crypto systems. Some systems, when decrypting a given ciphertext, verify whether the padding is valid or
 not, and throw an error if the padding is invalid. This seemly-harmless behavior enables a type of attack
-calledpadding oracle attack. The attack was originally published in 2002 by Serge Vaudenay, and many
+called padding oracle attack. The attack was originally published in 2002 by Serge Vaudenay, and many
 well-known systems were found vulnerable to this attack, including Ruby on Rails, ASP.NET, and OpenSSL.
 In this lab, students are given two oracle servers running inside a container. Each oracle has a secret
 message hidden inside, and it lets you know the ciphertext and the IV, but not the plaintext or the encryption
@@ -28,7 +28,7 @@ oracle attack is not covered in the current edition (future editions will includ
 tutorials on this attack from online resources, such as Wikipedia.
 
 - Chapter 21 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition,
-    by Wenliang Du. See details athttps://www.handsonsecurity.net.
+    by Wenliang Du. See details at https://www.handsonsecurity.net.
 
 Lab environment. This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
 image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
@@ -45,13 +45,13 @@ $ sudo unzip Labsetup.zip
 
 In this lab, we use a container to run the padding oracle.
 
-Container Setup and Commands. Please download the Labsetup.zip file to your VM from the lab’s
-website, unzip it, enter the Labsetup folder, and use the dockercompose.yml file to set up the lab
-environment. Detailed explanation of the content in this file and all the involved Dockerfile can be
+Container Setup and Commands. Please download the `Labsetup.zip` file to your VM from the lab’s
+website, unzip it, enter the `Labsetup` folder, and use the `dockercompose.yml` file to set up the lab
+environment. Detailed explanation of the content in this file and all the involved `Dockerfile` can be
 found from the user manual, which is linked to the website of this lab. If this is the first time you set up a
 SEED lab environment using containers, it is very important that you read the user manual.
 In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the .bashrc file
+we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file
 (in our provided SEEDUbuntu 20.04 VM).
 
 ```
@@ -66,9 +66,9 @@ $ dcdown # Alias for: docker-compose down
 ```
 
 All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "docker ps" command to find out the ID of
-the container, and then use "docker exec" to start a shell on that container. We have created aliases for
-them in the .bashrcfile.
+to get a shell on that container. We first need to use the `"docker ps"` command to find out the ID of
+the container, and then use `"docker exec"` to start a shell on that container. We have created aliases for
+them in the `.bashrc` file.
 
 ```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
@@ -97,17 +97,17 @@ For some block ciphers, when the size of a plaintext is not a multiple of the bl
 required. The PKCS#5 padding scheme is widely used by many block ciphers (see Chapter 21.4 of the
 SEED book for details). We will conduct the following experiments to understand how this type of padding
 works.
-We can use the "echo -n" command to create a file. The following example creates a file P with
-length 5 (without the -n option, the length will be 6, because a newline character will be added by echo):
+We can use the `"echo -n"` command to create a file. The following example creates a file P with
+length 5 (without the -n option, the length will be 6, because a newline character will be added by `echo`):
 
 ```
 $ echo -n "12345" > P
 ```
 
-We use "openssl enc -aes-128-cbc -e" to encrypt this file using 128-bit AES with CBC
-mode. To see what is added to the padding during the encryption, we will decrypt the ciphertext using "openssl enc -aes-128-cbc -d". Unfortunately, decryption by default will automatically remove
+We use `"openssl enc -aes-128-cbc -e"` to encrypt this file using 128-bit AES with CBC
+mode. To see what is added to the padding during the encryption, we will decrypt the ciphertext using `"openssl enc -aes-128-cbc -d"`. Unfortunately, decryption by default will automatically remove
 the padding, making it impossible for us to see the padding. However, the command does have an option
-called "-nopad" , which disables the padding, i.e., during the decryption, the command will not remove
+called `"-nopad"` , which disables the padding, i.e., during the decryption, the command will not remove
 the padded data. Therefore, by looking at the decrypted data, we can see what data are used in the padding.
 
 ```
@@ -132,15 +132,15 @@ method above, please figure out what paddings are added to the three files.
 ## 4 Task 2: Padding Oracle Attack (Level 1)
 
 Some systems, when decrypting a given ciphertext, verify whether the padding is valid or not, and throw an
-error if the padding is invalid. This seemly-harmless behavior enables a type of attack calledpadding oracle
+error if the padding is invalid. This seemly-harmless behavior enables a type of attack called padding oracle
 attack. The attack was originally published in 2002 by Serge Vaudenay, and many well-known systems were
 found vulnerable to this type of attacks, including Ruby on Rails, ASP.NET, and OpenSSL.
 
 ### 4.1 The Oracle Setup
 
-In this task, we provide a padding oracle hosted on port 5000. The oracle has a secret message inside,
+In this task, we provide a padding oracle hosted on port `5000`. The oracle has a secret message inside,
 and it prints out the ciphertext of this secret message. The encryption algorithm and mode used is AES-
-CBC, and the encryption key is K, which is unknown to others. You can interact with the oracle using "nc 10.9.0.80 5000". You will see the following hexadecimal data provided by the oracle. The first 16
+CBC, and the encryption key is `K`, which is unknown to others. You can interact with the oracle using `"nc 10.9.0.80 5000"`. You will see the following hexadecimal data provided by the oracle. The first 16
 bytes is the IV, and the rest is the ciphertext. From the length, you can see that the ciphertext has 32 bytes,
 i.e., 2 blocks, but the actual length of the plaintext is unknown due to the padding.
 
@@ -173,10 +173,10 @@ message. You need to use the padding oracle attack to derive this message; you n
 ### 4.2 Deriving the Plaintext Manually
 
 The objective of this task is to figure out the plaintext of the secret message. It has two blocks P1 and P2. We
-only need to get P2 (getting P1 is similar). We have provided a skeleton code called manualattack.py.
+only need to get P2 (getting P1 is similar). We have provided a skeleton code called `manualattack.py`.
 You can use this as a basis to construct your attack. We will explain each piece of this code.
 First, let’s get the ciphertext from the oracle. The ciphertext in this task consists of two blocks, and we
-use two 16-byte bytearrays C1 and C2 to hold the content of these two blocks.
+use two 16-byte bytearrays `C1` and `C2` to hold the content of these two blocks.
 
 ```
 oracle = PaddingOracle(’10.9.0.80’, 5000)
@@ -264,7 +264,7 @@ In the next task, students will be required to automate this process.
 
 We did manual attacks in the previous task. In this task, we will automate the attack process, and this time,
 we need to get all the blocks of the plaintext. When the container starts, two padding oracle servers will be started, one for the Level-1 task, and the other is for the Level-2 task, i.e., this task. The Level-2 server
-listens to port 6000. Although the key and the secret message are in the binary code of the oracle program,
+listens to port `6000`. Although the key and the secret message are in the binary code of the oracle program,
 we have tried to obfuscate them, so it will not be very easy to find them from the binary. Moreover, learning
 the secret message does not help the padding oracle attack at all. Students’ grade depends on how they
 derive the secret message using the padding oracle attack, not on whether they know the secret message or
