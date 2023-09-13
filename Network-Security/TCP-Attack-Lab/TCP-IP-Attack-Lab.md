@@ -150,6 +150,7 @@ the attackers have no intention to finish the 3-way handshake procedure. Attacke
 address or do not continue the procedure. Through this attack, attackers can flood the victim’s queue that
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/bff58889-41a7-4b76-b356-d02a4dfeeb18)
+
 `Figure 2: SYN Flooding Attack`
 
 is used for half-opened connections, i.e. the connections that has finished SYN, SYN-ACK, but has not yet
@@ -273,7 +274,7 @@ flush"command on the server.
 
 ```
 # ip tcp_metrics show
-10.9.0.6 age 140.552sec cwnd 10 rtt 79us rttvar 40us source 10.9.0.
+10.9.0.6 age 140.552sec cwnd 10 rtt 79us rttvar 40us source 10.9.0.5
 
 # ip tcp_metrics flush
 ```
