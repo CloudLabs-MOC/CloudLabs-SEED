@@ -299,24 +299,13 @@ on this task.
 
 ## 7 Task 5: BGP Prefix Attack
 
-BGP Route Hijacking, also called prefix hijacking, is a typical attack on BGP. In this attack, the attackers’
-BGP routers announce the IP prefix that are not assigned to them, so the traffic to this IP prefix can get
-rerouted to the attackers, who can intercept or modify the traffic. Many of the incidents on the Internet are
-caused by such an “attack”, although they are mostly caused by the mis-configured BGP routers. Students
-should read Section 12 of the tutorial before working on this task.
+BGP Route Hijacking, also called prefix hijacking, is a typical attack on BGP. In this attack, the attackers’ BGP routers announce the IP prefix that are not assigned to them, so the traffic to this IP prefix can get rerouted to the attackers, who can intercept or modify the traffic. Many of the incidents on the Internet are caused by such an “attack”, although they are mostly caused by the mis-configured BGP routers. Students should read Section 12 of the tutorial before working on this task.
 
 ### 7.1 Task 5.a. Launching the Prefix Hijacking Attack from AS-
 
-In this task, we will launch the prefix hijacking attack using a BGP router in AS-161. Our goal is to hijack
-the IP prefix owned by AS-154. If the attack is successful, all the packets going to AS-154 will be rerouted
-to AS-161, where they will be dropped. Essentially, we are blackholing AS-154.
-In BIRD, the prefixes announced by a BGP router can come from different sources: they can come from
-the `direct `protocol, i.e., they are obtained from the actual network interface attached to the BGP router.
-They can also come from the `static `protocol, which contains pre-defined routes. The easiest way for a
-BGP router to announce a prefix that it does not own is to use the `static` protocol. The following example
-creates a pre-defined route to `10.130.0.0/16`. See Section 3 of the tutorial for detailed explanation of
-the `static `protocol. It should be noted that in the filter part of the route, we need to add the route to the
-`LOCALCOMM`community; otherwise, the BGP router will not export it to the outside.
+In this task, we will launch the prefix hijacking attack using a BGP router in AS-161. Our goal is to hijack the IP prefix owned by AS-154. If the attack is successful, all the packets going to AS-154 will be rerouted to AS-161, where they will be dropped. Essentially, we are blackholing AS-154.
+<Br>
+&emsp; In BIRD, the prefixes announced by a BGP router can come from different sources: they can come from the `direct `protocol, i.e., they are obtained from the actual network interface attached to the BGP router. They can also come from the `static` protocol, which contains pre-defined routes. The easiest way for a BGP router to announce a prefix that it does not own is to use the `static` protocol. The following example creates a pre-defined route to `10.130.0.0/16`. See Section 3 of the tutorial for detailed explanation of the `static` protocol. It should be noted that in the filter part of the route, we need to add the route to the `LOCAL_COMM` community; otherwise, the BGP router will not export it to the outside.
 ```
 protocol static {
 ipv4 {
@@ -328,33 +317,18 @@ route 10.130.0.0/16 blackhole { bgp_large_community.add(LOCAL_COMM); };
 
 ### 7.2 Task 5.b. Fighting Back from AS-
 
-AS-154 has a detection system. After the attack was launched, it immediately detected the attack. It tried to
-contact the operators of AS-3, which is the upstream service provider for AS-161, asking them to block the
-attack. Unfortunately, it was midnight for AS-3’s operators, so nobody could be reached. The loss of the
-service is very significant, so the operators of AS-154 decide to fight back: they want to “steal” back their
-own network prefixes, without the help of AS-3. Please reconfigure the BGP routers of AS-154, so you can
-get the traffic back.
+AS-154 has a detection system. After the attack was launched, it immediately detected the attack. It tried to contact the operators of AS-3, which is the upstream service provider for AS-161, asking them to block the attack. Unfortunately, it was midnight for AS-3’s operators, so nobody could be reached. The loss of the service is very significant, so the operators of AS-154 decide to fight back: they want to “steal” back their own network prefixes, without the help of AS-3. Please reconfigure the BGP routers of AS-154, so you can get the traffic back.
 
 ### 7.3 Task 5.c. Fixing the Problem at AS-
 
-Eventually, the operators of AS-3 are reached. Without knowing whether this is a misconfiguration on the
-AS-161 side or an intentional attack, AS-3 decides not to cut the peering with AS-161, so the users of AS-
-161 can still reach the Internet (AS-3 is the only service provider to AS-161). However, AS-3 must stop
-the propagation of the fake announcement. This can be done by removing the fake routes from its own
-announcement to its own peers. More specifically, AS-3 can add some code to its filters, so the fake routes
-can be discarded. See Section 12 of the BGP tutorial to learn how to write filters.
+Eventually, the operators of AS-3 are reached. Without knowing whether this is a misconfiguration on the AS-161 side or an intentional attack, AS-3 decides not to cut the peering with AS-161, so the users of AS- 161 can still reach the Internet (AS-3 is the only service provider to AS-161). However, AS-3 must stop the propagation of the fake announcement. This can be done by removing the fake routes from its own announcement to its own peers. More specifically, AS-3 can add some code to its filters, so the fake routes can be discarded. See Section 12 of the BGP tutorial to learn how to write filters.
 
 ## 8 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 ## Acknowledgment
 
-This lab was developed with the help of Honghao Zeng, a graduate student in the Department of Electrical
-Engineering and Computer Science at Syracuse University. The SEED project was funded in part by the
-grants from the US National Science Foundation and Syracuse University.
+This lab was developed with the help of Honghao Zeng, a graduate student in the Department of Electrical Engineering and Computer Science at Syracuse University. The SEED project was funded in part by the grants from the US National Science Foundation and Syracuse University.
 
 
