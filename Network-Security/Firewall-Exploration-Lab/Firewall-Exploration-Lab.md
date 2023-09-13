@@ -78,32 +78,19 @@ section of the manual for potential solutions.
 
 ## 3 Task 1: Implementing a Simple Firewall
 
-In this task, we will implement a simple packet filtering type of firewall, which inspects each incoming and
-outgoing packets, and enforces the firewall policies set by the administrator. Since the packet processing is
-done within the kernel, the filtering must also be done within the kernel. Therefore, it seems that implement-
-ing such a firewall requires us to modify the `Linux`kernel. In the past, this had to be done by modifying
-and rebuilding the kernel. The modern `Linux` operating systems provide several new mechanisms to facil-
-itate the manipulation of packets without rebuilding the kernel image. These two mechanisms are *Loadable
-Kernel Module*(`LKM`) and `Netfilter`.
+In this task, we will implement a simple packet filtering type of firewall, which inspects each incoming and outgoing packets, and enforces the firewall policies set by the administrator. Since the packet processing is done within the kernel, the filtering must also be done within the kernel. Therefore, it seems that implementing such a firewall requires us to modify the `Linux` kernel. In the past, this had to be done by modifying and rebuilding the kernel. The modern `Linux` operating systems provide several new mechanisms to facilitate the manipulation of packets without rebuilding the kernel image. These two mechanisms are *Loadable Kernel Module*(`LKM`) and `Netfilter`.
 
-**Notes about containers.** Since all the containers share the same kernel, kernel modules are global. There-
-fore, if we set a kernel model from a container, it affects all the containers and the host. For this reason, it
-does not matter where you set the kernel module. In this lab, we will just set the kernel module from the
-host VM.
-Another thing to keep in mind is that containers’ IP addresses are virtual. Packets going to these virtual
-IP addresses may not traverse the same path as what is described in the Netfilter document. Therefore, in
-this task, to avoid confusion, we will try to avoid using those virtual addresses. We do most tasks on the
-host VM. The containers are mainly for the other tasks.
+**Notes about containers.** Since all the containers share the same kernel, kernel modules are global. Therefore, if we set a kernel model from a container, it affects all the containers and the host. For this reason, it does not matter where you set the kernel module. In this lab, we will just set the kernel module from the host VM.
+<Br>
+&emsp; Another thing to keep in mind is that containers’ IP addresses are virtual. Packets going to these virtual IP addresses may not traverse the same path as what is described in the Netfilter document. Therefore, in this task, to avoid confusion, we will try to avoid using those virtual addresses. We do most tasks on the host VM. The containers are mainly for the other tasks.
 
 ### 3.1 Task 1.A: Implement a Simple Kernel Module
 
-`LKM` allows us to add a new module to the kernel at the runtime. This new module enables us to extend
-the functionalities of the kernel, without rebuilding the kernel or even rebooting the computer. The packet
-filtering part of a firewall can be implemented as an LKM. In this task, we will get familiar with LKM.
-The following is a simple loadable kernel module. It prints out "`Hello World!`" when the module
-is loaded; when the module is removed from the kernel, it prints out "`Bye-bye World!`" . The messages
-are not printed out on the screen; they are actually printed into the `/var/log/syslog` file. You can use
-"`dmesg`" to view the messages.
+`LKM` allows us to add a new module to the kernel at the runtime. This new module enables us to extend the functionalities of the kernel, without rebuilding the kernel or even rebooting the computer. The packet filtering part of a firewall can be implemented as an LKM. In this task, we will get familiar with LKM.
+<Br>
+&emsp; The following is a simple loadable kernel module. It prints out "`Hello World!`" when the module is loaded; when the module is removed from the kernel, it prints out "`Bye-bye World!`" . The messages are not printed out on the screen; they are actually printed into the `/var/log/syslog` file. You can use "`dmesg`" to view the messages.
+
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; **Listing 1:** `hello.c` (included in the lab setup files)
 ```
 Listing 1:hello.c(included in the lab setup files)
 #include <linux/module.h>
@@ -124,10 +111,7 @@ void cleanup(void)
 module_init(initialization);
 module_exit(cleanup);
 ```
-We now need to create `Makefile`, which includes the following contents (the file is included in the lab
-setup files). Just type`make`, and the above program will be compiled into a loadable kernel module (if you
-copy and paste the following into `Makefile`, make sure replace the spaces before the `make` commands
-with a tab).
+&emsp; We now need to create `Makefile`, which includes the following contents (the file is included in the lab setup files). Just type`make`, and the above program will be compiled into a loadable kernel module (if you copy and paste the following into `Makefile`, make sure replace the spaces before the `make` commands with a tab).
 ```
 obj-m += hello.o
 
@@ -137,17 +121,14 @@ all:
 clean:
         make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 ```
-The generated kernel module is in `hello.ko`. You can use the following commands to load the module,
-list all modules, and remove the module. Also, you can use "`modinfo hello.ko`" to show information
-about a Linux Kernel module.
+&emsp; The generated kernel module is in `hello.ko`. You can use the following commands to load the module, list all modules, and remove the module. Also, you can use "`modinfo hello.ko`" to show information about a Linux Kernel module.
 ```
 $ sudo insmod hello.ko      (inserting a module)
 $ lsmod | grep hello        (list modules)
 $ sudo rmmod hello          (remove the module)
 $ dmesg                     (check the messages)
 ```
-**Task.** Please compile this simple kernel module on your VM, and run it on the VM. For this task, we will
-not use containers. Please show your running results in the lab report.
+**Task.** Please compile this simple kernel module on your VM, and run it on the VM. For this task, we will not use containers. Please show your running results in the lab report.
 
 ### 3.2 Task 1.B: Implement a Simple Firewall Using Netfilter
 
