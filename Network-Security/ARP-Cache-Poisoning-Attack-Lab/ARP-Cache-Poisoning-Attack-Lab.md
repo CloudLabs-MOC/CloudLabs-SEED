@@ -2,24 +2,14 @@
 
 ```
 Copyright © 2019 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-The Address Resolution Protocol (ARP) is a communication protocol used for discovering the link layer
-address, such as the MAC address, given an IP address. The ARP protocol is a very simple protocol, and
-it does not implement any security measure. The ARP cache poisoning attack is a common attack against
-the ARP protocol. Using such an attack, attackers can fool the victim into accepting forged IP-to-MAC
-mappings. This can cause the victim’s packets to be redirected to the computer with the forged MAC
-address, leading to potential man-in-the-middle attacks.
-The objective of this lab is for students to gain the first-hand experience on the ARP cache poisoning
-attack, and learn what damages can be caused by such an attack. In particular, students will use the ARP
-attack to launch a man-in-the-middle attack, where the attacker can intercept and modify the packets between
-the two victims A and B. Another objective of this lab is for students to practice packet sniffing and spoofing
-skills, as these are essential skills in network security, and they are the building blocks for many network
-attack and defense tools. Students will use Scapy to conduct lab tasks. This lab covers the following topics:
+The Address Resolution Protocol (ARP) is a communication protocol used for discovering the link layer address, such as the MAC address, given an IP address. The ARP protocol is a very simple protocol, and it does not implement any security measure. The ARP cache poisoning attack is a common attack against the ARP protocol. Using such an attack, attackers can fool the victim into accepting forged IP-to-MAC mappings. This can cause the victim’s packets to be redirected to the computer with the forged MAC address, leading to potential man-in-the-middle attacks.
+<BR>
+&emsp; The objective of this lab is for students to gain the first-hand experience on the ARP cache poisoning attack, and learn what damages can be caused by such an attack. In particular, students will use the ARP attack to launch a man-in-the-middle attack, where the attacker can intercept and modify the packets between the two victims A and B. Another objective of this lab is for students to practice packet sniffing and spoofing
+skills, as these are essential skills in network security, and they are the building blocks for many network attack and defense tools. Students will use Scapy to conduct lab tasks. This lab covers the following topics:
 
 - The ARP protocol
 - The ARP cache poisoning attack
@@ -29,11 +19,7 @@ attack and defense tools. Students will use Scapy to conduct lab tasks. This lab
 **Videos.** Detailed coverage of the ARP protocol and attacks can be found in the following:
 
 - Section 3 of the SEED Lecture at Udemy,Internet Security: A Hands-on Approach, by Wenliang Du.
-<<<<<<< HEAD
-    See details at `https://www.handsonsecurity.net/video.html`.
-=======
-    See details at [https://www.handsonsecurity.net/video.html(https://www.handsonsecurity.net/video.htm).
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
+  See details at `https://www.handsonsecurity.net/video.html`.
 
 **Lab environment.** This lab has been tested on the SEED Ubuntu 20.04 VM. You can download a pre-built
 image from the SEED website, and run the SEED VM on your own computer. However, most of the SEED
@@ -48,24 +34,18 @@ $ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/ARP_Attack/Labsetup.zi
 $ sudo unzip Labsetup.zip
 ```
 
-In this lab, we need three machines. We use containers to set up the lab environment, which is depicted in
-Figure 1. In this setup, we have an attacker machine (Host M), which is used to launch attacks against the
-other two machines, Host A and Host B. These three machines must be on the same LAN, because the ARP
-cache poisoning attack is limited to LAN. We use containers to set up the lab environment.
+In this lab, we need three machines. We use containers to set up the lab environment, which is depicted in Figure 1. In this setup, we have an attacker machine (Host M), which is used to launch attacks against the other two machines, Host A and Host B. These three machines must be on the same LAN, because the ARP cache poisoning attack is limited to LAN. We use containers to set up the lab environment.
 
 ![image](https://github.com/CloudLabs-MOC/CloudLabs-SEED/assets/33658792/5b5773e3-e6b7-4787-a1e7-8340e86d1c77)
 
+&emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp;  &emsp; **Figure 1:** Lab environment setup
+
 ### 2.1 Container Setup and Commands
 
-<<<<<<< HEAD
-Please download the `Labsetup.zip `file to your VM from the lab’s website, unzip it, enter the `Labsetup`
-folder, and use the `docker-compose.yml `file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved `Dockerfile `can be found from the user manual, which is linked
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
+Please download the `Labsetup.zip `file to your VM from the lab’s website, unzip it, enter the `Labsetup` folder, and use the `docker-compose.yml `file to set up the lab environment. Detailed explanation of the content in this file and all the involved `Dockerfile `can be found from the user manual, which is linked to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
 very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the `.bashrc`file
-(in our provided SEEDUbuntu 20.04 VM).
+<BR>
+&emsp; In the following, we list some of the commonly used commands related to Docker and Compose. Since we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file (in our provided SEEDUbuntu 20.04 VM).
 ```
 $ docker-compose build  # Build the container image
 $ docker-compose up     # Start the container
@@ -76,43 +56,11 @@ $ dcbuild       # Alias for: docker-compose build
 $ dcup          # Alias for: docker-compose up
 $ dcdown        # Alias for: docker-compose down
 ```
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of
-the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for
-them in the `.bashrc `file.
-```
-$ dockps        // Alias for: docker ps --format "{{.ID}} {{.Names}}"
-$ docksh <id>   // Alias for: docker exec -it <id> /bin/bash
-=======
-Please download the `Labsetup.zip` file to your VM from the lab’s website, unzip it, enter theLabsetup
-folder, and use the `docker-compose.yml` file to set up the lab environment. Detailed explanation of the
-content in this file and all the involved `Dockerfile` can be found from the user manual, which is linked
-to the website of this lab. If this is the first time you set up a SEED lab environment using containers, it is
-very important that you read the user manual.
-In the following, we list some of the commonly used commands related to Docker and Compose. Since
-we are going to use these commands very frequently, we have created aliases for them in the `.bashrc` file
-(in our provided SEEDUbuntu 20.04 VM).
-
-```
-$ docker-compose build # Build the container image
-$ docker-compose up # Start the container
-$ docker-compose down # Shut down the container
-
-// Aliases for the Compose commands above
-$ dcbuild # Alias for: docker-compose build
-$ dcup # Alias for: docker-compose up
-$ dcdown # Alias for: docker-compose down
-```
-
-All the containers will be running in the background. To run commands on a container, we often need
-to get a shell on that container. We first need to use the `"docker ps"` command to find out the ID of
-the container, and then use"docker exec"to start a shell on that container. We have created aliases for
-them in the `.bashrc` file.
+&emsp;  All the containers will be running in the background. To run commands on a container, we often need to get a shell on that container. We first need to use the "`docker ps`" command to find out the ID of the container, and then use "`docker exec`" to start a shell on that container. We have created aliases for them in the `.bashrc` file.
 
 ```
 $ dockps // Alias for: docker ps --format "{{.ID}} {{.Names}}"
 $ docksh <id> // Alias for: docker exec -it <id> /bin/bash
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
 
 // The following example shows how to get a shell inside hostC
 $ dockps
@@ -122,80 +70,44 @@ b1004832e275 hostA-10.9.0.5
 
 $ docksh 96
 root@9652715c8e0a:/#
-```
 
-```
 // Note: If a docker command requires a container ID, you do not need to
-<<<<<<< HEAD
 //       type the entire ID string. Typing the first few characters will
 //       be sufficient, as long as they are unique among all the containers.
 ```
-=======
-// type the entire ID string. Typing the first few characters will
-// be sufficient, as long as they are unique among all the containers.
-```
-
->>>>>>> 93dd82bd5f2fb3c6b876238a0d6822518259ef44
-If you encounter problems when setting up the lab environment, please read the “Common Problems”
-section of the manual for potential solutions.
+ &emsp; If you encounter problems when setting up the lab environment, please read the “Common Problems” section of the manual for potential solutions.
 
 ### 2.2 About the Attacker Container
 
-In this lab, we can either use the VM or the attacker container as the attacker machine. If you look at
-the Docker Compose file, you will see that the attacker container is configured differently from the other
-containers. Here are the differences:
+In this lab, we can either use the VM or the attacker container as the attacker machine. If you look at the Docker Compose file, you will see that the attacker container is configured differently from the other containers. Here are the differences:
 
-- *Shared folder*.When we use the attacker container to launch attacks, we need to put the attacking code
-    inside the container. Code editing is more convenient inside the VM than in containers, because we
-    can use our favorite editors. In order for the VM and container to share files, we have created a shared
-    folder between the VM and the container using the Docker `volumes`. If you look at the Docker
-    Compose file, you will find out that we have added the following entry to some of the containers.
-    It indicates mounting the `./volumes `folder on the host machine (i.e., the VM) to the `/volumes`
-    folder inside the container. We will write our code in the `./volumes `folder (on the VM), so they
-    can be used inside the containers.
+- *Shared folder*. When we use the attacker container to launch attacks, we need to put the attacking code inside the container. Code editing is more convenient inside the VM than in containers, because we can use our favorite editors. In order for the VM and container to share files, we have created a shared folder between the VM and the container using the Docker `volumes`. If you look at the Docker Compose file, you will find out that we have added the following entry to some of the containers. It indicates mounting the `./volumes `folder on the host machine (i.e., the VM) to the `/volumes`
+folder inside the container. We will write our code in the `./volumes `folder (on the VM), so they can be used inside the containers.
     ```
     volumes:
              - ./volumes:/volumes
     ```
-- *Privileged mode*.To be able to modify kernel parameters at runtime (using `sysctl`), such as enabling
-    IP forwarding, a container needs to be privileged. This is achieved by including the following entry
-    in the Docker Compose file for the container.
+- *Privileged mode*. To be able to modify kernel parameters at runtime (using `sysctl`), such as enabling IP forwarding, a container needs to be privileged. This is achieved by including the following entry in the Docker Compose file for the container.
     ```
     privileged: true
     ```
 ### 2.3 Packet Sniffing
 
-Being able to sniff packets is very important in this lab, because if things do not go as expected, being able
-to look at where packets go can help us identify the problems. There are several different ways to do packet
-sniffing:
+Being able to sniff packets is very important in this lab, because if things do not go as expected, being able to look at where packets go can help us identify the problems. There are several different ways to do packet sniffing:
 
-- Running `tcpdump `on containers. We have already installed `tcpdump `on each container. To sniff
-    the packets going through a particular interface, we just need to find out the interface name, and then
-    do the following (assume that the interface name is `eth0` ):
+- Running `tcpdump `on containers. We have already installed `tcpdump `on each container. To sniff the packets going through a particular interface, we just need to find out the interface name, and then do the following (assume that the interface name is `eth0` ):
 ```
     # tcpdump -i eth0 -n
 ```
-It should be noted that inside containers, due to the isolation created by Docker, when we run
-`tcpdump `inside a container, we can only sniff the packets going in and out of this container. We
-won’t be able to sniff the packets between other containers. However, if a container uses the `host` 
-mode in its network setup, it can sniff other containers’ packets.
+&emsp; It should be noted that inside containers, due to the isolation created by Docker, when we run `tcpdump `inside a container, we can only sniff the packets going in and out of this container. We won’t be able to sniff the packets between other containers. However, if a container uses the `host` mode in its network setup, it can sniff other containers’ packets.
 
-- Running `tcpdump `on the VM. If we run `tcpdump `on the VM, we do not have the restriction on the
-    containers, and we can sniff all the packets going among containers. The interface name for a network
-    is different on the VM than on the container. On containers, each interface name usually starts with
-    `eth`; on the VM, the interface name for the network created by Docker starts with `br-` , followed by
-    the ID of the network. You can always use the `ip address `command to get the interface name on
-    the VM and containers.
-- We can also run Wireshark on the VM to sniff packets. Similar to `tcpdump`, we need to select what
-    interface we want Wireshark to sniff on.
+- Running `tcpdump `on the VM. If we run `tcpdump `on the VM, we do not have the restriction on the containers, and we can sniff all the packets going among containers. The interface name for a network is different on the VM than on the container. On containers, each interface name usually starts with `eth`; on the VM, the interface name for the network created by Docker starts with `br-` , followed by the ID of the network. You can always use the `ip address `command to get the interface name on the VM and containers.
+  
+- We can also run Wireshark on the VM to sniff packets. Similar to `tcpdump`, we need to select what interface we want Wireshark to sniff on.
 
 ## 3 Task 1: ARP Cache Poisoning
 
-The objective of this task is to use packet spoofing to launch an ARP cache poisoning attack on a target,
-such that when two victim machines A and B try to communicate with each other, their packets will be
-intercepted by the attacker, who can make changes to the packets, and can thus become the man in the
-middle between A and B. This is called Man-In-The-Middle (MITM) attack. In this task, we focus on the
-ARP cache poisoning part. The following code skeleton shows how to construct an ARP packet using Scapy.
+The objective of this task is to use packet spoofing to launch an ARP cache poisoning attack on a target, such that when two victim machines A and B try to communicate with each other, their packets will be intercepted by the attacker, who can make changes to the packets, and can thus become the man in the middle between A and B. This is called Man-In-The-Middle (MITM) attack. In this task, we focus on the ARP cache poisoning part. The following code skeleton shows how to construct an ARP packet using Scapy.
 ```
 #!/usr/bin/env python
 from scapy.all import *
@@ -207,9 +119,7 @@ A.op = 1        # 1 for ARP request; 2 for ARP reply
 pkt = E/A
 sendp(pkt)
 ```
-The above program constructs and sends an ARP packet. Please set necessary attribute names/values to
-define your own ARP packet. We can use `ls(ARP)`and `ls(Ether)`to see the attribute names of the `ARP`
-and `Ether` classes. If a field is not set, a default value will be used (see the third column of the output):
+&emsp; The above program constructs and sends an ARP packet. Please set necessary attribute names/values to define your own ARP packet. We can use `ls(ARP)` and `ls(Ether)` to see the attribute names of the `ARP` and `Ether` classes. If a field is not set, a default value will be used (see the third column of the output):
 ```
 $ python
 >>> from scapy.all import *
@@ -231,37 +141,27 @@ hwdst           : MACField              = (’00:00:00:00:00:00’)
 pdst            : IPField               = (’0.0.0.0’)
 ```
 
-In this task, we have three machines (containers), A, B, and M. We use M as the attacker machine. We
-would like to cause A to add a fake entry to its ARP cache, such that B’s IP address is mapped to M’s MAC
-address. We can check a computer’s ARP cache using the following command. If you want to look at the
-ARP cache associated with a specific interface, you can use the `-i `option.
+&emsp; In this task, we have three machines (containers), A, B, and M. We use M as the attacker machine. We would like to cause A to add a fake entry to its ARP cache, such that B’s IP address is mapped to M’s MAC address. We can check a computer’s ARP cache using the following command. If you want to look at the ARP cache associated with a specific interface, you can use the `-i `option.
 ```
 $ arp -n
 Address     HWtype      HWaddress           Flags Mask   Iface
 10.0.2.1    ether       52:54:00:12:35:00   C            enp0s
 10.0.2.3    ether       08:00:27:48:f4:0b   C            enp0s
 ```
-There are many ways to conduct ARP cache poisoning attack. Students need to try the following three
-methods, and report whether each method works or not.
+&emsp; There are many ways to conduct ARP cache poisoning attack. Students need to try the following three methods, and report whether each method works or not.
 
-- **Task 1.A (using ARP request)**.On host M, construct an ARP request packet to map B’s IP address
-    to M’s MAC address. Send the packet to A and check whether the attack is successful or not.
-- **Task 1.B (using ARP reply)**. On host M, construct an ARP reply packet to map B’s IP address to
-    M’s MAC address. Send the packet to A and check whether the attack is successful or not. Try the
-    attack under the following two scenarios, and report the results of your attack:
+- **Task 1.A (using ARP request)**. On host M, construct an ARP request packet to map B’s IP address to M’s MAC address. Send the packet to A and check whether the attack is successful or not.
+
+- **Task 1.B (using ARP reply)**. On host M, construct an ARP reply packet to map B’s IP address to M’s MAC address. Send the packet to A and check whether the attack is successful or not. Try the attack under the following two scenarios, and report the results of your attack:
        - Scenario 1: B’s IP is already in A’s cache.
-       - Scenario 2: B’s IP is not in A’s cache. You can use the command "`arp -d a.b.c.d`" to
-          remove the ARP cache entry for the IP address `a.b.c.d`.
-- **Task 1.C (using ARP gratuitous message)**.On host M, construct an ARP gratuitous packet, and use
-    it to map B’s IP address to M’s MAC address. Please launch the attack under the same two scenarios
-    as those described in Task 1.B.
-    ARP gratuitous packet is a special ARP request packet. It is used when a host machine needs to
-    update outdated information on all the other machine’s ARP cache. The gratuitous ARP packet has
-    the following characteristics:
-    - The source and destination IP addresses are the same, and they are the IP address of the host
-          issuing the gratuitous ARP.
-    - The destination MAC addresses in both ARP header and Ethernet header are the broadcast MAC
-          address (`ff:ff:ff:ff:ff:ff`).
+       - Scenario 2: B’s IP is not in A’s cache. You can use the command "`arp -d a.b.c.d`" to remove the ARP cache entry for the IP address `a.b.c.d`.
+
+- **Task 1.C (using ARP gratuitous message)**. On host M, construct an ARP gratuitous packet, and use it to map B’s IP address to M’s MAC address. Please launch the attack under the same two scenarios as those described in Task 1.B.
+<Br><Br>
+ARP gratuitous packet is a special ARP request packet. It is used when a host machine needs to update outdated information on all the other machine’s ARP cache. The gratuitous ARP packet has the following characteristics:
+   
+    - The source and destination IP addresses are the same, and they are the IP address of the host issuing the gratuitous ARP.
+    - The destination MAC addresses in both ARP header and Ethernet header are the broadcast MAC address (`ff:ff:ff:ff:ff:ff`).
     - No reply is expected.
 
 ## 4 Task 2: MITM Attack on Telnet using ARP Cache Poisoning
