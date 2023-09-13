@@ -253,9 +253,7 @@ window. Therefore, what we see in the client window is not the direct result of 
 
 ## 5 Task 3: MITM Attack on Netcat using ARP Cache Poisoning
 
-This task is similar to Task 2, except that Hosts A and B are communicating using `netcat` , instead of
- `telnet`. Host M wants to intercept their communication, so it can make changes to the data sent between
-A and B. You can use the following commands to establish a `netcat `TCP connection between A and B:
+This task is similar to Task 2, except that Hosts A and B are communicating using `netcat` , instead of `telnet`. Host M wants to intercept their communication, so it can make changes to the data sent between A and B. You can use the following commands to establish a `netcat` TCP connection between A and B:
 ```
 On Host B (server, IP address is 10.9.0.6), run the following:
 # nc -lp 9090
@@ -263,17 +261,10 @@ On Host B (server, IP address is 10.9.0.6), run the following:
 On Host A (client), run the following:
 # nc 10.9.0.6 9090
 ```
-Once the connection is made, you can type messages on A. Each line of messages will be put into a TCP
-packet sent to B, which simply displays the message. Your task is to replace every occurrence of your first
-name in the message with a sequence of A’s. The length of the sequence should be the same as that of your
-first name, or you will mess up the TCP sequence number, and hence the entire TCP connection. You need
-to use your real first name, so we know the work is done by you.
+&emsp; Once the connection is made, you can type messages on A. Each line of messages will be put into a TCP packet sent to B, which simply displays the message. Your task is to replace every occurrence of your first name in the message with a sequence of A’s. The length of the sequence should be the same as that of your first name, or you will mess up the TCP sequence number, and hence the entire TCP connection. You need to use your real first name, so we know the work is done by you.
 
 ## 6 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
