@@ -2,21 +2,13 @@
 
 ```
 Copyright © 2021 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-Border Gateway Protocol (BGP) is the standard exterior gateway protocol designed to exchange routing and
-reachability information among autonomous systems (AS) on the Internet. It is the “glue” of the Internet,
-and is an essential piece of the Internet infrastructure. It is also a primary attack target, because if attackers
-can compromise BGP, they can disconnect the Internet and redirect traffics.
-The goal of this lab is to help students understand how BGP “glues” the Internet together, and how the
-Internet is actually connected. We have built an Internet emulator, and will use this emulator as the basis
-for the lab activities. Due to the complexity of BGP, the explanation of how BGP works is provided in a
-separate document. It is essential for the lab activities, so students should read the document before working
-on the lab. This lab covers the following topics:
+Border Gateway Protocol (BGP) is the standard exterior gateway protocol designed to exchange routing and reachability information among autonomous systems (AS) on the Internet. It is the “glue” of the Internet, and is an essential piece of the Internet infrastructure. It is also a primary attack target, because if attackers can compromise BGP, they can disconnect the Internet and redirect traffics.
+<BR>
+&emsp; The goal of this lab is to help students understand how BGP “glues” the Internet together, and how the Internet is actually connected. We have built an Internet emulator, and will use this emulator as the basis for the lab activities. Due to the complexity of BGP, the explanation of how BGP works is provided in a separate document. It is essential for the lab activities, so students should read the document before working on the lab. This lab covers the following topics:
 
 - How the BGP protocol works
 - Autonomous systems
@@ -25,26 +17,15 @@ on the lab. This lab covers the following topics:
 - Internet Exchange (IX)
 - BGP attack, network prefix hijacking
 
-**Supporting materials**. BGP is quite complicated, especially its practice side. To help students work on
-this lab, I have written a chapter on BGP, which will be included in the 3rd edition of my book. I will make
-this chapter a sample chapter, so it is free for everybody to download. The link to this chapter can be found
-from the web page of this lab. Without reading this chapter or covering it in the lecture, it will be quite hard
+**Supporting materials**. BGP is quite complicated, especially its practice side. To help students work on this lab, I have written a chapter on BGP, which will be included in the 3rd edition of my book. I will make this chapter a sample chapter, so it is free for everybody to download. The link to this chapter can be found from the web page of this lab. Without reading this chapter or covering it in the lecture, it will be quite hard
 for students to work on this lab.
 
-**Note for instructors**. Tasks 1 to 4 are designed to help students understand the technical details of BGP,
-it is for the instructors who do cover BGP in-depth in their classes. Only Task 5, BGP attacks, is related
-to security, so if instructors only want students to focus on the security aspect of BGP, they can skip Tasks
-1 - 4, and assign Task 5 directly to students, as this task does not depend on the earlier tasks. High-level
+**Note for instructors**. Tasks 1 to 4 are designed to help students understand the technical details of BGP, it is for the instructors who do cover BGP in-depth in their classes. Only Task 5, BGP attacks, is related to security, so if instructors only want students to focus on the security aspect of BGP, they can skip Tasks 1 - 4, and assign Task 5 directly to students, as this task does not depend on the earlier tasks. High-level
 knowledge on BGP should be sufficient for Task 5.
 
-**Lab environment**. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded
-from the SEED website. Since we use containers to set up the lab environment, this lab does not depend
-much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
+**Lab environment**. This lab has been tested on our pre-built Ubuntu 20.04 VM, which can be downloaded from the SEED website. Since we use containers to set up the lab environment, this lab does not depend much on the SEED VM. You can do this lab using other VMs, physical machines, or VMs on the cloud.
 
 ## 2 The Lab Setup and the SEED Internet Emulator
-
-This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document).
-We provide a pre-built emulator in two different forms: Python code and container files. The container files
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
@@ -53,20 +34,13 @@ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/BGP_Exploration_Attack/L
 sudo unzip Labsetup.zip
 ```
 
-are generated from the Python code, but students need to install the SEED Emulator source code from
-the GitHub to run the Python code. The container files can be directly used without the emulator source
-code. Instructors who would like to customize the emulator can modify the Python code, generate their own
+This lab will be performed inside the SEED Internet Emulator (simply called the emulator in this document). We provide a pre-built emulator in two different forms: Python code and container files. The container files are generated from the Python code, but students need to install the SEED Emulator source code from the GitHub to run the Python code. The container files can be directly used without the emulator source code. Instructors who would like to customize the emulator can modify the Python code, generate their own
 container files, and then provide the files to students, replacing the ones included in the lab setup file.
 
-**Download the emulator files**. Please download the `Labsetup.zip `file from the web page, and unzip
-it. The files inside the `output `sub-folder are the actual emulation files (container files) that are generated
-from the Python code `mini-internet.py`.
+**Download the emulator files**. Please download the `Labsetup.zip `file from the web page, and unzip it. The files inside the `output `sub-folder are the actual emulation files (container files) that are generated from the Python code `mini-internet.py`.
 
-**Start the emulation.** We will directly use the container files in the `output `folder. Go to this folder,
-and run the following docker commands to build and start the containers. We recommend that you run the
-emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating
-system should not have any problem, as long as the docker software is installed. Readers can find the docker
-manual from this link.
+**Start the emulation.** We will directly use the container files in the `output `folder. Go to this folder, and run the following docker commands to build and start the containers. We recommend that you run the emulator inside the provided SEED Ubuntu 20.04 VM, but doing it in a generic Ubuntu 20.04 operating system should not have any problem, as long as the docker software is installed. Readers can find the docker
+manual from [this link](https://pages.github.com/).
 
 ```
 $ docker-compose build
@@ -79,41 +53,26 @@ $ dcdown        # Alias for: docker-compose down
 ```
 ### 2.1 The Network Map
 
-Each computer (hosts or routers) running inside the emulator is a docker container. Users can access these
-computers using docker commands, such as getting a shell inside a container. The emulator also comes
-with a web application, which visualizes all the hosts, routers, and networks. After the emulator starts, the
-map can be accessed from this URL:`http://localhost:8080/map.html`. See Figure 1. Users can
-interact with this map, such as getting a terminal from any of the container, disabling BGP sessions (see
-Figure 2). Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in
-`tcpdump` ; actually, the filter is directly fed into the `tcpdump `program running on all nodes.
+Each computer (hosts or routers) running inside the emulator is a docker container. Users can access these computers using docker commands, such as getting a shell inside a container. The emulator also comes with a web application, which visualizes all the hosts, routers, and networks. After the emulator starts, the map can be accessed from this URL:`http://localhost:8080/map.html`. See Figure 1. Users can interact with this map, such as getting a terminal from any of the container, disabling BGP sessions (see
+Figure 2). Users can also set filters to visualize network traffic. The syntax of the filter is the same as that in `tcpdump` ; actually, the filter is directly fed into the `tcpdump `program running on all nodes.
 
 ### 2.2 Modifying the BGP Configuration File
 
-We need to modify the BGP configuration file in several tasks. We can do that by directly modifying the
-configuration file inside a container. Anther way is to copy the file into the host VM, do the editing from
-the host VM, and then copy it back. Let us see an example (assuming that we want to modify the BGP
-configuration file of AS-180):
+We need to modify the BGP configuration file in several tasks. We can do that by directly modifying the configuration file inside a container. Anther way is to copy the file into the host VM, do the editing from the host VM, and then copy it back. Let us see an example (assuming that we want to modify the BGP configuration file of AS-180):
 
 ```
 // Find out the IP of the AS-180’s BGP router container
 $ dockps | grep 180
-6bf0bcda8d06 as180h-host_1-10.180.0.
-437874056b15 as180h-webservice_0-10.180.0.
-**2967** 6d5034ce as180r-router0-10.180.0.254 Ÿ **This is AS-180’s BGP router**
+6bf0bcda8d06 as180h-host_1-10.180.0.72
+437874056b15 as180h-webservice_0-10.180.0.71
+**2967** 6d5034ce as180r-router0-10.180.0.254    <---- This is AS-180’s BGP router
 
 // Copy the configuration file from the container to the host machine
 $ docker cp 2967:/etc/bird/bird.conf ./as180_bird.conf
 ```
-Get a terminal on a
-selected node
-```
-```
-Set filter for Click on a node
-packet trace
-visulization
-```
-```
-Figure 1: The SEED Internet Emulator
+![SEED Internet Emulator](../media/net-sec-bgp-exploration.png)
+
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; Figure 1: The SEED Internet Emulator
 ```
 ... edit the file ...
 
@@ -126,6 +85,7 @@ BIRD 2.0.7 ready.
 Reading configuration from /etc/bird/bird.conf
 Reconfigured
 ```
+
 ### 2.3 Convention used in the Emulator
 
 To make it easy to identify the roles of each node in the emulator, we have created a set of conventions when
