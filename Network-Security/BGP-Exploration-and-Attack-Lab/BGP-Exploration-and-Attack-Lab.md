@@ -211,26 +211,18 @@ in the following.
 
 ## 4 Task 2: Transit Autonomous System
 
-If two ASes want to connect, they can peer with each other at an Internet exchange point. The question is
-how two ASes in two different locations can reach each other. It is hard for them to find a common location
-to peer. To solve this problem, a special type of AS is needed.
-This type of AS have BGP routers in many Internet Exchange Points, where they peer with many other
-ASes. Once packets get into its networks, they will be pulled from one IX to another IX (typically via some
-internal routers), and eventually be handed over to another AS. This type of AS provides the transit service
-for other ASes. That is how the hosts in one AS can reach the hosts in another AS, even though they are not
+If two ASes want to connect, they can peer with each other at an Internet exchange point. The question is how two ASes in two different locations can reach each other. It is hard for them to find a common location to peer. To solve this problem, a special type of AS is needed.
+<Br>
+&emsp;  This type of AS have BGP routers in many Internet Exchange Points, where they peer with many otherASes. Once packets get into its networks, they will be pulled from one IX to another IX (typically via some internal routers), and eventually be handed over to another AS. This type of AS provides the transit service for other ASes. That is how the hosts in one AS can reach the hosts in another AS, even though they are not
 peers with each other. This special of AS is called *Transit* AS.
-In this task, we will first understand how a transit AS works and then we will configure a transit AS
-in our Internet emulator. Students should read Section 10 of the tutorial before working on this task. We
-pick AS-3 transit autonomous system in this task. This AS has four BGP routers, each at a different Internet
-exchange (IX). We pick the one connected to the Miami Internet exchange (IX-103).
+<Br>
+&emsp; In this task, we will first understand how a transit AS works and then we will configure a transit AS in our Internet emulator. Students should read Section 10 of the tutorial before working on this task. We pick AS-3 transit autonomous system in this task. This AS has four BGP routers, each at a different Internet exchange (IX). We pick the one connected to the Miami Internet exchange (IX-103).
 
 ### 4.1 Task 2.a: Experimenting with IBGP
 
-For the task, we first need to find some traffic that goes through AS-3. We will ping `10.164.0.71` from a
-host in AS-162. Using the map client program, we can see that the packets go through the AS-3 transit AS.
-If this is not consistent with your observation, do find some other traffics that go through AS-3.
-We will now disable the IBGP sessions on AS-3’s BGP router at IX-103 either using the map client or
-from the command line (see the following example).
+For the task, we first need to find some traffic that goes through AS-3. We will ping `10.164.0.71` from a host in AS-162. Using the map client program, we can see that the packets go through the AS-3 transit AS. If this is not consistent with your observation, do find some other traffics that go through AS-3.
+<Br>
+&emsp; We will now disable the IBGP sessions on AS-3’s BGP router at IX-103 either using the map client or from the command line (see the following example).
 
 ```
 # birdc
@@ -239,70 +231,49 @@ Name        Proto   Table   State   Since           Info
 ...
 ibgp1       BGP     ---     up      20:19:03.800    Established
 ibgp2       BGP     ---     up      20:19:11.921    Established
-ibgp3       BGP     ---     **up**  20:20:50.238    Established
+ibgp3       BGP     ---     up      20:20:50.238    Established
 
 bird> disable ibgp
 bird> show protocols ibgp
 Name        Proto   Table   State   Since          Info
-ibgp3       BGP     ---   **down**  20:26:44.
+ibgp3       BGP     ---     down  20:26:44.526
 ```
-Before disabling IBGP, show the routing table on the BGP router (using "`ip route`" ). Compare the
-results before and after disabling IBGP, and explain your observations.
+&emsp; Before disabling IBGP, show the routing table on the BGP router (using "`ip route`" ). Compare the results before and after disabling IBGP, and explain your observations.
 
 ### 4.2 Task 2.b: Experimenting with IGP
 
-In this task, we will use the same BGP router. We will disable the OSPF routing protocol, and see how it
-affects the routing. There are several ways to disable OSPF. One way is to do it inside `birdc` :
+In this task, we will use the same BGP router. We will disable the OSPF routing protocol, and see how it affects the routing. There are several ways to disable OSPF. One way is to do it inside `birdc` :
 ```
 # bridc
 birdc> show protocols
 ...
-ospf1   OSPF    t_ospf     **up**      19:49:43.343    Running
+ospf1   OSPF    t_ospf       up      19:49:43.343    Running
 ...
 
 birdc> disable ospf1
 birdc> show protocols ospf1
-ospf1   OSPF    t_ospf     **down**    19:57:37:187
+ospf1   OSPF    t_ospf       down    19:57:37:187
 ```
-Before and after disabling OSPF, show the routing table on the BGP router (using"ip route").
-Compare the results. Based on the observation, explain why the IGP is essential for the transit autonomous
+&emsp; Before and after disabling OSPF, show the routing table on the BGP router (using"ip route"). Compare the results. Based on the observation, explain why the IGP is essential for the transit autonomous
 systems.
 
 ### 4.3 Task 2.c: Configuring AS-
 
-```
-Internet Exchange
-IX‐ 101
-Internet Exchange
-IX‐ 103
-```
-```
-Internet Exchange
-IX‐ 105
-AS‐ 5
-```
-```
-Figure 3: AS-5’s network diagram
-```
+![AS-5 network diagram](../media/net-sec-bgp-exploration-as5-network-diagram.png)
 
-The transit autonomous system AS-5 is already included in the emulator. It connects to three Internet
-exchanges: IX-101, IX-103, and IX-105, but it does not peer with any AS. Its topology can be found in
-Figure 3. In this task, students need to conduct the following tasks:
+ &emsp; &emsp;  &emsp; &emsp;  &emsp; &emsp;  &emsp; &emsp;  &emsp; Figure 3: AS-5’s network diagram
 
-- The IBGP peering for AS-5 is already established in the emulator. Please use AS-5’s BGP router at
-    IX-101 as an example, explain the meaning of its IBGP configuration.
-- AS-5 will provide the transit service for AS-153 (at IX-101), AS-160 (at IX-103), and AS-171 (at
-    IX-105). Please configure their EBGP peering accordingly. Students can learn from the other transit
-    ASes, and see how their peering is configured.
-- AS-5 and AS-3 are both transit ASes, and they decide to peer at IX-103 (Miami). Since they are
-    roughly the same size, they both benefit from the peering equally, so they decide that their relationship
-    should be peer-to-peer, not provider-to-customer. They do not pay each other.
+The transit autonomous system AS-5 is already included in the emulator. It connects to three Internet exchanges: IX-101, IX-103, and IX-105, but it does not peer with any AS. Its topology can be found in Figure 3. In this task, students need to conduct the following tasks:
 
-In this task, we need to modify several BIRD configuration files. Just like in Task 1, we have created two
-shell scripts in the `task2 `folder. They can be used to automate the downloading/uploading of the BIRD
-configuration from/to the containers.
-In your lab report, please include the content you add to the BIRD configuration file, and provide proper
-explanation. Please also include screenshots (such as traceroute) to demonstrate that your task is successful.
+- The IBGP peering for AS-5 is already established in the emulator. Please use AS-5’s BGP router at IX-101 as an example, explain the meaning of its IBGP configuration.
+
+- AS-5 will provide the transit service for AS-153 (at IX-101), AS-160 (at IX-103), and AS-171 (at IX-105). Please configure their EBGP peering accordingly. Students can learn from the other transit ASes, and see how their peering is configured.
+
+- AS-5 and AS-3 are both transit ASes, and they decide to peer at IX-103 (Miami). Since they are roughly the same size, they both benefit from the peering equally, so they decide that their relationship should be peer-to-peer, not provider-to-customer. They do not pay each other.
+
+&emsp;  In this task, we need to modify several BIRD configuration files. Just like in Task 1, we have created two shell scripts in the `task2 `folder. They can be used to automate the downloading/uploading of the BIRD configuration from/to the containers.
+<Br>
+&emsp; In your lab report, please include the content you add to the BIRD configuration file, and provide proper explanation. Please also include screenshots (such as traceroute) to demonstrate that your task is successful.
 
 ## 5 Task 3: Path Selection
 
