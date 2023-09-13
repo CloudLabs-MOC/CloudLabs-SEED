@@ -143,91 +143,55 @@ while response:
 
 ## 5 Task 3: Virtual Private Network (VPN)
 
-VPN is often used to bypass firewall. In this task, we will use VPN to bypass ingress and egress firewalls.
-OpenVPN is a powerful tool that we can use, but in this task, we will simply use SSH, which is often called
-the poor man’s VPN. We need to change some default SSH settings on the server to allow VPN creation.
-The changes made in `/etc/ssh/sshd_config` are listed in the following. They are already enabled
-inside the containers.
+VPN is often used to bypass firewall. In this task, we will use VPN to bypass ingress and egress firewalls. OpenVPN is a powerful tool that we can use, but in this task, we will simply use SSH, which is often called the poor man’s VPN. We need to change some default SSH settings on the server to allow VPN creation. The changes made in `/etc/ssh/sshd_config` are listed in the following. They are already enabled inside the containers.
 ```
-PermitRootLogin yes
-PermitTunnel    yes
+PermitRootLogin  yes
+PermitTunnel     yes
 ```
 #### 5.1 Task 3.1: Bypassing Ingress Firewall
 
-To create a VPN tunnel from a client to a server, we run the following ssh command. This command creates
-a TUN interface `tun0 `on the VPN client and server machines, and then connect these two TUN interfaces
-using an encrypted TCP connection. Both zeros in option `0:0 `means `tun0`. Detailed explanation of the
- `-w `option can be found in the manual of SSH.
+To create a VPN tunnel from a client to a server, we run the following ssh command. This command creates a TUN interface `tun0` on the VPN client and server machines, and then connect these two TUN interfaces using an encrypted TCP connection. Both zeros in option `0:0 `means `tun0`. Detailed explanation of the `-w` option can be found in the manual of SSH.
 ```
 # ssh -w 0:0 root@<VPN Server’s IP>
 ```
-It should also be noted that creating TUN interfaces requires the root privilege, so we need to have the
-root privilege on both ends of the tunnel. That is why we run it inside the root account, and also SSH into
-the root account on the server. The above command only creates a tunnel; further configuration is needed on
-both ends of the tunnel. The following improved command include some of the configuration commands:
-```
+&emsp; It should also be noted that creating TUN interfaces requires the root privilege, so we need to have the root privilege on both ends of the tunnel. That is why we run it inside the root account, and also SSH into the root account on the server. The above command only creates a tunnel; further configuration is needed on both ends of the tunnel. The following improved command include some of the configuration commands:
+<pre>
 # ssh -w 0:0 root@<VPN Server’s IP> \
       -o "PermitLocalCommand=yes" \
       -o "LocalCommand= ip addr add 192.168.53.88/24 dev  tun0 && \
                         ip link set tun0 up" \
       -o "RemoteCommand=ip addr add 192.168.53.99/24 dev tun0 && \
                         ip link set tun0 up"
-root@<VPN Server’s IP> password: **** Ÿ **Password: dees**
-```
-The `LocalCommand `entry specifies the command running on the VPN client side. It configures the
-client-side TUN interface: assigning the `192.168.53.88/24 `address to the interface and bringing it
-up. The `RemoteCommand `entry specifies the command running on the VPN server side. It configures the
-server-side TUN interface. The configuration is incomplete, and further configuration is still needed.
+root@<VPN Server’s IP> password: ****  <b><---- Password: dees</b>
+</pre>
 
-**Lab task.** Please create a VPN tunnel between `A` and `B`, with `B` being the VPN server. Then conduct all
-the necessary configuration. Once everything is set up, please demonstrate that you can telnet to `B`, `B1`, and 
-`B2` from the outside network. Please capture the packets trace, and explain why the packets are not blocked
-by the firewall.
+&emsp; The `LocalCommand `entry specifies the command running on the VPN client side. It configures the client-side TUN interface: assigning the `192.168.53.88/24 `address to the interface and bringing it up. The `RemoteCommand `entry specifies the command running on the VPN server side. It configures the server-side TUN interface. The configuration is incomplete, and further configuration is still needed.
+
+**Lab task.** Please create a VPN tunnel between `A` and `B`, with `B` being the VPN server. Then conduct all the necessary configuration. Once everything is set up, please demonstrate that you can telnet to `B`, `B1`, and  `B2` from the outside network. Please capture the packets trace, and explain why the packets are not blocked by the firewall.
 
 
 #### 5.2 Task 3.2: Bypassing Egress Firewall
 
-In this task, we will use VPN to bypass egress firewall. In our setup, we have blocked three external websites,
-so the hosts on the `192.168.20.0/24` cannot access these websites. The objective of this task is to use
-the VPN tunneling technique to bypass these rules. This objective of is the same as that of Task 2, except
-that this time, we use VPN, instead of dynamic port forwarding. The command for creating VPN tunnels is
+In this task, we will use VPN to bypass egress firewall. In our setup, we have blocked three external websites, so the hosts on the `192.168.20.0/24` cannot access these websites. The objective of this task is to use the VPN tunneling technique to bypass these rules. This objective of is the same as that of Task 2, except that this time, we use VPN, instead of dynamic port forwarding. The command for creating VPN tunnels is
 similar to that in Task 3.1. In this task, we use `B` as the VPN client and `A` as the VPN server.
-It should be noted that when a packet generated on the VPN client is sent to the VPN server via the
-tunnel, the source IP address of the packet will be `192.168.53.88 `according to our setup. When this
-packet goes out, it will go through VirtualBox’s NAT (Network Address Translation) server, where the
-source IP address will be replaced by the IP address of the host computer. The packet will eventually arrive
-at `example.com`, and the reply packet will come back to our host computer, and then be given to the same
-NAT server, where the destination address is translated back `192.168.53.88`. This is where the problem
-comes up.
-VirtualBox’s NAT server knows nothing about the `192.168.53.0/24` network, because this is the
-one that we create internally for our TUN interface, and VirtualBox has no idea how to route to this network,
-much less knowing that the packet should be given to VPN server. As a result, the reply packet from
-`example.com` will be dropped.
-To solve this problem, we will set up our own NAT server on VPN server, so when packets from
- `192.168.53.88 `go out, their source IP addresses are always replaced by the VPN server `A’s` IP ad-
-dress (`10.8.0.99`). We can use the following command to create a NAT server on the `eth0` interface of
-the VPN server.
+<Br>
+&emsp; It should be noted that when a packet generated on the VPN client is sent to the VPN server via the tunnel, the source IP address of the packet will be `192.168.53.88 `according to our setup. When this packet goes out, it will go through VirtualBox’s NAT (Network Address Translation) server, where the source IP address will be replaced by the IP address of the host computer. The packet will eventually arrive at `example.com`, and the reply packet will come back to our host computer, and then be given to the same
+NAT server, where the destination address is translated back `192.168.53.88`. This is where the problem comes up.
+<Br>
+&emsp; VirtualBox’s NAT server knows nothing about the `192.168.53.0/24` network, because this is the one that we create internally for our TUN interface, and VirtualBox has no idea how to route to this network, much less knowing that the packet should be given to VPN server. As a result, the reply packet from `example.com` will be dropped.
+<Br>
+&emsp; To solve this problem, we will set up our own NAT server on VPN server, so when packets from `192.168.53.88 `go out, their source IP addresses are always replaced by the VPN server `A’s` IP address (`10.8.0.99`). We can use the following command to create a NAT server on the `eth0` interface of the VPN server.
 ```
-# iptables -t nat -A POSTROUTING -j MASQUERADE -o eth
+# iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0
 ```
-**Lab task.** Please set up a VPN tunnel between `B` and `A`, with `A` being the VPN server. Please demonstrate
-that you can use this VPN tunnel to successfully reach the blocked websites from hosts `B,B1` and `B2`. Please
-capture the packets trace, and explain why the packets are not blocked by the firewall.
+**Lab task.** Please set up a VPN tunnel between `B` and `A`, with `A` being the VPN server. Please demonstrate that you can use this VPN tunnel to successfully reach the blocked websites from hosts `B, B1` and `B2`. Please capture the packets trace, and explain why the packets are not blocked by the firewall.
 
 ## 6 Task 4: Comparing SOCKS5 Proxy and VPN
 
-Both SOCKS5 proxy (dynamic port forwarding) and VPN are commonly used in creating tunnels to bypass
-firewalls, as well as to protect communications. Many VPN service providers provide both types of services.
-Sometimes, when a VPN service provider tells you that it provides the VPN service, but in reality, it is just a
-SOCKS5 proxy. Although both technologies can be used to solve the same problem, they do have significant
-differences. Based on your experience from this lab, please compare these two technologies, describing their
-differences, pros and cons.
+Both SOCKS5 proxy (dynamic port forwarding) and VPN are commonly used in creating tunnels to bypass firewalls, as well as to protect communications. Many VPN service providers provide both types of services. Sometimes, when a VPN service provider tells you that it provides the VPN service, but in reality, it is just a SOCKS5 proxy. Although both technologies can be used to solve the same problem, they do have significant differences. Based on your experience from this lab, please compare these two technologies, describing their differences, pros and cons.
 
 ## 7 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
