@@ -152,57 +152,39 @@ $ a.out
 
 ## 3 Task 2: Modify the Password File to Gain the Root Privilege
 
-Now, let’s launch the attack on a real system file, so we can gain the root privilege. We choose the `/etc/passwd` file as our target file. This file is world-readable, but non-root users cannot modify it.
-The file contains the user account information, one record for each user. Assume that our user name is
-`seed`. The following lines show the records for root and `seed`:
+Now, let’s launch the attack on a real system file, so we can gain the root privilege. We choose the `/etc/passwd` file as our target file. This file is world-readable, but non-root users cannot modify it. The file contains the user account information, one record for each user. Assume that our user name is `seed`. The following lines show the records for root and `seed`:
 
 ```
 root:x:0:0:root:/root:/bin/bash
 seed:x:1000:1000:Seed,123,,:/home/seed:/bin/bash
 ```
 
-Each of the above record contains seven colon-separated fields. Our interest is on the third field, which
-specifies the user ID (UID) value assigned to a user. UID is the primary basis for access control in `Linux`,
-so this value is critical to security. The root user’s UID field contains a special value 0; that is what makes
-it the superuser, not its name. Any user with UID 0 is treated by the system as root, regardless of what user
-name he or she has. The `seed` user’s ID is only `1000` , so it does not have the root privilege. However,
-if we can change the value to `0` , we can turn it into root. We will exploit the Dirty COW vulnerability to
-achieve this goal.
-In our experiment, we will not use the `seed` account, because this account is used for most of the
-experiments in this book; if we forget to change the UID back after the experiment, other experiments will
-be affected. Instead, we create a new account called `charlie`, and we will turn this normal user into root
-using the Dirty COW attack. Adding a new account can be achieved using the `adduser` command. After
-the account is created, a new record will be added to `/etc/passwd`. See the following:
+&emsp; Each of the above record contains seven colon-separated fields. Our interest is on the third field, which specifies the user ID (UID) value assigned to a user. UID is the primary basis for access control in `Linux`, so this value is critical to security. The root user’s UID field contains a special value 0; that is what makes it the superuser, not its name. Any user with UID `0` is treated by the system as root, regardless of what user name he or she has. The `seed` user’s ID is only `1000` , so it does not have the root privilege. However, if we can change the value to `0` , we can turn it into root. We will exploit the Dirty COW vulnerability to achieve this goal.
+<Br>
+&emsp; In our experiment, we will not use the `seed` account, because this account is used for most of the experiments in this book; if we forget to change the UID back after the experiment, other experiments will be affected. Instead, we create a new account called `charlie`, and we will turn this normal user into root using the Dirty COW attack. Adding a new account can be achieved using the `adduser` command. After the account is created, a new record will be added to `/etc/passwd`. See the following:
 
 ```
 $ sudo adduser charlie
-...
+    ...
 $ cat /etc/passwd | grep charlie
 charlie:x:1001:1001:,,,:/home/charlie:/bin/bash
 ```
 
-We suggest that you save a copy of the `/etc/passwd` file, just in case you make a mistake and corrupt
-this file. An alternative is to take a snapshot of your VM before working on this lab, so you can always roll
-back if the VM got corrupted.
+&emsp; We suggest that you save a copy of the `/etc/passwd` file, just in case you make a mistake and corrupt this file. An alternative is to take a snapshot of your VM before working on this lab, so you can always roll back if the VM got corrupted.
 
-Task: You need to modify the `charlie’s` entry in `/etc/passwd`, so the third field is changed from
-`1001` to `0000` , essentially turning `charlie` into a root account. The file is not writable to `charlie`, but we can use the Dirty COW attack to write to this file. You can modify the `cowattack.c` program from Task 1 to achieve this goal.
-After your attack is successful, if you switch user to `charlie`, you should be able to see the #sign at
-the shell prompt, which is an indicator of the root shell. If you run the id command, you should be able to
-see that you have gained the root privilege.
+**Task:** You need to modify the `charlie’s` entry in `/etc/passwd`, so the third field is changed from `1001` to `0000` , essentially turning `charlie` into a root account. The file is not writable to `charlie`, but we can use the Dirty COW attack to write to this file. You can modify the `cow_attack.c` program from Task 1 to achieve this goal.
+<Br>
+&emsp; After your attack is successful, if you switch user to `charlie`, you should be able to see the `#` sign at the shell prompt, which is an indicator of the root shell. If you run the id command, you should be able to see that you have gained the root privilege.
 
-```
+<pre>
 seed@ubuntu$ su charlie
 Passwd:
 root@ubuntu# id
-**uid=0(root)** gid=1001(charlie) groups=0(root),1001(charlie)
-```
+<b>uid=0(root)</b> gid=1001(charlie) groups=0(root),1001(charlie)
+</pre>
 
 ## 4 Submission
 
-You need to submit a detailed lab report, with screenshots, to describe what you have done and what you
-have observed. You also need to provide explanation to the observations that are interesting or surprising.
-Please also list the important code snippets followed by explanation. Simply attaching code without any
-explanation will not receive credits.
+You need to submit a detailed lab report, with screenshots, to describe what you have done and what you have observed. You also need to provide explanation to the observations that are interesting or surprising. Please also list the important code snippets followed by explanation. Simply attaching code without any explanation will not receive credits.
 
 
