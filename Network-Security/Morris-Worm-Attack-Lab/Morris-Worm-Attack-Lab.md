@@ -220,6 +220,7 @@ $ ./worm.py
 The malicious code that we would like to run on the target server is called shellcode, which is typically written using the assembly language and then converted to the binary machine code. In this lab, we only provide the binary version of a generic shellcode, without explaining how it works, because it is non-trivial. If students are interested in how exactly shellcode works and want to write a shellcode from scratch, they can learn that from a separate SEED lab called *Shellcode Lab.*
 
 <Br>
+
 &emsp; The provided shellcode (listed below) executes "/bin/bash -c commands", where `commands` are the commands put inside Lines ➀, ➁, and ➂. Students can put whatever shell commands they want in these spaces (commands should be separated by semicolons or `&&`). We provide enough space (180 bytes) as students may need to run a long list of commands in the subsequent tasks.
 <Br>
 &emsp; When putting commands in these three lines, make sure never change their length, or the shellcode may not work. Each line is exactly 60 characters long (see the ruler in Line ➃). When the shellcode runs, the * character at the end of Line ➂ will be replaced by a binary zero to mark the end of the command string. The offset of the * character is hardcoded in the binary code, so if the commands are longer than 180 bytes, they will be cut off.
