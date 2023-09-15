@@ -136,7 +136,7 @@ We provide a skeleton code in the `Labsetup/worm` folder. We will complete this 
 <Br>
 &emsp; To help visualize the attack, we let the worm run a ping command in the background once it successfully gets into a victim host (see Line ➁). This command sends out an ICMP echo message to a non-existing machine every 2 seconds. Our Map application will flash the node after seeing its ICMP messages. That is just one way to visualize the compromised hosts.
 
-<p align="center">Listing 1: The attack code: `worm.py`</p>
+<p align="center">Listing 1: The attack code: "worm.py"</p>
 
 ```
 shellcode= (
